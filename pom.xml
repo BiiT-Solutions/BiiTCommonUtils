@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.biit.utils</groupId>
+	<artifactId>fileutils</artifactId>
+	<packaging>jar</packaging>
+	<version>0.0.1</version>
+	<name>Generic Utilities for accessing files.</name>
+	<description>Access files in different operative systems and servers</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.jdk.version>1.6</java.jdk.version>
+		<plugin.compiler.version>2.3.2</plugin.compiler.version>
+		<plugin.exec.version>1.2.1</plugin.exec.version>
+		<org.testng.version>6.8</org.testng.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${plugin.compiler.version}</version>
+				<configuration>
+					<source>${java.jdk.version}</source>
+					<target>${java.jdk.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>biit-releases</name>
+			<url>http://ec2-54-217-214-241.eu-west-1.compute.amazonaws.com:8080/artifactory/ext-release-local</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${org.testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
