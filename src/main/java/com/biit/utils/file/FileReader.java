@@ -20,6 +20,7 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
+					System.out.println("File not found: " + FileReader.convert2OsPath(url));
 					e.printStackTrace();
 				}
 			}
