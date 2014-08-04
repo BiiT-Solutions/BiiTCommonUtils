@@ -1,8 +1,12 @@
 package com.biit.utils.file;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 
@@ -45,6 +49,24 @@ public class FileReader {
 	public static ImageIcon getIcon(String iconFile) {
 		return new ImageIcon(FileReader.class.getClassLoader().getResource(
 				File.separator + ICON_FOLDER + File.separator + iconFile));
+	}
+
+	/**
+	 * Reads a resource text file and returns a list of strings (one line per string).
+	 * 
+	 * @param resourceName
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public static List<String> getResouceAsList(String resourceName) throws FileNotFoundException {
+		File file = FileReader.getResource(resourceName);
+		Scanner s = new Scanner(file);
+		List<String> lines = new ArrayList<String>();
+		while (s.hasNext()) {
+			lines.add(s.next());
+		}
+		s.close();
+		return lines;
 	}
 
 }
