@@ -60,6 +60,22 @@ public class FileReader {
 	 */
 	public static List<String> getResouceAsList(String resourceName) throws FileNotFoundException {
 		File file = FileReader.getResource(resourceName);
+		return readFile(file);
+	}
+
+	/**
+	 * Reads a resource text file and returns a list of strings (one line per string).
+	 * 
+	 * @param resourceName
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public static List<String> getFileAsList(String filePath) throws FileNotFoundException {
+		File file = new File(filePath);
+		return readFile(file);
+	}
+
+	private static List<String> readFile(File file) throws FileNotFoundException {
 		Scanner s = new Scanner(file);
 		List<String> lines = new ArrayList<String>();
 		while (s.hasNext()) {
