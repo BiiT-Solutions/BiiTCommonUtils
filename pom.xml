@@ -4,7 +4,7 @@
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<name>Generic utilities used in Biit projects.</name>
 	<description>Access files in different operative systems and servers</description>
 
