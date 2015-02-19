@@ -1,5 +1,6 @@
 package com.biit.utils.configuration;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.biit.utils.configuration.exception.PropertyNotFoundException;
+import com.biit.utils.logger.CommonUtilsLogger;
 
 public class ConfigurationReader {
 
@@ -54,8 +56,10 @@ public class ConfigurationReader {
 			try {
 				propertyFile = propertiesSource.loadFile();
 				readAllProperties(propertyFile);
+			} catch (FileNotFoundException e){
+				CommonUtilsLogger.warning(this.getClass().getName(), e.getMessage());
 			} catch (IOException e) {
-				e.printStackTrace();
+				CommonUtilsLogger.errorMessage(this.getClass().getName(), e);
 			}
 		}
 	}

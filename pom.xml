@@ -15,6 +15,8 @@
 		<plugin.exec.version>1.2.1</plugin.exec.version>
 		<org.testng.version>6.8</org.testng.version>
 		<maven-surefire.version>2.17</maven-surefire.version>
+		<log4j.version>1.2.17</log4j.version>
+		<biit-logger.version>0.1.0</biit-logger.version>
 	</properties>
 
 	<build>
@@ -52,10 +54,15 @@
 	</distributionManagement>
 
 	<dependencies>
+	    <dependency>
+			<groupId>com.biit</groupId>
+			<artifactId>biit-logger</artifactId>
+			<version>${biit-logger.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+			<version>${log4j.version}</version>
 		</dependency>
 		<!-- Testing -->
 		<dependency>

@@ -10,6 +10,8 @@ import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 
+import com.biit.utils.logger.CommonUtilsLogger;
+
 public class FileReader {
 	private final static String ICON_FOLDER = "icons";
 	
@@ -24,8 +26,7 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					System.out.println("File not found: " + FileReader.convert2OsPath(url));
-					e.printStackTrace();
+					CommonUtilsLogger.errorMessage(FileReader.class.getName(),"File not found: " + FileReader.convert2OsPath(url));
 				}
 			}
 		} catch (NullPointerException npe) {
