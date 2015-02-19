@@ -10,12 +10,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 import java.util.Properties;
 
 
 public class PropertiesFile {
 
 	public PropertiesFile() {
+	}
+	
+	public static String readEnvironmentVariable(String environmentVariable){
+		Map<String, String> env = System.getenv();
+		return env.get(environmentVariable);
+	}
+	
+	public static Properties load(String path, String fileName) throws IOException{		
+		File file = new File(path,fileName);
+		return load(file);
 	}
 
 	public static Properties load(String fileName) throws IOException {

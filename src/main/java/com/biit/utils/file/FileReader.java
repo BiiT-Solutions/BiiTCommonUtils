@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 
 public class FileReader {
 	private final static String ICON_FOLDER = "icons";
-
+	
 	public static File getResource(String filename) throws NullPointerException {
 		URL url = FileReader.class.getClassLoader().getResource(filename);
 		File file = null;
