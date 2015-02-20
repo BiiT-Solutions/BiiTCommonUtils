@@ -6,7 +6,9 @@ import org.testng.annotations.Test;
 
 import com.biit.utils.configuration.ConfigurationReader;
 import com.biit.utils.configuration.PropertiesSourceFile;
+import com.biit.utils.configuration.SystemVariablePropertiesSourceFile;
 import com.biit.utils.configuration.exception.PropertyNotFoundException;
+import com.biit.utils.logger.CommonUtilsLogger;
 
 @Test(groups = { "configReader" })
 public class ConfigReaderTests {
@@ -39,6 +41,8 @@ public class ConfigReaderTests {
 	private static final String PROPERTY_REWRITE_1_FILE_1 = "../test2/test2";
 	private static final Integer PROPERTY_REWRITE_2_FILE_2 = new Integer(3);
 	private static final Double PROPERTY_REWRITE_12_FILE_2 = new Double(4.0);
+	private static final String BAD_VARIABLE = "BAD_VARIABLE";
+	private static final String BAD_FILE = "BAD_FILE";
 	
 	public class TestConfigurationReader extends ConfigurationReader{
 
@@ -57,6 +61,9 @@ public class ConfigReaderTests {
 			addPropertiesSource(new PropertiesSourceFile(FILE_1));
 			addPropertiesSource(new PropertiesSourceFile(FILE_2));
 			addPropertiesSource(new PropertiesSourceFile(FILE_3));
+			//Test a null bad variable file breaks the application.
+			addPropertiesSource(new PropertiesSourceFile(BAD_FILE));
+			addPropertiesSource(new SystemVariablePropertiesSourceFile(BAD_VARIABLE, FILE_1));
 		}
 	}
 
@@ -74,7 +81,9 @@ public class ConfigReaderTests {
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_2,Integer.class),PROPERTY_REWRITE_2_DEFAULT_VALUE);
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_12,Double.class),PROPERTY_REWRITE_12_DEFAULT_VALUE);
 		
+		System.out.println("<START of expected debug and info warning messages>");
 		testConfigurationReader.readConfigurations();
+		System.out.println("<END of expected debug and info warning messages>");
 		
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_PATH),PROPERTY_PATH_FILE_0);
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_INT,Integer.class),PROPERTY_INT_FILE_0);
@@ -91,7 +100,9 @@ public class ConfigReaderTests {
 		
 		TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
 		
+		System.out.println("<START of expected debug and info warning messages>");
 		testConfigurationReader.readConfigurations();
+		System.out.println("<END of expected debug and info warning messages>");
 		
 		testConfigurationReader.getProperty(PROPERTY_NOT_USED,Double.class);
 	}

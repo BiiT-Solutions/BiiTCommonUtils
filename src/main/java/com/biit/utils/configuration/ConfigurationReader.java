@@ -1,7 +1,5 @@
 package com.biit.utils.configuration;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +8,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.biit.utils.configuration.exception.PropertyNotFoundException;
-import com.biit.utils.logger.CommonUtilsLogger;
 
 public class ConfigurationReader {
 
@@ -53,14 +50,10 @@ public class ConfigurationReader {
 		
 		for (IPropertiesSource propertiesSource : propertiesSources) {
 			Properties propertyFile;
-			try {
-				propertyFile = propertiesSource.loadFile();
+			propertyFile = propertiesSource.loadFile();
+			if(propertyFile!=null){
 				readAllProperties(propertyFile);
-			} catch (FileNotFoundException e){
-				CommonUtilsLogger.warning(this.getClass().getName(), e.getMessage());
-			} catch (IOException e) {
-				CommonUtilsLogger.errorMessage(this.getClass().getName(), e);
-			}
+			}			
 		}
 	}
 
@@ -86,7 +79,10 @@ public class ConfigurationReader {
 	 * @param defaultValue
 	 */
 	public <T> void addProperty(String propertyName, T defaultValue) {
-		if (defaultValue instanceof String) {
+		if(defaultValue == null){
+			propertiesDefault.put(propertyName, null);
+			properties.put(propertyName, null);
+		}else if (defaultValue instanceof String) {
 			propertiesDefault.put(propertyName, new String((String) defaultValue));
 			properties.put(propertyName, new String((String) defaultValue));
 		} else {
@@ -97,7 +93,11 @@ public class ConfigurationReader {
 
 	public String getProperty(String propertyName) throws PropertyNotFoundException {
 		if(properties.containsKey(propertyName)){
-		return new String(properties.get(propertyName));
+			if(properties.get(propertyName)!=null){
+				return new String(properties.get(propertyName));
+			}else{
+				return null;
+			}
 		}else{
 			throw new PropertyNotFoundException("Property not defined in the configuration reader");
 		}
@@ -105,6 +105,10 @@ public class ConfigurationReader {
 
 	public <T> T getProperty(String propertyName, Class<? extends T> type) throws PropertyNotFoundException {
 		String stringValue = getProperty(propertyName);
-		return getConverter(type).convertFromString(stringValue);
+		if(stringValue!=null){
+			return getConverter(type).convertFromString(stringValue);
+		}else{
+			return null;
+		}
 	}
 }
