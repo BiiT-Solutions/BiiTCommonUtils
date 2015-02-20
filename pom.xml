@@ -16,7 +16,7 @@
 		<org.testng.version>6.8</org.testng.version>
 		<maven-surefire.version>2.17</maven-surefire.version>
 		<log4j.version>1.2.17</log4j.version>
-		<biit-logger.version>0.1.0</biit-logger.version>
+		<biit-logger.version>0.2.0</biit-logger.version>
 	</properties>
 
 	<build>
