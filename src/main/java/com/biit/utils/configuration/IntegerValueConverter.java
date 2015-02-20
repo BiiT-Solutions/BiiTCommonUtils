@@ -4,12 +4,18 @@ public class IntegerValueConverter implements IValueConverter<Integer> {
 
 	@Override
 	public Integer convertFromString(String value) {
-		return Integer.parseInt(value);
+		if(value!=null){
+			return Integer.parseInt(value);
+		}
+		return null;
 	}
 
 	@Override
 	public String convertToString(Object value) {
-		return value.toString();
+		if(value!=null){
+			return value.toString();
+		}
+		return null;
 	}
 
 }

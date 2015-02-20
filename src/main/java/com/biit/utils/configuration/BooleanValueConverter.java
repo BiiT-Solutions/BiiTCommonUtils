@@ -4,13 +4,16 @@ public class BooleanValueConverter implements IValueConverter<Boolean> {
 
 	protected static final Object TRUE = "true";
 	protected static final Object FALSE = "false";
-	
+
 	@Override
 	public Boolean convertFromString(String value) {
-		if(value.equals(TRUE)){
+		if (value == null) {
 			return true;
 		}
-		if(value.equals(FALSE)){
+		if (value.equals(TRUE)) {
+			return true;
+		}
+		if (value.equals(FALSE)) {
 			return false;
 		}
 		return false;
@@ -18,7 +21,10 @@ public class BooleanValueConverter implements IValueConverter<Boolean> {
 
 	@Override
 	public String convertToString(Object value) {
-		return value.toString();
+		if (value != null) {
+			return value.toString();
+		}
+		return null;
 	}
-	
+
 }
