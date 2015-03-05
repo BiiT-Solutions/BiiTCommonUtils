@@ -4,19 +4,20 @@
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.0</version>
-	<name>Generic utilities used in Biit projects.</name>
-	<description>Access files in different operative systems and servers</description>
+	<version>0.2.1</version>
+	<name>Generic utilities used in all Biit projects.</name>
+	<description>Read settings files and basic logging.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.jdk.version>1.6</java.jdk.version>
+		<java.jdk.version>1.7</java.jdk.version>
 		<plugin.compiler.version>2.3.2</plugin.compiler.version>
 		<plugin.exec.version>1.2.1</plugin.exec.version>
 		<org.testng.version>6.8</org.testng.version>
 		<maven-surefire.version>2.17</maven-surefire.version>
+		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
 		<log4j.version>1.2.17</log4j.version>
-		<biit-logger.version>0.2.0</biit-logger.version>
+		<javax.mail.version>1.4.7</javax.mail.version>
 	</properties>
 
 	<build>
@@ -42,6 +43,11 @@
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -54,15 +60,24 @@
 	</distributionManagement>
 
 	<dependencies>
-	    <dependency>
-			<groupId>com.biit</groupId>
-			<artifactId>biit-logger</artifactId>
-			<version>${biit-logger.version}</version>
-		</dependency>
+		<!-- log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
+		</dependency>
+		<!-- MAIL -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>${javax.mail.version}</version>
+		</dependency>
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${org.testng.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<!-- Testing -->
 		<dependency>
