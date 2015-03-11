@@ -18,7 +18,7 @@ public class SendEmail {
 			throws EmailNotSentException, InvalidEmailAddressException {
 		for (String mailTo : mailToList) {
 			sendEmail(mailTo, subject, htmlContent);
-			BiitLogger.info(SendEmail.class.getName(), "Sending email to " + mailTo);
+			BiitLogger.info(SendEmail.class.getName() + ": " + "Sending email to " + mailTo);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class SendEmail {
 
 			sendEmailThread.run();
 		} catch (Throwable exc) {
-			BiitLogger.errorMessage(SendEmail.class.getName(), exc);
+			BiitLogger.errorMessage(SendEmail.class.getName(), BiitLogger.getStackTrace(exc));
 			EmailNotSentException emailNotSentException = new EmailNotSentException(exc.getMessage());
 			emailNotSentException.setStackTrace(exc.getStackTrace());
 			throw emailNotSentException;
