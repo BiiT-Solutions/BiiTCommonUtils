@@ -40,4 +40,8 @@ public class DateManager {
 		return c.getTime();
 	}
 
+	public static Timestamp convertToTimestamp(Date date) {
+		return new Timestamp(date.getTime());
+	}
+
 }
