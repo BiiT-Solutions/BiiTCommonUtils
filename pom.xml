@@ -22,9 +22,8 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:dev.biit-solutions.com:BiiTCommonUtils.git</connection>
-		<developerConnection>scm:git:dev.biit-solutions.com:BiiTCommonUtils.git</developerConnection>
-		<tag>storableobject-persistence-manager-0.2.5</tag>
+		<connection>scm:git:dev.biit-solutions.com:/opt/projects/BiiTCommonUtils.git</connection>
+		<developerConnection>scm:git:dev.biit-solutions.com:/opt/projects/BiiTCommonUtils.git</developerConnection>
 	</scm>
 	
 	<properties>
