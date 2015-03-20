@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
@@ -8,7 +9,7 @@
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
-		<distributionManagement>
+	<distributionManagement>
 		<repository>
 			<id>central</id>
 			<name>biit-releases</name>
@@ -22,8 +23,8 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:dev.biit-solutions.com:/opt/projects/BiiTCommonUtils.git</connection>
-		<developerConnection>scm:git:dev.biit-solutions.com:/opt/projects/BiiTCommonUtils.git</developerConnection>
+		<connection>scm:git:dev.biit-solutions.com:BiiTCommonUtils.git</connection>
+		<developerConnection>scm:git:dev.biit-solutions.com:BiiTCommonUtils.git</developerConnection>
 	</scm>
 	
 	<properties>
@@ -116,4 +117,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 </project>
