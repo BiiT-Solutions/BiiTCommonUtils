@@ -39,6 +39,7 @@
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<maven-release-plugin.version>2.5.1</maven-release-plugin.version>
 		<maven-scm-provider-gitexe.version>1.9.2</maven-scm-provider-gitexe.version>
+		<project.scm.id>git</project.scm.id>
 	</properties>
 
 	<dependencies>

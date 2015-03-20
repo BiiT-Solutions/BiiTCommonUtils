@@ -8,3 +8,5 @@ project.properties
 output.log
 tmp
 
+/pom.xml.releaseBackup
+/release.properties
