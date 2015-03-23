@@ -76,7 +76,13 @@ public abstract class BiitLogger {
 		severe(className + ": " + message);
 	}
 
-	public static void errorMessage(String className, String error) {
+	/**
+	 * Logs an error and send an email to the email configured in settings.conf file.
+	 * 
+	 * @param className
+	 * @param error
+	 */
+	public static void errorMessageNotification(String className, String error) {
 		severe(className, error);
 		sendByEmail(className, error);
 	}

@@ -66,7 +66,7 @@ public class EmailConfigurationReader {
 			emailToListCommaSeparated = prop.getProperty(EMAIL_TO);
 		} catch (IOException e) {
 			// Do nothing.
-			BiitLogger.errorMessage(this.getClass().getName(), BiitLogger.getStackTrace(e));
+			BiitLogger.errorMessageNotification(this.getClass().getName(), BiitLogger.getStackTrace(e));
 		}
 
 		if (smtpServer == null || smtpServer.length() == 0) {

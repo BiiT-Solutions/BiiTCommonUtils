@@ -26,7 +26,7 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					CommonUtilsLogger.errorMessage(FileReader.class.getName(),"File not found: " + FileReader.convert2OsPath(url));
+					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(),"File not found: " + FileReader.convert2OsPath(url));
 				}
 			}
 		} catch (NullPointerException npe) {
