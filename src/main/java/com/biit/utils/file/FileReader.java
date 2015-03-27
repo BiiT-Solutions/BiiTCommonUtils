@@ -14,7 +14,7 @@ import com.biit.utils.logger.CommonUtilsLogger;
 
 public class FileReader {
 	private final static String ICON_FOLDER = "icons";
-	
+
 	public static File getResource(String filename) throws NullPointerException {
 		URL url = FileReader.class.getClassLoader().getResource(filename);
 		File file = null;
@@ -26,7 +26,11 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(),"File not found: " + FileReader.convert2OsPath(url));
+					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(), "File not found: "
+							+ FileReader.convert2OsPath(url));
+				} catch (IllegalArgumentException e) {
+					CommonUtilsLogger.severe(FileReader.class.getName(),
+							"File not found: " + FileReader.convert2OsPath(url));
 				}
 			}
 		} catch (NullPointerException npe) {
@@ -53,7 +57,8 @@ public class FileReader {
 	}
 
 	/**
-	 * Reads a resource text file and returns a list of strings (one line per string).
+	 * Reads a resource text file and returns a list of strings (one line per
+	 * string).
 	 * 
 	 * @param resourceName
 	 * @return
@@ -65,7 +70,8 @@ public class FileReader {
 	}
 
 	/**
-	 * Reads a resource text file and returns a list of strings (one line per string).
+	 * Reads a resource text file and returns a list of strings (one line per
+	 * string).
 	 * 
 	 * @param resourceName
 	 * @return
