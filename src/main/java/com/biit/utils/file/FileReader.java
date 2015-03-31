@@ -31,6 +31,9 @@ public class FileReader {
 				} catch (URISyntaxException e) {
 					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(), "File not found: "
 							+ FileReader.convert2OsPath(url));
+				} catch (IllegalArgumentException e) {
+					CommonUtilsLogger.severe(FileReader.class.getName(),
+							"File not found: " + FileReader.convert2OsPath(url));
 				}
 			}
 		} catch (NullPointerException npe) {
