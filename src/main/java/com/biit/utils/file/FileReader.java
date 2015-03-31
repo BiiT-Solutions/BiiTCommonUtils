@@ -2,8 +2,11 @@ package com.biit.utils.file;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,7 +17,7 @@ import com.biit.utils.logger.CommonUtilsLogger;
 
 public class FileReader {
 	private final static String ICON_FOLDER = "icons";
-	
+
 	public static File getResource(String filename) throws NullPointerException {
 		URL url = FileReader.class.getClassLoader().getResource(filename);
 		File file = null;
@@ -26,7 +29,8 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(),"File not found: " + FileReader.convert2OsPath(url));
+					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(), "File not found: "
+							+ FileReader.convert2OsPath(url));
 				}
 			}
 		} catch (NullPointerException npe) {
@@ -84,6 +88,20 @@ public class FileReader {
 		}
 		s.close();
 		return lines;
+	}
+
+	public static String getResource(String fileName, Charset charset) throws FileNotFoundException {
+		StringBuilder result = new StringBuilder("");
+		// Get file from resources folder
+		File file = getResource(fileName);
+		try {
+			for (String line : Files.readAllLines(file.toPath(), charset)) {
+				result.append(line).append("\n");
+			}
+		} catch (IOException e) {
+			CommonUtilsLogger.errorMessage(FileReader.class.getName(), e);
+		}
+		return result.toString();
 	}
 
 }
