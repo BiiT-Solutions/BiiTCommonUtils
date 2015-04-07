@@ -88,13 +88,18 @@ public abstract class BiitLogger {
 	}
 
 	private static void sendByEmail(String className, String throwable) {
-		if (EmailConfigurationReader.getInstance().isEmailEnabled()) {
-			try {
-				SendEmail.sendEmail(EmailConfigurationReader.getInstance().getEmailToList(),
-						ErrorMailGeneration.getSubject(), ErrorMailGeneration.getHtmlMailContent(className, throwable));
-			} catch (EmailNotSentException | InvalidEmailAddressException e) {
-				severe(BiitLogger.class.getName(), getStackTrace(e));
+		try {
+			if (EmailConfigurationReader.getInstance().isEmailEnabled()) {
+				try {
+					SendEmail.sendEmail(EmailConfigurationReader.getInstance().getEmailToList(),
+							ErrorMailGeneration.getSubject(),
+							ErrorMailGeneration.getHtmlMailContent(className, throwable));
+				} catch (EmailNotSentException | InvalidEmailAddressException e) {
+					severe(BiitLogger.class.getName(), getStackTrace(e));
+				}
 			}
+		} catch (NullPointerException npe) {
+			warning(BiitLogger.class.getName() + ": email configuration is not set!");
 		}
 	}
 
