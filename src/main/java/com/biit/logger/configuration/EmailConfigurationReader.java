@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.biit.logger.BiitLogger;
+import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.PropertiesFile;
 
 /**
@@ -66,7 +66,7 @@ public class EmailConfigurationReader {
 			emailToListCommaSeparated = prop.getProperty(EMAIL_TO);
 		} catch (IOException e) {
 			// Do nothing.
-			BiitLogger.severe(this.getClass().getName(), BiitLogger.getStackTrace(e));
+			BiitCommonLogger.severe(this.getClass().getName(), e);
 		}
 
 		if (smtpServer == null || smtpServer.length() == 0) {

@@ -6,7 +6,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import com.biit.logger.BiitLogger;
+import com.biit.logger.BiitCommonLogger;
 import com.biit.logger.configuration.EmailConfigurationReader;
 import com.biit.logger.mail.SendEmailThread.ThreadExceptionListener;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
@@ -18,7 +18,7 @@ public class SendEmail {
 			throws EmailNotSentException, InvalidEmailAddressException {
 		for (String mailTo : mailToList) {
 			sendEmail(mailTo, subject, htmlContent);
-			BiitLogger.info(SendEmail.class.getName() + ": " + "Sending email to " + mailTo);
+			BiitCommonLogger.info(SendEmail.class,"Sending email to " + mailTo);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class SendEmail {
 
 				@Override
 				public void exceptionLaunched(MessagingException e) {
-					BiitLogger.severe(SendEmail.class.getName(), BiitLogger.getStackTrace(e));
+					BiitCommonLogger.severe(SendEmail.class.getName(), e);
 					// Catch exception, convert to Runtime to take out from the thread and catch and convert again to
 					// exception.
 					throw new RuntimeException(e);
@@ -72,7 +72,7 @@ public class SendEmail {
 
 			sendEmailThread.run();
 		} catch (Throwable exc) {
-			BiitLogger.errorMessageNotification(SendEmail.class.getName(), BiitLogger.getStackTrace(exc));
+			BiitCommonLogger.errorMessageNotification(SendEmail.class, exc);
 			EmailNotSentException emailNotSentException = new EmailNotSentException(exc.getMessage());
 			emailNotSentException.setStackTrace(exc.getStackTrace());
 			throw emailNotSentException;

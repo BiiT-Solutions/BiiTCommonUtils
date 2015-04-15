@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.PropertiesFile;
-import com.biit.utils.logger.CommonUtilsLogger;
 
 public class PropertiesSourceFile implements IPropertiesSource {
 
@@ -30,11 +30,11 @@ public class PropertiesSourceFile implements IPropertiesSource {
 				return PropertiesFile.load(filePath, fileName);
 			}
 		} catch (FileNotFoundException e) {
-			CommonUtilsLogger.warning(this.getClass().getName(), e.getMessage());
+			BiitCommonLogger.warning(this.getClass(), e.getMessage());
 		} catch (IOException e) {
-			CommonUtilsLogger.errorMessage(this.getClass().getName(), e);
+			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 		} catch (NullPointerException e) {
-			CommonUtilsLogger.info(this.getClass().getName(), e.getMessage());
+			BiitCommonLogger.info(this.getClass(), e.getMessage());
 		}
 		return null;
 	}

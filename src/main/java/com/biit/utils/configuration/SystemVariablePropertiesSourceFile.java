@@ -2,8 +2,8 @@ package com.biit.utils.configuration;
 
 import java.util.Properties;
 
+import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.PropertiesFile;
-import com.biit.utils.logger.CommonUtilsLogger;
 
 public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile{
 
@@ -25,7 +25,7 @@ public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile{
 			setFilePath(environmentVariableValue);
 			return super.loadFile();
 		}else{
-			CommonUtilsLogger.debug(this.getClass().getName(), "Environmental variable '"+getEnvironmentVariable()+"' is not set on the system.");
+			BiitCommonLogger.debug(this.getClass(), "Environmental variable '"+getEnvironmentVariable()+"' is not set on the system.");
 			return null;
 		}
 	}

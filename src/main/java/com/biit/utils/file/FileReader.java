@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 
-import com.biit.utils.logger.CommonUtilsLogger;
+import com.biit.logger.BiitCommonLogger;
 
 public class FileReader {
 	private final static String ICON_FOLDER = "icons";
@@ -29,10 +29,10 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					CommonUtilsLogger.errorMessageNotification(FileReader.class.getName(), "File not found: "
+					BiitCommonLogger.errorMessageNotification(FileReader.class, "File not found: "
 							+ FileReader.convert2OsPath(url));
 				} catch (IllegalArgumentException e) {
-					CommonUtilsLogger.severe(FileReader.class.getName(),
+					BiitCommonLogger.severe(FileReader.class,
 							"File not found: " + FileReader.convert2OsPath(url));
 				}
 			}
@@ -102,7 +102,7 @@ public class FileReader {
 				result.append(line).append("\n");
 			}
 		} catch (IOException e) {
-			CommonUtilsLogger.errorMessage(FileReader.class.getName(), e);
+			BiitCommonLogger.errorMessageNotification(FileReader.class, e);
 		}
 		return result.toString();
 	}
