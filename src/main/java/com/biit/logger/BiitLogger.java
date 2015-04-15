@@ -12,7 +12,7 @@ import com.biit.logger.mail.SendEmail;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 
-public class LoggerUtils {
+public abstract class BiitLogger {
 
 	/**
 	 * Shows not critical errors. I.e. Email address not found, permissions not allowed for this user, ...
@@ -21,6 +21,15 @@ public class LoggerUtils {
 	 */
 	public static void warning(Logger logger, String message) {
 		logger.warn(message);
+	}
+	
+	/**
+	 * Shows not critical errors. I.e. Email address not found, permissions not allowed for this user, ...
+	 * 
+	 * @param message
+	 */
+	public static void warning(Logger logger, String className, String message) {
+		logger.warn(className+":"+message);
 	}
 	
 	/**
@@ -103,11 +112,11 @@ public class LoggerUtils {
 							ErrorMailGeneration.getSubject(),
 							ErrorMailGeneration.getHtmlMailContent(className, throwable));
 				} catch (EmailNotSentException | InvalidEmailAddressException e) {
-					severe(logger, LoggerUtils.class.getName(), getStackTrace(e));
+					severe(logger, BiitLogger.class.getName(), getStackTrace(e));
 				}
 			}
 		} catch (NullPointerException npe) {
-			warning(logger, LoggerUtils.class.getName() + ": email configuration is not set!");
+			warning(logger, BiitLogger.class.getName() + ": email configuration is not set!");
 		}
 	}
 
