@@ -111,4 +111,8 @@ public class ConfigurationReader {
 			return null;
 		}
 	}
+
+	public List<IPropertiesSource> getPropertiesSources() {
+		return propertiesSources;
+	}
 }

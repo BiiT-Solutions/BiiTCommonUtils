@@ -22,6 +22,7 @@ public class PropertiesSourceFile implements IPropertiesSource {
 		this.fileName = fileName;
 	}
 
+	@Override
 	public Properties loadFile() {
 		try {
 			if (filePath == null) {
@@ -43,11 +44,18 @@ public class PropertiesSourceFile implements IPropertiesSource {
 		this.filePath = filePath;
 	}
 
+	@Override
 	public String getFilePath() {
 		return filePath;
 	}
 
+	@Override
 	public String getFileName() {
 		return fileName;
+	}
+
+	@Override
+	public String toString() {
+		return (getFilePath() != null ? getFilePath() + "/" : "") + getFileName();
 	}
 }

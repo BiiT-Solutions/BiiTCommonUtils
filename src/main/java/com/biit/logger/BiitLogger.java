@@ -29,7 +29,7 @@ public abstract class BiitLogger {
 	 * @param message
 	 */
 	public static void warning(Logger logger, String className, String message) {
-		logger.warn(className+":"+message);
+		logger.warn(className+": "+message);
 	}
 	
 	/**
@@ -47,7 +47,7 @@ public abstract class BiitLogger {
 	 * @param message
 	 */
 	public static void info(Logger logger, String className, String message){
-		info(logger,className+":"+message);
+		info(logger,className+": "+message);
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public abstract class BiitLogger {
 	 */
 	public static void debug(Logger logger, String className, String message) {
 		if (logger.isDebugEnabled()) {
-			logger.debug(className+":"+message);
+			logger.debug(className+": "+message);
 		}
 	}
 	
