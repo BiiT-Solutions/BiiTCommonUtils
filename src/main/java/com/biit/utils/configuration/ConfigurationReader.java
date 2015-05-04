@@ -41,26 +41,24 @@ public class ConfigurationReader {
 	}
 
 	/**
-	 * Restarts all properties to their default values and then reads all the
-	 * configuration files again.
+	 * Restarts all properties to their default values and then reads all the configuration files again.
 	 */
 	public void readConfigurations() {
 		properties.clear();
 		properties.putAll(propertiesDefault);
-		
+
 		for (IPropertiesSource propertiesSource : propertiesSources) {
 			Properties propertyFile;
 			propertyFile = propertiesSource.loadFile();
-			if(propertyFile!=null){
+			if (propertyFile != null) {
 				readAllProperties(propertyFile);
-			}			
+			}
 		}
 	}
 
 	/**
-	 * Reads all properties configured in this configuration reader from
-	 * propertyFile. If they doesn't exist, then the current value is mantained
-	 * as default value.
+	 * Reads all properties configured in this configuration reader from propertyFile. If they doesn't exist, then the
+	 * current value is mantained as default value.
 	 * 
 	 * @param propertyFile
 	 */
@@ -79,12 +77,12 @@ public class ConfigurationReader {
 	 * @param defaultValue
 	 */
 	public <T> void addProperty(String propertyName, T defaultValue) {
-		if(defaultValue == null){
+		if (defaultValue == null) {
 			propertiesDefault.put(propertyName, null);
 			properties.put(propertyName, null);
-		}else if (defaultValue instanceof String) {
-			propertiesDefault.put(propertyName, new String((String) defaultValue));
-			properties.put(propertyName, new String((String) defaultValue));
+		} else if (defaultValue instanceof String) {
+			propertiesDefault.put(propertyName, new String((String) defaultValue).trim());
+			properties.put(propertyName, new String((String) defaultValue).trim());
 		} else {
 			propertiesDefault.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
 			properties.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
@@ -92,22 +90,22 @@ public class ConfigurationReader {
 	}
 
 	public String getProperty(String propertyName) throws PropertyNotFoundException {
-		if(properties.containsKey(propertyName)){
-			if(properties.get(propertyName)!=null){
-				return new String(properties.get(propertyName));
-			}else{
+		if (properties.containsKey(propertyName)) {
+			if (properties.get(propertyName) != null) {
+				return new String(properties.get(propertyName).trim());
+			} else {
 				return null;
 			}
-		}else{
+		} else {
 			throw new PropertyNotFoundException("Property not defined in the configuration reader");
 		}
 	}
 
 	public <T> T getProperty(String propertyName, Class<? extends T> type) throws PropertyNotFoundException {
 		String stringValue = getProperty(propertyName);
-		if(stringValue!=null){
+		if (stringValue != null) {
 			return getConverter(type).convertFromString(stringValue);
-		}else{
+		} else {
 			return null;
 		}
 	}
