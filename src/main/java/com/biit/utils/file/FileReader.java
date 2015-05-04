@@ -29,11 +29,10 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					BiitCommonLogger.errorMessageNotification(FileReader.class, "File not found: "
-							+ FileReader.convert2OsPath(url));
-				} catch (IllegalArgumentException e) {
-					BiitCommonLogger.severe(FileReader.class,
+					BiitCommonLogger.errorMessageNotification(FileReader.class,
 							"File not found: " + FileReader.convert2OsPath(url));
+				} catch (IllegalArgumentException e) {
+					BiitCommonLogger.severe(FileReader.class, "File not found: " + FileReader.convert2OsPath(url));
 				}
 			}
 		} catch (NullPointerException npe) {
@@ -96,13 +95,17 @@ public class FileReader {
 	public static String getResource(String fileName, Charset charset) throws FileNotFoundException {
 		StringBuilder result = new StringBuilder("");
 		// Get file from resources folder
-		File file = getResource(fileName);
 		try {
-			for (String line : Files.readAllLines(file.toPath(), charset)) {
-				result.append(line).append("\n");
+			File file = getResource(fileName);
+			try {
+				for (String line : Files.readAllLines(file.toPath(), charset)) {
+					result.append(line).append("\n");
+				}
+			} catch (IOException e) {
+				BiitCommonLogger.errorMessageNotification(FileReader.class, e);
 			}
-		} catch (IOException e) {
-			BiitCommonLogger.errorMessageNotification(FileReader.class, e);
+		} catch (NullPointerException npe) {
+			throw new FileNotFoundException(npe.getMessage());
 		}
 		return result.toString();
 	}
