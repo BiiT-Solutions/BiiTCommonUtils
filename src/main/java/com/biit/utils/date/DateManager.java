@@ -24,6 +24,9 @@ public class DateManager {
 	}
 
 	public static String convertDateToStringWithHours(Timestamp time) {
+		if (time == null) {
+			return "";
+		}
 		Date date = new Date(time.getTime());
 		return convertDateToString(date, DATE_FORMAT);
 	}
