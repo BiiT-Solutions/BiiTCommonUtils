@@ -4,7 +4,7 @@
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4.4-SNAPSHOT</version>
+	<version>0.4.4</version>
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
@@ -24,7 +24,7 @@
 	<scm>
 		<connection>scm:git:dev.biit-solutions.com:BiiTCommonUtils.git</connection>
 		<developerConnection>scm:git:dev.biit-solutions.com:BiiTCommonUtils.git</developerConnection>
-		<tag>common-utils</tag>
+		<tag>common-utils-0.4.4</tag>
 	</scm>
 	
 	<properties>
