@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.exception.PropertyNotFoundException;
 
 public class ConfigurationReader {
@@ -67,6 +68,7 @@ public class ConfigurationReader {
 		for (String propertyId : propertyIds) {
 			String value = propertyFile.getProperty(propertyId, properties.get(propertyId));
 			properties.put(propertyId, value);
+			BiitCommonLogger.debug(this.getClass(), "Property '" + propertyId + "' set as value '" + value + "'.");
 		}
 	}
 

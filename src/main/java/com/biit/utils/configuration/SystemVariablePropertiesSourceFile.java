@@ -22,10 +22,12 @@ public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile {
 	public Properties loadFile() {
 		String environmentVariableValue = PropertiesFile.readEnvironmentVariable(getEnvironmentVariable());
 		if (environmentVariableValue != null) {
+			BiitCommonLogger.debug(this.getClass(), "Environmental variable '" + getEnvironmentVariable()
+					+ "' values is: '" + environmentVariableValue + "'.");
 			setFilePath(environmentVariableValue);
 			return super.loadFile();
 		} else {
-			BiitCommonLogger.debug(this.getClass(), "Environmental variable '" + getEnvironmentVariable()
+			BiitCommonLogger.warning(this.getClass(), "Environmental variable '" + getEnvironmentVariable()
 					+ "' is not set on the system.");
 			return null;
 		}
