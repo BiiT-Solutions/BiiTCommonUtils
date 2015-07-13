@@ -62,33 +62,76 @@ public class ImageTools {
 		ImageIO.write(image, "jpg", new File(path));
 	}
 
-	public static BufferedImage resizeImage(Image originalImage, int scaledWidth, int scaledHeight) {
-		return resizeImage(toBufferedImage(originalImage), scaledWidth, scaledHeight, true);
+	/**
+	 * Loads an image from a specific path
+	 * 
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
+	public static BufferedImage loadFromFile(String path) throws IOException {
+		return ImageIO.read(new File(path));
 	}
 
-	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeight) {
-		return resizeImage(originalImage, scaledWidth, scaledHeight, true);
+	/**
+	 * Resizes an image to the specified width and height. The relation between high and width will be preserved.
+	 * 
+	 * @param originalImage
+	 * @param scaledWidth
+	 *            width in pixels.
+	 * @param scaledHeigh
+	 *            height in pixels.
+	 * @return
+	 */
+	public static BufferedImage resizeImage(Image originalImage, int scaledWidth, int scaledHeigh) {
+		return resizeImage(toBufferedImage(originalImage), scaledWidth, scaledHeigh, true);
 	}
 
-	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeight,
+	/**
+	 * Resizes an image to the specified width and height. The relation between high and width will be preserved.
+	 * 
+	 * @param originalImage
+	 * @param scaledWidth
+	 *            width in pixels.
+	 * @param scaledHeigh
+	 *            height in pixels.
+	 * @return
+	 */
+	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh) {
+		return resizeImage(originalImage, scaledWidth, scaledHeigh, true);
+	}
+
+	/**
+	 * Resizes an image to the specified width and height. The relation between high and width will be preserved.
+	 * 
+	 * @param originalImage
+	 * @param scaledWidth
+	 *            width in pixels.
+	 * @param scaledHeigh
+	 *            height in pixels.
+	 * @param preserveAlpha
+	 *            preserve alpha channel.
+	 * @return
+	 */
+	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh,
 			boolean preserveAlpha) {
 		BufferedImage resizedImage;
-		int finalHeight, finalWidth;
-		if (((double) originalImage.getHeight()) / scaledHeight < ((double) originalImage.getWidth()) / scaledWidth) {
+		int finalHeigh, finalWidth;
+		if (((double) originalImage.getHeight()) / scaledHeigh < ((double) originalImage.getWidth()) / scaledWidth) {
 			finalWidth = scaledWidth;
-			finalHeight = (int) (originalImage.getHeight() * scaledWidth / (double) originalImage.getWidth());
+			finalHeigh = (int) (originalImage.getHeight() * scaledWidth / (double) originalImage.getWidth());
 		} else {
-			finalWidth = (int) (originalImage.getWidth() * scaledHeight / (double) originalImage.getHeight());
-			finalHeight = scaledHeight;
+			finalWidth = (int) (originalImage.getWidth() * scaledHeigh / (double) originalImage.getHeight());
+			finalHeigh = scaledHeigh;
 		}
 		int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-		resizedImage = new BufferedImage(finalWidth, finalHeight, imageType);
+		resizedImage = new BufferedImage(finalWidth, finalHeigh, imageType);
 		Graphics2D graphic = resizedImage.createGraphics();
 		graphic.setComposite(AlphaComposite.Src);
 		graphic.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		graphic.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		graphic.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphic.drawImage(originalImage, 0, 0, finalWidth, finalHeight, null);
+		graphic.drawImage(originalImage, 0, 0, finalWidth, finalHeigh, null);
 		graphic.dispose();
 
 		return resizedImage;
