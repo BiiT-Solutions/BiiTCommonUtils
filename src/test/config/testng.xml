@@ -4,10 +4,12 @@
 		<groups>
 			<run>
 				<include name="configReader" />
+				<include name="imageTests" />
 			</run>
 		</groups>
 		<classes>
 			<class name="com.biit.utils.ConfigReaderTests" />
+			<class name="com.biit.utils.ImageToolsTest" />
 		</classes>
 	</test>
 </suite>
