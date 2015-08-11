@@ -1,6 +1,7 @@
 package com.biit.utils.date;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,6 +46,11 @@ public class DateManager {
 
 	public static Timestamp convertToTimestamp(Date date) {
 		return new Timestamp(date.getTime());
+	}
+
+	public static Date getDate(String date, String format) throws ParseException {
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		return formatter.parse(date);
 	}
 
 }
