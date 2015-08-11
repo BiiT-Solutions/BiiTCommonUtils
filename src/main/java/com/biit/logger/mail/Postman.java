@@ -1,5 +1,6 @@
 package com.biit.logger.mail;
 
+import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
@@ -62,6 +63,14 @@ public class Postman {
 	public void addAttachment(String filename) throws MessagingException {
 		BodyPart messageBodyPart = new MimeBodyPart();
 		DataSource source = new FileDataSource(filename);
+		messageBodyPart.setDataHandler(new DataHandler(source));
+		messageBodyPart.setFileName(filename);
+		multipart.addBodyPart(messageBodyPart);
+	}
+	
+	public void addAttachment(File file, String filename) throws MessagingException {
+		BodyPart messageBodyPart = new MimeBodyPart();
+		DataSource source = new FileDataSource(file);
 		messageBodyPart.setDataHandler(new DataHandler(source));
 		messageBodyPart.setFileName(filename);
 		multipart.addBodyPart(messageBodyPart);
