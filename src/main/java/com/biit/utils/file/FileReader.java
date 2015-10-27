@@ -31,8 +31,10 @@ public class FileReader {
 				} catch (URISyntaxException e) {
 					BiitCommonLogger.errorMessageNotification(FileReader.class,
 							"File not found: " + FileReader.convert2OsPath(url));
+					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
 					BiitCommonLogger.severe(FileReader.class, "File not found: " + FileReader.convert2OsPath(url));
+					e.printStackTrace();
 				}
 			}
 		} catch (NullPointerException npe) {
