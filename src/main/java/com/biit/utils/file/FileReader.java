@@ -36,22 +36,24 @@ public class FileReader {
 				} catch (IllegalArgumentException e) {
 					// Resource inside a jar.
 					if (url.toString().contains(".jar!")) {
-						BiitCommonLogger.warning(FileReader.class, "Resource inside a jar. Copy to a temporaly file.");
+						BiitCommonLogger.warning(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
 						// Copy to a temp file and return it.
-						InputStream inputStream = FileReader.class.getClassLoader().getResourceAsStream(url.toString());
 						try {
-							final File tempFile = File.createTempFile(filename, "_jar");
-							tempFile.deleteOnExit();
-							OutputStream os = new FileOutputStream(tempFile);
-							byte[] buffer = new byte[1024];
-							int bytesRead;
-							// read from is to buffer
-							while ((bytesRead = inputStream.read(buffer)) != -1) {
-								os.write(buffer, 0, bytesRead);
+							InputStream inputStream = url.openStream();
+							if (inputStream != null) {
+								final File tempFile = File.createTempFile(filename, "_jar");
+								tempFile.deleteOnExit();
+								OutputStream os = new FileOutputStream(tempFile);
+								byte[] buffer = new byte[1024];
+								int bytesRead;
+								// read from is to buffer
+								while ((bytesRead = inputStream.read(buffer)) != -1) {
+									os.write(buffer, 0, bytesRead);
+								}
+								inputStream.close();
+								os.close();
+								return tempFile;
 							}
-							inputStream.close();
-							os.close();
-							return tempFile;
 						} catch (Exception e1) {
 							BiitCommonLogger.severe(FileReader.class.getName(), e1);
 						}
