@@ -51,7 +51,7 @@ public class FileReader {
 							}
 							return tempFile;
 						} catch (Exception e1) {
-							BiitCommonLogger.errorMessageNotification(FileReader.class, e1);
+							BiitCommonLogger.severe(FileReader.class.getName(), e1);
 						}
 					}
 					BiitCommonLogger.severe(FileReader.class, "File not found: " + FileReader.convert2OsPath(url));
