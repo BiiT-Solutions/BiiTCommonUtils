@@ -42,13 +42,15 @@ public class FileReader {
 						try {
 							final File tempFile = File.createTempFile(filename, "_jar");
 							tempFile.deleteOnExit();
-							try (FileOutputStream out = new FileOutputStream(tempFile)) {
-								byte[] buffer = new byte[inputStream.available()];
-								inputStream.read(buffer);
-								OutputStream outStream = new FileOutputStream(tempFile);
-								outStream.write(buffer);
-								outStream.close();
+							OutputStream os = new FileOutputStream(tempFile);
+							byte[] buffer = new byte[1024];
+							int bytesRead;
+							// read from is to buffer
+							while ((bytesRead = inputStream.read(buffer)) != -1) {
+								os.write(buffer, 0, bytesRead);
 							}
+							inputStream.close();
+							os.close();
 							return tempFile;
 						} catch (Exception e1) {
 							BiitCommonLogger.severe(FileReader.class.getName(), e1);
