@@ -2,7 +2,10 @@ package com.biit.utils.file;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -29,12 +32,29 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					BiitCommonLogger.errorMessageNotification(FileReader.class,
-							"File not found: " + FileReader.convert2OsPath(url));
-					e.printStackTrace();
+					BiitCommonLogger.errorMessageNotification(FileReader.class, "File not found: " + FileReader.convert2OsPath(url));
 				} catch (IllegalArgumentException e) {
+					// Resource inside a jar.
+					if (url.toString().contains(".jar!")) {
+						BiitCommonLogger.warning(FileReader.class, "Resource inside a jar. Copy to a temporaly file.");
+						// Copy to a temp file and return it.
+						InputStream inputStream = FileReader.class.getClassLoader().getResourceAsStream(url.toString());
+						try {
+							final File tempFile = File.createTempFile(filename, "_jar");
+							tempFile.deleteOnExit();
+							try (FileOutputStream out = new FileOutputStream(tempFile)) {
+								byte[] buffer = new byte[inputStream.available()];
+								inputStream.read(buffer);
+								OutputStream outStream = new FileOutputStream(tempFile);
+								outStream.write(buffer);
+								outStream.close();
+							}
+							return tempFile;
+						} catch (Exception e1) {
+
+						}
+					}
 					BiitCommonLogger.severe(FileReader.class, "File not found: " + FileReader.convert2OsPath(url));
-					e.printStackTrace();
 				}
 			}
 		} catch (NullPointerException npe) {
@@ -60,12 +80,12 @@ public class FileReader {
 	}
 
 	public static ImageIcon getIcon(String iconFile) {
-		return new ImageIcon(FileReader.class.getClassLoader().getResource(
-				File.separator + ICON_FOLDER + File.separator + iconFile));
+		return new ImageIcon(FileReader.class.getClassLoader().getResource(File.separator + ICON_FOLDER + File.separator + iconFile));
 	}
 
 	/**
-	 * Reads a resource text file and returns a list of strings (one line per string).
+	 * Reads a resource text file and returns a list of strings (one line per
+	 * string).
 	 * 
 	 * @param resourceName
 	 * @return
@@ -77,7 +97,8 @@ public class FileReader {
 	}
 
 	/**
-	 * Reads a resource text file and returns a list of strings (one line per string).
+	 * Reads a resource text file and returns a list of strings (one line per
+	 * string).
 	 * 
 	 * @param resourceName
 	 * @return
