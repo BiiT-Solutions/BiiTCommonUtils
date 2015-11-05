@@ -1,6 +1,8 @@
 package com.biit.utils.image;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
+import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.FileReader;
 
 public class ImageTools {
@@ -51,7 +54,8 @@ public class ImageTools {
 	 * @param image
 	 *            the image to convert.
 	 * @param format
-	 *            the final image format. Can be "jpg", "png", "gif", "bmp", "wbmp".
+	 *            the final image format. Can be "jpg", "png", "gif", "bmp",
+	 *            "wbmp".
 	 * @return
 	 * @throws IOException
 	 */
@@ -83,7 +87,8 @@ public class ImageTools {
 	 * @param image
 	 *            the image to save.
 	 * @param format
-	 *            the final image format. Can be "jpg", "png", "gif", "bmp", "wbmp".
+	 *            the final image format. Can be "jpg", "png", "gif", "bmp",
+	 *            "wbmp".
 	 * @param path
 	 *            the path where the image will be saved.
 	 * @throws IOException
@@ -93,7 +98,8 @@ public class ImageTools {
 	}
 
 	/**
-	 * Resizes an image to the specified width and height. The relation between high and width will be preserved.
+	 * Resizes an image to the specified width and height. The relation between
+	 * high and width will be preserved.
 	 * 
 	 * @param originalImage
 	 * @param scaledWidth
@@ -107,7 +113,8 @@ public class ImageTools {
 	}
 
 	/**
-	 * Resizes an image to the specified width and height. The relation between high and width will be preserved.
+	 * Resizes an image to the specified width and height. The relation between
+	 * high and width will be preserved.
 	 * 
 	 * @param originalImage
 	 * @param scaledWidth
@@ -121,7 +128,8 @@ public class ImageTools {
 	}
 
 	/**
-	 * Resizes an image to the specified width and height. The relation between high and width will be preserved.
+	 * Resizes an image to the specified width and height. The relation between
+	 * high and width will be preserved.
 	 * 
 	 * @param originalImage
 	 * @param scaledWidth
@@ -132,8 +140,7 @@ public class ImageTools {
 	 *            preserve alpha channel.
 	 * @return
 	 */
-	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh,
-			boolean preserveAlpha) {
+	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh, boolean preserveAlpha) {
 		BufferedImage resizedImage;
 		int finalHeigh, finalWidth;
 		if (((double) originalImage.getHeight()) / scaledHeigh < ((double) originalImage.getWidth()) / scaledWidth) {
@@ -169,8 +176,7 @@ public class ImageTools {
 		}
 
 		// Create a buffered image with transparency
-		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-				BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
 		// Draw the image on to the buffered image
 		Graphics2D graphic = bufferedimage.createGraphics();
@@ -179,6 +185,39 @@ public class ImageTools {
 
 		// Return the buffered image
 		return bufferedimage;
+	}
+
+	/**
+	 * Creates a default image with a text.
+	 * 
+	 * @return
+	 */
+
+	public static byte[] createDefaultImage(int imageWidth, int imageHeight, String text) {
+		int MIN_SIZE = 200;
+		ByteArrayOutputStream imagebuffer = null;
+		// No data (because there is not any flow).
+		// HEIGHT discount the top margin of panel.
+		int width = imageWidth < MIN_SIZE ? MIN_SIZE : imageWidth;
+		int height = imageHeight < MIN_SIZE ? MIN_SIZE : imageHeight;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics drawable = image.getGraphics();
+		drawable.setColor(Color.WHITE);
+		drawable.fillRect(0, 0, (int) width, height);
+		drawable.setColor(Color.black);
+		drawable.drawString("Image cannot be created. ", width / 2 - 75, height / 2);
+
+		try {
+			// Write the image to a buffer.
+			imagebuffer = new ByteArrayOutputStream();
+			ImageIO.write(image, "png", imagebuffer);
+
+			// Return a stream from the buffer.
+			return imagebuffer.toByteArray();
+		} catch (IOException e) {
+			BiitCommonLogger.severe(ImageTools.class.getName(), e);
+			return null;
+		}
 	}
 
 }
