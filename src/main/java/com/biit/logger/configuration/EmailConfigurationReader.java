@@ -24,7 +24,7 @@ public class EmailConfigurationReader {
 	private final String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
 	private final String DEFAULT_EMAIL_USERNAME = "noreply@email.com";
 	private final String DEFAULT_EMAIL_PASSWORD = "password";
-	private final String DEFAULT_EMAIL_SENDER = "BiiT Sourcing Solutions";
+	private final String DEFAULT_EMAIL_SENDER = "info@biit-solutions.com";
 
 	private boolean emailEnabled = false;
 	private String smtpServer;
