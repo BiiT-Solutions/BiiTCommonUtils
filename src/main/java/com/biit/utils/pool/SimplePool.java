@@ -39,6 +39,11 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 						storedObjectId = null;
 					} else {
 						if (elementsById.get(storedObjectId) != null && storedObjectId.equals(elementId)) {
+							// Remove not valid elements.
+							if (isDirty(elementsById.get(storedObjectId))) {
+								removeElement(storedObjectId);
+								return null;
+							}
 							return elementsById.get(storedObjectId);
 						}
 					}
@@ -67,6 +72,14 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 		elementsTime = new HashMap<ElementId, Long>();
 		elementsById = new HashMap<ElementId, Type>();
 	}
+
+	/**
+	 * An element is dirty if cannot be used by the pool any more.
+	 * 
+	 * @param elementId
+	 * @return
+	 */
+	public abstract boolean isDirty(Type element);
 
 	public abstract long getExpirationTime();
 }
