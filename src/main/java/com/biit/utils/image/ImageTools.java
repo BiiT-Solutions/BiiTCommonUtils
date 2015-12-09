@@ -225,17 +225,17 @@ public class ImageTools {
 		}
 	}
 
-	public byte[] getDataFromUrl(String url) throws InvalidRemoteImageDefinition {
+	public static byte[] getImageFromUrl(String url) throws InvalidRemoteImageDefinition {
 		try {
 			URL urlPath = new URL(url);
-			return getDataFromUrl(urlPath);
+			return getImageFromUrl(urlPath);
 		} catch (IOException e) {
-			BiitCommonLogger.severe(this.getClass().getName(), e);
+			BiitCommonLogger.severe(ImageTools.class.getName(), e);
 			throw new InvalidRemoteImageDefinition(e.getMessage());
 		}
 	}
 
-	public static byte[] getDataFromUrl(URL url) throws IOException {
+	public static byte[] getImageFromUrl(URL url) throws IOException {
 		if (url == null) {
 			return null;
 		}
