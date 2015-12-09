@@ -224,16 +224,19 @@ public class ImageTools {
 	}
 
 	/**
-	 * Gets an image from an URL and converts it to a byte[] in a specific format. 
+	 * Gets an image from an URL and converts it to a byte[] in a specific
+	 * format.
+	 * 
 	 * @param url
-	 * @param format JPG, PNG, GIF...
+	 * @param format
+	 *            JPG, PNG, GIF...
 	 * @return
 	 * @throws InvalidRemoteImageDefinition
 	 */
-	public static byte[] getImageFromUrl(String url, String format) throws InvalidRemoteImageDefinition {
+	public static byte[] getImageFromUrl(String url) throws InvalidRemoteImageDefinition {
 		try {
 			URL urlPath = new URL(url);
-			return getImageFromUrl(urlPath, format);
+			return getImageFromUrl(urlPath);
 		} catch (IOException e) {
 			BiitCommonLogger.severe(ImageTools.class.getName(), e);
 			throw new InvalidRemoteImageDefinition(e.getMessage());
@@ -241,29 +244,34 @@ public class ImageTools {
 	}
 
 	/**
-	 * Gets an image from an URL and converts it to a byte[] in a specific format. 
+	 * Gets an image from an URL and converts it to a byte[] in a specific
+	 * format.
+	 * 
 	 * @param url
-	 * @param format JPG, PNG, GIF...
+	 * @param format
+	 *            JPG, PNG, GIF...
 	 * @return
 	 * @throws IOException
 	 */
-	public static byte[] getImageFromUrl(URL url, String format) throws IOException {
+	public static byte[] getImageFromUrl(URL url) throws IOException {
 		if (url == null) {
 			return null;
 		}
-		BufferedImage bufferedImage = ImageIO.read(url);
+		// Read the image ...
+		InputStream inputStream = url.openStream();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
 
-		// get DataBufferBytes from Raster
-		// WritableRaster raster = bufferedImage.getRaster();
-		// DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+		int n = 0;
+		while (-1 != (n = inputStream.read(buffer))) {
+			output.write(buffer, 0, n);
+		}
+		inputStream.close();
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageIO.write(bufferedImage, format, baos);
-		baos.flush();
-		byte[] imageInByte = baos.toByteArray();
-		baos.close();
+		byte[] data = output.toByteArray();
+		output.close();
 
-		return imageInByte;
+		return data;
 	}
 
 }
