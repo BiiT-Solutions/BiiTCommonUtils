@@ -7,8 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -225,27 +223,47 @@ public class ImageTools {
 		}
 	}
 
-	public static byte[] getImageFromUrl(String url) throws InvalidRemoteImageDefinition {
+	/**
+	 * Gets an image from an URL and converts it to a byte[] in a specific format. 
+	 * @param url
+	 * @param format JPG, PNG, GIF...
+	 * @return
+	 * @throws InvalidRemoteImageDefinition
+	 */
+	public static byte[] getImageFromUrl(String url, String format) throws InvalidRemoteImageDefinition {
 		try {
 			URL urlPath = new URL(url);
-			return getImageFromUrl(urlPath);
+			return getImageFromUrl(urlPath, format);
 		} catch (IOException e) {
 			BiitCommonLogger.severe(ImageTools.class.getName(), e);
 			throw new InvalidRemoteImageDefinition(e.getMessage());
 		}
 	}
 
-	public static byte[] getImageFromUrl(URL url) throws IOException {
+	/**
+	 * Gets an image from an URL and converts it to a byte[] in a specific format. 
+	 * @param url
+	 * @param format JPG, PNG, GIF...
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] getImageFromUrl(URL url, String format) throws IOException {
 		if (url == null) {
 			return null;
 		}
 		BufferedImage bufferedImage = ImageIO.read(url);
 
 		// get DataBufferBytes from Raster
-		WritableRaster raster = bufferedImage.getRaster();
-		DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+		// WritableRaster raster = bufferedImage.getRaster();
+		// DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
 
-		return data.getData();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(bufferedImage, format, baos);
+		baos.flush();
+		byte[] imageInByte = baos.toByteArray();
+		baos.close();
+
+		return imageInByte;
 	}
 
 }
