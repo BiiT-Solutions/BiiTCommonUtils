@@ -8,7 +8,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.biit.logger.BiitCommonLogger;
-import com.biit.utils.configuration.exception.PropertyNotFoundException;
+import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 
 public class ConfigurationReader {
 

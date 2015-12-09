@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +23,7 @@ import javax.imageio.ImageIO;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.FileReader;
+import com.biit.utils.image.exceptions.InvalidRemoteImageDefinition;
 
 public class ImageTools {
 
@@ -140,7 +143,8 @@ public class ImageTools {
 	 *            preserve alpha channel.
 	 * @return
 	 */
-	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh, boolean preserveAlpha) {
+	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh,
+			boolean preserveAlpha) {
 		BufferedImage resizedImage;
 		int finalHeigh, finalWidth;
 		if (((double) originalImage.getHeight()) / scaledHeigh < ((double) originalImage.getWidth()) / scaledWidth) {
@@ -176,7 +180,8 @@ public class ImageTools {
 		}
 
 		// Create a buffered image with transparency
-		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB);
 
 		// Draw the image on to the buffered image
 		Graphics2D graphic = bufferedimage.createGraphics();
@@ -218,6 +223,29 @@ public class ImageTools {
 			BiitCommonLogger.severe(ImageTools.class.getName(), e);
 			return null;
 		}
+	}
+
+	public byte[] getDataFromUrl(String url) throws InvalidRemoteImageDefinition {
+		try {
+			URL urlPath = new URL(url);
+			return getDataFromUrl(urlPath);
+		} catch (IOException e) {
+			BiitCommonLogger.severe(this.getClass().getName(), e);
+			throw new InvalidRemoteImageDefinition(e.getMessage());
+		}
+	}
+
+	public static byte[] getDataFromUrl(URL url) throws IOException {
+		if (url == null) {
+			return null;
+		}
+		BufferedImage bufferedImage = ImageIO.read(url);
+
+		// get DataBufferBytes from Raster
+		WritableRaster raster = bufferedImage.getRaster();
+		DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+
+		return data.getData();
 	}
 
 }
