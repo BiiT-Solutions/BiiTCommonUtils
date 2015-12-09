@@ -16,8 +16,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.FileReader;
@@ -258,7 +266,24 @@ public class ImageTools {
 			return null;
 		}
 		// Read the image ...
-		InputStream inputStream = url.openStream();
+		InputStream inputStream;
+
+		// Configure secure connections.
+		if (url.toString().startsWith("https")) {
+			try {
+				// Ignore untrusted certificates in SSL.
+				SSLContext sslContext = SSLContext.getInstance("SSL");
+				sslContext.init(new KeyManager[0], new TrustManager[] { new DefaultTrustManager() },
+						new SecureRandom());
+				SSLContext.setDefault(sslContext);
+				HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+			} catch (Exception e) {
+				BiitCommonLogger.severe(ImageTools.class.getName(), e);
+			}
+		}
+		// Obtain the image.
+		inputStream = url.openStream();
+
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 
@@ -272,6 +297,21 @@ public class ImageTools {
 		output.close();
 
 		return data;
+	}
+
+	public static class DefaultTrustManager implements X509TrustManager {
+		public DefaultTrustManager() {
+		}
+
+		public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+		}
+
+		public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+		}
+
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
 	}
 
 }
