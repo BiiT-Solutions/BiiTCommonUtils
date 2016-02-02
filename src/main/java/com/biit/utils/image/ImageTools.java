@@ -16,11 +16,20 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.FileReader;
+import com.biit.utils.image.exceptions.InvalidRemoteImageDefinition;
 
 public class ImageTools {
 
@@ -140,7 +149,8 @@ public class ImageTools {
 	 *            preserve alpha channel.
 	 * @return
 	 */
-	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh, boolean preserveAlpha) {
+	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh,
+			boolean preserveAlpha) {
 		BufferedImage resizedImage;
 		int finalHeigh, finalWidth;
 		if (((double) originalImage.getHeight()) / scaledHeigh < ((double) originalImage.getWidth()) / scaledWidth) {
@@ -176,7 +186,8 @@ public class ImageTools {
 		}
 
 		// Create a buffered image with transparency
-		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB);
 
 		// Draw the image on to the buffered image
 		Graphics2D graphic = bufferedimage.createGraphics();
@@ -216,6 +227,89 @@ public class ImageTools {
 			return imagebuffer.toByteArray();
 		} catch (IOException e) {
 			BiitCommonLogger.severe(ImageTools.class.getName(), e);
+			return null;
+		}
+	}
+
+	/**
+	 * Gets an image from an URL and converts it to a byte[] in a specific
+	 * format.
+	 * 
+	 * @param url
+	 * @param format
+	 *            JPG, PNG, GIF...
+	 * @return
+	 * @throws InvalidRemoteImageDefinition
+	 */
+	public static byte[] getImageFromUrl(String url) throws InvalidRemoteImageDefinition {
+		try {
+			URL urlPath = new URL(url);
+			return getImageFromUrl(urlPath);
+		} catch (IOException e) {
+			BiitCommonLogger.severe(ImageTools.class.getName(), e);
+			throw new InvalidRemoteImageDefinition(e.getMessage());
+		}
+	}
+
+	/**
+	 * Gets an image from an URL and converts it to a byte[] in a specific
+	 * format.
+	 * 
+	 * @param url
+	 * @param format
+	 *            JPG, PNG, GIF...
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] getImageFromUrl(URL url) throws IOException {
+		if (url == null) {
+			return null;
+		}
+		// Read the image ...
+		InputStream inputStream;
+
+		// Configure secure connections.
+		if (url.toString().startsWith("https")) {
+			try {
+				// Ignore untrusted certificates in SSL.
+				SSLContext sslContext = SSLContext.getInstance("SSL");
+				sslContext.init(new KeyManager[0], new TrustManager[] { new DefaultTrustManager() },
+						new SecureRandom());
+				SSLContext.setDefault(sslContext);
+				HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+			} catch (Exception e) {
+				BiitCommonLogger.severe(ImageTools.class.getName(), e);
+			}
+		}
+		// Obtain the image.
+		inputStream = url.openStream();
+
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+
+		int n = 0;
+		while (-1 != (n = inputStream.read(buffer))) {
+			output.write(buffer, 0, n);
+		}
+		inputStream.close();
+
+		byte[] data = output.toByteArray();
+		output.close();
+
+		return data;
+	}
+
+	public static class DefaultTrustManager implements X509TrustManager {
+		public DefaultTrustManager() {
+		}
+
+		public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+		}
+
+		public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+		}
+
+		public X509Certificate[] getAcceptedIssuers() {
 			return null;
 		}
 	}
