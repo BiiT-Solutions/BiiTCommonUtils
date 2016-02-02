@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.ConfigurationReader;
-import com.biit.utils.configuration.exception.PropertyNotFoundException;
 
 /**
  * Jar applications cannot have configuration files inside JAR file, must be in
@@ -51,7 +50,7 @@ public class EmailConfigurationReader extends ConfigurationReader {
 	private String getPropertyLogException(String propertyId) {
 		try {
 			return getProperty(propertyId);
-		} catch (PropertyNotFoundException e) {
+		} catch (Exception e) {
 			BiitCommonLogger.errorMessageNotification(this.getClass(), e.getMessage());
 			return null;
 		}
