@@ -108,7 +108,7 @@ public abstract class BiitLogger {
 		try {
 			if (EmailConfigurationReader.getInstance().isEmailEnabled()) {
 				try {
-					SendEmail.sendEmail(EmailConfigurationReader.getInstance().getEmailToList(),
+					SendEmail.sendEmail(EmailConfigurationReader.getInstance().getEmailTo(),
 							ErrorMailGeneration.getSubject(),
 							ErrorMailGeneration.getHtmlMailContent(className, throwable));
 				} catch (EmailNotSentException | InvalidEmailAddressException e) {
