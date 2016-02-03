@@ -11,17 +11,17 @@ import com.biit.utils.configuration.ConfigurationReader;
  * an external folder to allow editing.
  */
 public class EmailConfigurationReader extends ConfigurationReader {
-	private final String EMAIL_ENABLED = "mail.enabled";
-	private final String EMAIL_TO = "mail.to";
-	private final String EMAIL_SMTP_SERVER_TAG = "mail.smtpserver";
-	private final String EMAIL_USERNAME_TAG = "mail.username";
-	private final String EMAIL_PASSWORD_TAG = "mail.password";
-	private final String EMAIL_SENDER_TAG = "mail.sender";
+	private final static String EMAIL_ENABLED_TAG = "mail.enabled";
+	private final static String EMAIL_TO_TAG = "mail.to";
+	private final static String EMAIL_SMTP_SERVER_TAG = "mail.smtpserver";
+	private final static String EMAIL_USERNAME_TAG = "mail.username";
+	private final static String EMAIL_PASSWORD_TAG = "mail.password";
+	private final static String EMAIL_SENDER_TAG = "mail.sender";
 
-	private final String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
-	private final String DEFAULT_EMAIL_USERNAME = "noreply@email.com";
-	private final String DEFAULT_EMAIL_PASSWORD = "password";
-	private final String DEFAULT_EMAIL_SENDER = "info@biit-solutions.com";
+	private final static String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
+	private final static String DEFAULT_EMAIL_USERNAME = "noreply@email.com";
+	private final static String DEFAULT_EMAIL_PASSWORD = "password";
+	private final static String DEFAULT_EMAIL_SENDER = "info@biit-solutions.com";
 
 	private static EmailConfigurationReader instance;
 
@@ -32,8 +32,8 @@ public class EmailConfigurationReader extends ConfigurationReader {
 		addProperty(EMAIL_USERNAME_TAG, DEFAULT_EMAIL_USERNAME);
 		addProperty(EMAIL_PASSWORD_TAG, DEFAULT_EMAIL_PASSWORD);
 		addProperty(EMAIL_SENDER_TAG, DEFAULT_EMAIL_SENDER);
-		addProperty(EMAIL_ENABLED, false);
-		addProperty(EMAIL_TO, "");
+		addProperty(EMAIL_ENABLED_TAG, false);
+		addProperty(EMAIL_TO_TAG, "");
 	}
 
 	public static EmailConfigurationReader getInstance() {
@@ -74,14 +74,14 @@ public class EmailConfigurationReader extends ConfigurationReader {
 
 	public boolean isEmailEnabled() {
 		try {
-			return Boolean.parseBoolean(getPropertyLogException(EMAIL_ENABLED));
+			return Boolean.parseBoolean(getPropertyLogException(EMAIL_ENABLED_TAG));
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
 	public List<String> getEmailTo() {
-		String emailToListCommaSeparated = getPropertyLogException(EMAIL_TO);
+		String emailToListCommaSeparated = getPropertyLogException(EMAIL_TO_TAG);
 		List<String> emailToList = new ArrayList<>();
 		if (emailToListCommaSeparated != null && emailToListCommaSeparated.length() > 0) {
 			String[] users = emailToListCommaSeparated.split(",");
