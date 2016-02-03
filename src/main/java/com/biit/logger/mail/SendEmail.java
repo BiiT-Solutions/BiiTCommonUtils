@@ -18,15 +18,16 @@ public class SendEmail {
 			throws EmailNotSentException, InvalidEmailAddressException {
 		for (String mailTo : mailToList) {
 			sendEmail(mailTo, subject, htmlContent);
-			BiitCommonLogger.info(SendEmail.class,"Sending email to " + mailTo);
+			BiitCommonLogger.info(SendEmail.class, "Sending email to " + mailTo);
 		}
 	}
 
-	public static void sendEmail(String mailTo, String subject, String htmlContent) throws EmailNotSentException,
-			InvalidEmailAddressException {
-		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance()
-				.getEmailUser(), EmailConfigurationReader.getInstance().getEmailPassword(), EmailConfigurationReader
-				.getInstance().getEmailSender(), mailTo, subject, htmlContent);
+	public static void sendEmail(String mailTo, String subject, String htmlContent)
+			throws EmailNotSentException, InvalidEmailAddressException {
+		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(),
+				EmailConfigurationReader.getInstance().getEmailUser(),
+				EmailConfigurationReader.getInstance().getEmailPassword(),
+				EmailConfigurationReader.getInstance().getEmailSender(), mailTo, subject, htmlContent);
 	}
 
 	/**
@@ -43,8 +44,8 @@ public class SendEmail {
 	 * @throws InvalidEmailAddressException
 	 */
 	public static void sendEmail(String smtpServer, String emailUser, String emailPassword, String emailSender,
-			String mailTo, String subject, String htmlContent) throws EmailNotSentException,
-			InvalidEmailAddressException {
+			String mailTo, String subject, String htmlContent)
+					throws EmailNotSentException, InvalidEmailAddressException {
 		if (!isValidEmailAddress(emailSender)) {
 			throw new InvalidEmailAddressException("Address email '" + emailSender + "' is invalid");
 		}
@@ -56,7 +57,8 @@ public class SendEmail {
 				@Override
 				public void exceptionLaunched(MessagingException e) {
 					BiitCommonLogger.severe(SendEmail.class.getName(), e);
-					// Catch exception, convert to Runtime to take out from the thread and catch and convert again to
+					// Catch exception, convert to Runtime to take out from the
+					// thread and catch and convert again to
 					// exception.
 					throw new RuntimeException(e);
 				}
@@ -80,7 +82,8 @@ public class SendEmail {
 	}
 
 	/**
-	 * This method is not too strong, some invalid emails will pass this test. Only for very basic validation of email
+	 * This method is not too strong, some invalid emails will pass this test.
+	 * Only for very basic validation of email
 	 * 
 	 * @param email
 	 * @return
@@ -90,7 +93,7 @@ public class SendEmail {
 		try {
 			InternetAddress emailAddr = new InternetAddress(email);
 			emailAddr.validate();
-		} catch (AddressException ex) {
+		} catch (NullPointerException | AddressException ex) {
 			result = false;
 		}
 		return result;
