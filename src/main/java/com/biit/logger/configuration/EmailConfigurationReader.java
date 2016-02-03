@@ -61,20 +61,20 @@ public class EmailConfigurationReader extends ConfigurationReader {
 	}
 
 	public synchronized String getEmailUser() {
-		return getPropertyLogException(DEFAULT_EMAIL_USERNAME);
+		return getPropertyLogException(EMAIL_USERNAME_TAG);
 	}
 
 	public synchronized String getEmailPassword() {
-		return getPropertyLogException(DEFAULT_EMAIL_PASSWORD);
+		return getPropertyLogException(EMAIL_PASSWORD_TAG);
 	}
 
 	public synchronized String getEmailSender() {
-		return getPropertyLogException(DEFAULT_EMAIL_SENDER);
+		return getPropertyLogException(EMAIL_SENDER_TAG);
 	}
 
 	public boolean isEmailEnabled() {
 		try {
-			return Boolean.parseBoolean(getPropertyLogException(EMAIL_SENDER_TAG));
+			return Boolean.parseBoolean(getPropertyLogException(EMAIL_ENABLED));
 		} catch (Exception e) {
 			return false;
 		}
