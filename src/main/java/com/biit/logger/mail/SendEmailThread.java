@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 
+import com.biit.logger.BiitCommonLogger;
+
 public class SendEmailThread implements Runnable {
 	private String smtpServer;
 	private String emailUser;
@@ -36,10 +38,13 @@ public class SendEmailThread implements Runnable {
 		try {
 			postman.setSubject(subject);
 			postman.addHtml(htmlContent);
-			// Avoiding javax.activation.UnsupportedDataTypeException: no object DCH for MIME type multipart/mixed;
+			// Avoiding javax.activation.UnsupportedDataTypeException: no object
+			// DCH for MIME type multipart/mixed;
 			Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
 			postman.sendMail(to, null, null, emailSender);
 		} catch (MessagingException e) {
+			BiitCommonLogger.severe(this.getClass(), "Sending email failed: smtpServer '" + smtpServer + "', emailUser '" + emailUser + "', emailPassword '"
+					+ emailPassword + "' ");
 			// throw new EmailNotSentException(e.getMessage());
 			for (ThreadExceptionListener listener : exceptionListeners) {
 				listener.exceptionLaunched(e);
