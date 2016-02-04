@@ -1,6 +1,7 @@
 package com.biit.logger.mail;
 
 import java.io.File;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
 
@@ -21,7 +22,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 /**
- * This class gives all the functionality to create a multipart email, Ascii text/html/files.
+ * This class gives all the functionality to create a multipart email, Ascii
+ * text/html/files.
  * 
  */
 public class Postman {
@@ -67,7 +69,7 @@ public class Postman {
 		messageBodyPart.setFileName(filename);
 		multipart.addBodyPart(messageBodyPart);
 	}
-	
+
 	public void addAttachment(File file, String filename) throws MessagingException {
 		BodyPart messageBodyPart = new MimeBodyPart();
 		DataSource source = new FileDataSource(file);
@@ -85,8 +87,7 @@ public class Postman {
 		subject = null;
 	}
 
-	public void sendMail(List<String> to, List<String> toCC, List<String> toCCO, String from) throws AddressException,
-			MessagingException {
+	public void sendMail(List<String> to, List<String> toCC, List<String> toCCO, String from) throws AddressException, MessagingException {
 		MimeMessage message = new MimeMessage(session);
 		message.setFrom(new InternetAddress(from));
 		for (String singleTo : to) {
@@ -107,6 +108,13 @@ public class Postman {
 		}
 		message.setContent(multipart);
 
-		Transport.send(message);
+		try {
+			Transport.send(message);
+		} catch (MessagingException me) {
+			// If email is not configured launch a UnknownHostException, then do nothing.
+			if (!(me.getNextException() instanceof UnknownHostException)) {
+				throw me;
+			}
+		}
 	}
 }
