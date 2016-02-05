@@ -74,7 +74,7 @@ public class SendEmail {
 
 			sendEmailThread.run();
 		} catch (Throwable exc) {
-			BiitCommonLogger.errorMessageNotification(SendEmail.class, exc);
+			BiitCommonLogger.severe(SendEmail.class.getName(), exc);
 			EmailNotSentException emailNotSentException = new EmailNotSentException(exc.getMessage());
 			emailNotSentException.setStackTrace(exc.getStackTrace());
 			throw emailNotSentException;
