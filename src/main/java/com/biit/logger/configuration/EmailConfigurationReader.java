@@ -5,12 +5,17 @@ import java.util.List;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.ConfigurationReader;
+import com.biit.utils.configuration.PropertiesSourceFile;
+import com.biit.utils.configuration.SystemVariablePropertiesSourceFile;
 
 /**
  * Jar applications cannot have configuration files inside JAR file, must be in
  * an external folder to allow editing.
  */
 public class EmailConfigurationReader extends ConfigurationReader {
+	private static final String CONFIG_FILE = "settings.conf";
+	private static final String SYSTEM_VARIABLE_CONFIG = "BIIT_LOGGER_CONFIG";
+	
 	private final static String EMAIL_ENABLED_TAG = "mail.enabled";
 	private final static String EMAIL_TO_TAG = "mail.to";
 	private final static String EMAIL_SMTP_SERVER_TAG = "mail.smtpserver";
@@ -34,6 +39,11 @@ public class EmailConfigurationReader extends ConfigurationReader {
 		addProperty(EMAIL_SENDER_TAG, DEFAULT_EMAIL_SENDER);
 		addProperty(EMAIL_ENABLED_TAG, false);
 		addProperty(EMAIL_TO_TAG, "");
+		
+		addPropertiesSource(new PropertiesSourceFile(CONFIG_FILE));
+		addPropertiesSource(new SystemVariablePropertiesSourceFile(SYSTEM_VARIABLE_CONFIG, CONFIG_FILE));
+		
+		readConfigurations();
 	}
 
 	public static EmailConfigurationReader getInstance() {
