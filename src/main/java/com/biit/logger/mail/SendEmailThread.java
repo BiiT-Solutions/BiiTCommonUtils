@@ -43,7 +43,6 @@ public class SendEmailThread implements Runnable {
 			Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
 			postman.sendMail(to, null, null, emailSender);
 		} catch (MessagingException e) {
-			BiitCommonLogger.severe(this.getClass().getName(), e);
 			BiitCommonLogger.severe(this.getClass(), "Sending email failed: smtpServer '" + smtpServer + "', emailUser '" + emailUser + "', emailPassword '"
 					+ emailPassword + "' ");
 			// throw new EmailNotSentException(e.getMessage());

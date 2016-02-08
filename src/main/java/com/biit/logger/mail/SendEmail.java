@@ -2,32 +2,26 @@ package com.biit.logger.mail;
 
 import java.util.List;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.logger.configuration.EmailConfigurationReader;
-import com.biit.logger.mail.SendEmailThread.ThreadExceptionListener;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 
 public class SendEmail {
 
-	public static void sendEmail(List<String> mailToList, String subject, String htmlContent)
-			throws EmailNotSentException, InvalidEmailAddressException {
+	public static void sendEmail(List<String> mailToList, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
 		for (String mailTo : mailToList) {
 			sendEmail(mailTo, subject, htmlContent);
 			BiitCommonLogger.info(SendEmail.class, "Sending email to " + mailTo);
 		}
 	}
 
-	public static void sendEmail(String mailTo, String subject, String htmlContent)
-			throws EmailNotSentException, InvalidEmailAddressException {
-		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(),
-				EmailConfigurationReader.getInstance().getEmailUser(),
-				EmailConfigurationReader.getInstance().getEmailPassword(),
-				EmailConfigurationReader.getInstance().getEmailSender(), mailTo, subject, htmlContent);
+	public static void sendEmail(String mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
+		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance().getEmailUser(), EmailConfigurationReader
+				.getInstance().getEmailPassword(), EmailConfigurationReader.getInstance().getEmailSender(), mailTo, subject, htmlContent);
 	}
 
 	/**
@@ -43,26 +37,14 @@ public class SendEmail {
 	 * @throws EmailNotSentException
 	 * @throws InvalidEmailAddressException
 	 */
-	public static void sendEmail(String smtpServer, String emailUser, String emailPassword, String emailSender,
-			String mailTo, String subject, String htmlContent)
-					throws EmailNotSentException, InvalidEmailAddressException {
+	public static void sendEmail(String smtpServer, String emailUser, String emailPassword, String emailSender, String mailTo, String subject,
+			String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
 		if (!isValidEmailAddress(emailSender)) {
 			throw new InvalidEmailAddressException("Address email '" + emailSender + "' is invalid");
 		}
 
 		try {
 			SendEmailThread sendEmailThread = new SendEmailThread();
-			sendEmailThread.addExceptionListener(new ThreadExceptionListener() {
-
-				@Override
-				public void exceptionLaunched(MessagingException e) {
-					BiitCommonLogger.severe(SendEmail.class.getName(), e);
-					// Catch exception, convert to Runtime to take out from the
-					// thread and catch and convert again to
-					// exception.
-					throw new RuntimeException(e);
-				}
-			});
 
 			sendEmailThread.setSmtpServer(smtpServer);
 			sendEmailThread.setEmailUser(emailUser);
