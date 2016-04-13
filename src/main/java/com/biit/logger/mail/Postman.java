@@ -60,7 +60,7 @@ public class Postman {
 
 	public void addHtml(String html) throws MessagingException {
 		BodyPart messageBodyPart = new MimeBodyPart();
-		messageBodyPart.setContent(html, "text/html");
+		messageBodyPart.setContent(html, "text/html; charset=utf-8");
 		multipart.addBodyPart(messageBodyPart);
 	}
 
