@@ -1,11 +1,13 @@
 package com.biit.utils.file;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -139,6 +141,28 @@ public class FileReader {
 			throw new FileNotFoundException(npe.getMessage());
 		}
 		return result.toString();
+	}
+
+	public static byte[] downloadUrl(String urlname) throws MalformedURLException {
+		URL url = new URL(urlname);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		try {
+			byte[] chunk = new byte[4096];
+			int bytesRead;
+			InputStream stream = url.openStream();
+
+			while ((bytesRead = stream.read(chunk)) > 0) {
+				outputStream.write(chunk, 0, bytesRead);
+			}
+			outputStream.close();
+
+		} catch (IOException e) {
+			BiitCommonLogger.errorMessageNotification(FileReader.class, e);
+			return null;
+		}
+
+		return outputStream.toByteArray();
 	}
 
 }
