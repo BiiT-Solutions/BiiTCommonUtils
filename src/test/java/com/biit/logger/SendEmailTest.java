@@ -8,6 +8,6 @@ public class SendEmailTest {
 	@Test
 	public void checkLoggerName() {
 		BiitCommonLogger.errorMessageNotification(SendEmailTest.class, new Exception(
-				"Catastrophic Error: Pray Anything you can before the end of the world."));
+				"Catastrophic Error: Pray whatever you can before the end of the world."));
 	}
 }
