@@ -35,7 +35,7 @@ public class Postman {
 	private Multipart multipart;
 	private String subject;
 
-	public Postman(String smtpServer, final String username, final String password, final String port) {
+	public Postman(String smtpServer, final String port, final String username, final String password) {
 		properties = new Properties();
 		properties.put("mail.smtp.starttls.enable", "true");
 		properties.put("mail.smtp.auth", "true");

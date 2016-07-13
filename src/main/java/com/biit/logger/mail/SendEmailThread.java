@@ -35,7 +35,7 @@ public class SendEmailThread implements Runnable {
 
 	public void run() {
 		List<String> to = Arrays.asList(new String[] { mailTo });
-		Postman postman = new Postman(smtpServer, emailUser, emailPassword, emailPort);
+		Postman postman = new Postman(smtpServer, emailPort, emailUser, emailPassword);
 		try {
 			postman.setSubject(subject);
 			postman.addHtml(htmlContent);
