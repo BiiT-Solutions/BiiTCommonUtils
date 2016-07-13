@@ -14,6 +14,7 @@ public class SendEmailThread implements Runnable {
 	private String emailUser;
 	private String mailTo;
 	private String emailPassword;
+	private String emailPort;
 	private String emailSender;
 	private String subject;
 	private String htmlContent;
@@ -34,7 +35,7 @@ public class SendEmailThread implements Runnable {
 
 	public void run() {
 		List<String> to = Arrays.asList(new String[] { mailTo });
-		Postman postman = new Postman(smtpServer, emailUser, emailPassword);
+		Postman postman = new Postman(smtpServer, emailUser, emailPassword, emailPort);
 		try {
 			postman.setSubject(subject);
 			postman.addHtml(htmlContent);
@@ -82,6 +83,10 @@ public class SendEmailThread implements Runnable {
 
 	public void setExceptionListeners(Set<ThreadExceptionListener> exceptionListeners) {
 		this.exceptionListeners = exceptionListeners;
+	}
+
+	public void setEmailPort(String emailPort) {
+		this.emailPort = emailPort;
 	}
 
 }

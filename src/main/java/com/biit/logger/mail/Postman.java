@@ -35,12 +35,12 @@ public class Postman {
 	private Multipart multipart;
 	private String subject;
 
-	public Postman(String smtpServer, final String username, final String password) {
+	public Postman(String smtpServer, final String username, final String password, final String port) {
 		properties = new Properties();
 		properties.put("mail.smtp.starttls.enable", "true");
 		properties.put("mail.smtp.auth", "true");
 		properties.put("mail.smtp.host", smtpServer);
-		properties.put("mail.smtp.port", "587");
+		properties.put("mail.smtp.port", port);
 
 		session = Session.getInstance(properties, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {

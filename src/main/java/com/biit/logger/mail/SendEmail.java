@@ -20,8 +20,9 @@ public class SendEmail {
 	}
 
 	public static void sendEmail(String mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance().getEmailUser(), EmailConfigurationReader
-				.getInstance().getEmailPassword(), EmailConfigurationReader.getInstance().getEmailSender(), mailTo, subject, htmlContent);
+		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance().getEmailPort(), EmailConfigurationReader
+				.getInstance().getEmailUser(), EmailConfigurationReader.getInstance().getEmailPassword(), EmailConfigurationReader.getInstance()
+				.getEmailSender(), mailTo, subject, htmlContent);
 	}
 
 	/**
@@ -37,7 +38,7 @@ public class SendEmail {
 	 * @throws EmailNotSentException
 	 * @throws InvalidEmailAddressException
 	 */
-	public static void sendEmail(String smtpServer, String emailUser, String emailPassword, String emailSender, String mailTo, String subject,
+	public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo, String subject,
 			String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
 		if (!isValidEmailAddress(emailSender)) {
 			throw new InvalidEmailAddressException("Address email '" + emailSender + "' is invalid");
@@ -53,6 +54,7 @@ public class SendEmail {
 			sendEmailThread.setMailTo(mailTo);
 			sendEmailThread.setSubject(subject);
 			sendEmailThread.setHtmlContent(htmlContent);
+			sendEmailThread.setEmailPort(smtpPort);
 
 			sendEmailThread.run();
 		} catch (Throwable exc) {

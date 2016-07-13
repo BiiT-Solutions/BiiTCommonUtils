@@ -22,8 +22,10 @@ public class EmailConfigurationReader extends ConfigurationReader {
 	private final static String EMAIL_USERNAME_TAG = "mail.username";
 	private final static String EMAIL_PASSWORD_TAG = "mail.password";
 	private final static String EMAIL_SENDER_TAG = "mail.sender";
+	private final static String EMAIL_PORT_TAG = "mail.port";
 
 	private final static String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
+	private final static String DEFAULT_EMAIL_PORT = "587";
 	private final static String DEFAULT_EMAIL_USERNAME = "noreply@email.com";
 	private final static String DEFAULT_EMAIL_PASSWORD = "password";
 	private final static String DEFAULT_EMAIL_SENDER = "info@biit-solutions.com";
@@ -37,6 +39,7 @@ public class EmailConfigurationReader extends ConfigurationReader {
 		addProperty(EMAIL_USERNAME_TAG, DEFAULT_EMAIL_USERNAME);
 		addProperty(EMAIL_PASSWORD_TAG, DEFAULT_EMAIL_PASSWORD);
 		addProperty(EMAIL_SENDER_TAG, DEFAULT_EMAIL_SENDER);
+		addProperty(EMAIL_PORT_TAG, DEFAULT_EMAIL_PORT);
 		addProperty(EMAIL_ENABLED_TAG, false);
 		addProperty(EMAIL_TO_TAG, "");
 
@@ -80,6 +83,10 @@ public class EmailConfigurationReader extends ConfigurationReader {
 
 	public synchronized String getEmailSender() {
 		return getPropertyLogException(EMAIL_SENDER_TAG);
+	}
+
+	public synchronized String getEmailPort() {
+		return getPropertyLogException(EMAIL_PORT_TAG);
 	}
 
 	public boolean isEmailEnabled() {
