@@ -7,28 +7,23 @@ import java.util.Properties;
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.PropertiesFile;
 
-public class PropertiesSourceFile implements IPropertiesSource {
-
-	private String filePath;
-	private final String fileName;
+public class PropertiesSourceFile extends SourceFile<Properties> implements IPropertiesSource {
 
 	public PropertiesSourceFile(String fileName) {
-		this.filePath = null;
-		this.fileName = fileName;
+		super(fileName);
 	}
 
 	public PropertiesSourceFile(String filePath, String fileName) {
-		this.filePath = filePath;
-		this.fileName = fileName;
+		super(filePath, fileName);
 	}
 
 	@Override
 	public Properties loadFile() {
 		try {
-			if (filePath == null) {
-				return PropertiesFile.load(fileName);
+			if (getFilePath() == null) {
+				return PropertiesFile.load(getFileName());
 			} else {
-				return PropertiesFile.load(filePath, fileName);
+				return PropertiesFile.load(getFilePath(), getFileName());
 			}
 		} catch (FileNotFoundException e) {
 			BiitCommonLogger.warning(this.getClass(), e.getMessage());
@@ -40,22 +35,4 @@ public class PropertiesSourceFile implements IPropertiesSource {
 		return null;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
-	@Override
-	public String getFilePath() {
-		return filePath;
-	}
-
-	@Override
-	public String getFileName() {
-		return fileName;
-	}
-
-	@Override
-	public String toString() {
-		return (getFilePath() != null ? getFilePath() + "/" : "") + getFileName();
-	}
 }

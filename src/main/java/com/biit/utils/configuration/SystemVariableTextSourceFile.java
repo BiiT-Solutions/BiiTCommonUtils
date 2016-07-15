@@ -1,14 +1,13 @@
 package com.biit.utils.configuration;
 
-import java.util.Properties;
+import java.io.FileNotFoundException;
 
 import com.biit.logger.BiitCommonLogger;
 
-public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile {
-
+public class SystemVariableTextSourceFile extends TextSourceFile {
 	private final String environmentVariable;
 
-	public SystemVariablePropertiesSourceFile(String environmentVariable, String fileName) {
+	public SystemVariableTextSourceFile(String environmentVariable, String fileName) {
 		super(fileName);
 		this.environmentVariable = environmentVariable;
 	}
@@ -18,7 +17,7 @@ public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile {
 	}
 
 	@Override
-	public Properties loadFile() {
+	public String loadFile() throws FileNotFoundException {
 		String environmentVariableValue = SourceFile.readEnvironmentVariable(getEnvironmentVariable());
 		if (environmentVariableValue != null) {
 			BiitCommonLogger.debug(this.getClass(), "Environmental variable '" + getEnvironmentVariable() + "' values is: '" + environmentVariableValue + "'.");
@@ -29,5 +28,4 @@ public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile {
 			return null;
 		}
 	}
-
 }
