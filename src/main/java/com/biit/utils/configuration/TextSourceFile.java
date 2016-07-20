@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 
 import com.biit.logger.BiitCommonLogger;
@@ -31,6 +32,8 @@ public class TextSourceFile extends SourceFile<String> {
 				// return PropertiesFile.load(getFilePath(), getFileName());
 				return readFile(getFilePath() + File.separator + getFileName(), StandardCharsets.UTF_8);
 			}
+		} catch (NoSuchFileException Nsfe) {
+			BiitCommonLogger.warning(this.getClass(), "File not found '" + getFilePath() + File.separator + getFileName() + "'.");
 		} catch (IOException e) {
 			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 		} catch (NullPointerException e) {
