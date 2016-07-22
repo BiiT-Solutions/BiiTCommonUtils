@@ -1,7 +1,9 @@
 package com.biit.logger.mail;
 
+import java.util.Arrays;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -72,7 +74,7 @@ public class SendEmail {
 	 * @param email
 	 * @return
 	 */
-	private static boolean isValidEmailAddress(String email) {
+	public static boolean isValidEmailAddress(String email) {
 		boolean result = true;
 		try {
 			InternetAddress emailAddr = new InternetAddress(email);
@@ -81,5 +83,17 @@ public class SendEmail {
 			result = false;
 		}
 		return result;
+	}
+
+	public static void basicMailSender(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo,
+			String subject, String htmlContent) throws MessagingException {
+		Postman postman = new Postman(smtpServer, smtpPort, emailUser, emailPassword);
+		List<String> to = Arrays.asList(new String[] { mailTo });
+		postman.setSubject(subject);
+		postman.addHtml(htmlContent);
+		// Avoiding javax.activation.UnsupportedDataTypeException: no object
+		// DCH for MIME type multipart/mixed;
+		Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
+		postman.sendMail(to, null, null, emailSender);
 	}
 }

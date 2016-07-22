@@ -1,7 +1,6 @@
 package com.biit.logger.mail;
 
 import java.io.File;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
 
@@ -20,8 +19,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
-import com.biit.logger.BiitCommonLogger;
 
 /**
  * This class gives all the functionality to create a multipart email, Ascii
@@ -110,15 +107,15 @@ public class Postman {
 		}
 		message.setContent(multipart);
 
-		try {
+//		try {
 			Transport.send(message);
-		} catch (MessagingException me) {
-			BiitCommonLogger.severe(this.getClass().getName(), me);
-			// If email is not configured launch a UnknownHostException, then do
-			// nothing.
-			if (!(me.getNextException() instanceof UnknownHostException)) {
-				throw me;
-			}
-		}
+//		} catch (MessagingException me) {
+//			BiitCommonLogger.severe(this.getClass().getName(), me);
+//			// If email is not configured launch a UnknownHostException, then do
+//			// nothing.
+//			if (!(me.getNextException() instanceof UnknownHostException)) {
+//				throw me;
+//			}
+//		}
 	}
 }
