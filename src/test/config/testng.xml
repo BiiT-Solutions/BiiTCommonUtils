@@ -5,11 +5,13 @@
 			<run>
 				<include name="configReader" />
 				<include name="imageTests" />
+				<include name="watcherTests" />
 			</run>
 		</groups>
 		<classes>
 			<class name="com.biit.utils.ConfigReaderTests" />
 			<class name="com.biit.utils.ImageToolsTest" />
+			<class name="com.biit.utils.WatcherTests" />
 		</classes>
 	</test>
 </suite>
