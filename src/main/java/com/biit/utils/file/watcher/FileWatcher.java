@@ -117,7 +117,7 @@ public class FileWatcher {
 					key = watcher.take();
 				}
 			} catch (InterruptedException e) {
-				BiitCommonLogger.severe(this.getClass().getName(), e);
+				BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 			}
 		}
 

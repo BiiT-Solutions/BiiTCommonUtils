@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -12,9 +13,9 @@ import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 
 public class ConfigurationReader {
 
-	private final HashMap<Class<?>, IValueConverter<?>> converter;
-	private final HashMap<String, String> propertiesDefault;
-	private final HashMap<String, String> properties;
+	private final Map<Class<?>, IValueConverter<?>> converter;
+	private final Map<String, String> propertiesDefault;
+	private final Map<String, String> properties;
 	private final List<IPropertiesSource> propertiesSources;
 
 	public ConfigurationReader() {
@@ -42,7 +43,8 @@ public class ConfigurationReader {
 	}
 
 	/**
-	 * Restarts all properties to their default values and then reads all the configuration files again.
+	 * Restarts all properties to their default values and then reads all the
+	 * configuration files again.
 	 */
 	public void readConfigurations() {
 		properties.clear();
@@ -58,8 +60,9 @@ public class ConfigurationReader {
 	}
 
 	/**
-	 * Reads all properties configured in this configuration reader from propertyFile. If they doesn't exist, then the
-	 * current value is mantained as default value.
+	 * Reads all properties configured in this configuration reader from
+	 * propertyFile. If they doesn't exist, then the current value is mantained
+	 * as default value.
 	 * 
 	 * @param propertyFile
 	 */
