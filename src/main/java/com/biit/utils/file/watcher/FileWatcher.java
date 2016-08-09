@@ -13,47 +13,75 @@ import java.nio.file.WatchService;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.file.FileReader;
 
 public class FileWatcher {
-	public static final String DIRECTORY_TO_WATCH = FileReader.class.getClassLoader().getResource("/.").toString();
+	private WatchQueueReader fileWatcher = null;
+	public String directoryToWatch;
 	private Set<FileModifiedListener> fileModifiedListeners;
+	private Set<FileCreationListener> fileCreationListeners;
+	private Set<FileDeletionListener> fileDeletionListeners;
 
 	public interface FileModifiedListener {
-		void changeDetected(Path fileName);
+		void changeDetected(Path pathToFile);
 	}
 
-	public FileWatcher() {
+	public interface FileCreationListener {
+		void fileCreated(Path pathToFile);
+	}
+
+	public interface FileDeletionListener {
+		void fileDeleted(Path pathToFile);
+	}
+
+	public FileWatcher(Set<String> filesNames) throws IOException {
+		directoryToWatch = FileReader.class.getClassLoader().getResource(".").toString();
 		fileModifiedListeners = new HashSet<>();
+		fileCreationListeners = new HashSet<>();
+		fileDeletionListeners = new HashSet<>();
+		startWatcher(filesNames);
+	}
+
+	public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
+		this.directoryToWatch = directoryToWatch;
+		fileModifiedListeners = new HashSet<>();
+		fileCreationListeners = new HashSet<>();
+		fileDeletionListeners = new HashSet<>();
+		startWatcher(filesNames);
 	}
 
 	public void addFileModifiedListener(FileModifiedListener listener) {
 		fileModifiedListeners.add(listener);
 	}
 
-	public void setWatcher() throws IOException {
-		Path pathToWatch = Paths.get(DIRECTORY_TO_WATCH);
+	public void addFileCreationListener(FileCreationListener listener) {
+		fileCreationListeners.add(listener);
+	}
+
+	public void addFileDeletionListener(FileDeletionListener listener) {
+		fileDeletionListeners.add(listener);
+	}
+
+	private void startWatcher(Set<String> filesNames) throws IOException {
+		Path pathToWatch = Paths.get(directoryToWatch);
 		if (pathToWatch == null) {
 			throw new UnsupportedOperationException("Directory not found");
 		}
 		WatchService watcher = pathToWatch.getFileSystem().newWatchService();
 
-		WatchQueueReader fileWatcher = new WatchQueueReader(watcher, pathToWatch);
+		fileWatcher = new WatchQueueReader(watcher, pathToWatch);
+		fileWatcher.setFilesNames(filesNames);
 		Thread th = new Thread(fileWatcher, "FileWatcher");
 		th.start();
 
 		pathToWatch.register(watcher, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
-		try {
-			th.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
-	// TODO Add files to
 	private class WatchQueueReader implements Runnable {
 		private WatchService watcher;
 		private Path pathToWatch;
+		private Set<String> filesNames;
 
 		public WatchQueueReader(WatchService watcher, Path pathToWatch) {
 			this.watcher = watcher;
@@ -62,34 +90,39 @@ public class FileWatcher {
 
 		@Override
 		public void run() {
-			Set<String> filesNames = null;
 			try {
-				// get the first event before looping
+				// Get the first event before looping
 				WatchKey key = watcher.take();
 				while (key != null) {
-					// we have a polled event, now we traverse it and
-					// receive all the states from it
+					// We have a polled event, now we traverse it and receive
+					// all the states from it
 					for (WatchEvent<?> event : key.pollEvents()) {
-						if (filesNames != null && filesNames.contains(event.context())) {
+						if (filesNames != null && filesNames.contains(event.context().toString())) {
 							if (event.kind().equals(ENTRY_MODIFY)) {
 								for (FileModifiedListener fileModifiedListener : new HashSet<>(fileModifiedListeners)) {
 									fileModifiedListener.changeDetected(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(ENTRY_CREATE)) {
-
+								for (FileCreationListener fileCreationListener : new HashSet<>(fileCreationListeners)) {
+									fileCreationListener.fileCreated(combine(pathToWatch, (Path) event.context()));
+								}
 							} else if (event.kind().equals(ENTRY_DELETE)) {
-
+								for (FileDeletionListener fileDeletionListener : new HashSet<>(fileDeletionListeners)) {
+									fileDeletionListener.fileDeleted(combine(pathToWatch, (Path) event.context()));
+								}
 							}
 						}
-
-						System.out.printf("Received %s event for file: %s\n", event.kind(), event.context());
 					}
 					key.reset();
 					key = watcher.take();
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				BiitCommonLogger.severe(this.getClass().getName(), e);
 			}
+		}
+
+		public void setFilesNames(Set<String> filesNames) {
+			this.filesNames = filesNames;
 		}
 	}
 
