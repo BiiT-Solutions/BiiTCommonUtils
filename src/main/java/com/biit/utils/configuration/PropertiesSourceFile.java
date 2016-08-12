@@ -15,21 +15,26 @@ import com.biit.utils.file.watcher.FileWatcher.FileModifiedListener;
 
 public class PropertiesSourceFile extends SourceFile<Properties> implements IPropertiesSource {
 	private Set<FileModifiedListener> fileModifiedListeners;
+	private FileWatcher fileWatcher;
 
 	public PropertiesSourceFile(String fileName) {
 		super(fileName);
 		fileModifiedListeners = new HashSet<>();
-		setWatcher();
 	}
 
 	public PropertiesSourceFile(String filePath, String fileName) {
 		super(filePath, fileName);
 		fileModifiedListeners = new HashSet<>();
-		setWatcher();
 	}
 
 	public void addFileModifiedListeners(FileModifiedListener fileModifiedListener) {
 		fileModifiedListeners.add(fileModifiedListener);
+	}
+
+	@Override
+	public void setFilePath(String filePath) {
+		super.setFilePath(filePath);
+		setWatcher();
 	}
 
 	@Override
@@ -50,11 +55,15 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 		return null;
 	}
 
+	private String getDirectoryToWatch() {
+		return (getFilePath() != null ? getFilePath() : this.getClass().getClassLoader().getResource(".").getPath());
+	}
+
 	private void setWatcher() {
 		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { getFileName() }));
-		FileWatcher fileWatcher;
+
 		try {
-			fileWatcher = new FileWatcher((getFilePath() != null ? getFilePath() : this.getClass().getClassLoader().getResource(".").getPath()), checkedFiles);
+			fileWatcher = new FileWatcher(getDirectoryToWatch(), checkedFiles);
 			fileWatcher.addFileModifiedListener(new FileModifiedListener() {
 
 				@Override

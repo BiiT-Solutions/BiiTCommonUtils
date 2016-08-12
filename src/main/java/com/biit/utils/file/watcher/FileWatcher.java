@@ -18,10 +18,13 @@ import com.biit.utils.file.FileReader;
 
 public class FileWatcher {
 	private WatchQueueReader fileWatcher = null;
-	public String directoryToWatch;
+	public String directoryToWatch = null;
 	private Set<FileModifiedListener> fileModifiedListeners;
 	private Set<FileCreationListener> fileCreationListeners;
 	private Set<FileDeletionListener> fileDeletionListeners;
+	private Thread thread;
+	private Path pathToWatch = null;
+	private WatchService watcher = null;
 
 	public interface FileModifiedListener {
 		void changeDetected(Path pathToFile);
@@ -36,7 +39,7 @@ public class FileWatcher {
 	}
 
 	public FileWatcher(Set<String> filesNames) throws IOException {
-		directoryToWatch = FileReader.class.getClassLoader().getResource(".").toString();
+		setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
 		fileModifiedListeners = new HashSet<>();
 		fileCreationListeners = new HashSet<>();
 		fileDeletionListeners = new HashSet<>();
@@ -44,7 +47,7 @@ public class FileWatcher {
 	}
 
 	public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
-		this.directoryToWatch = directoryToWatch;
+		setDirectoryToWatch(directoryToWatch);
 		fileModifiedListeners = new HashSet<>();
 		fileCreationListeners = new HashSet<>();
 		fileDeletionListeners = new HashSet<>();
@@ -63,19 +66,31 @@ public class FileWatcher {
 		fileDeletionListeners.add(listener);
 	}
 
-	private void startWatcher(Set<String> filesNames) throws IOException {
-		Path pathToWatch = Paths.get(directoryToWatch);
+	private Path getDirectoryToWatch() {
 		if (pathToWatch == null) {
-			throw new UnsupportedOperationException("Directory not found");
+			pathToWatch = Paths.get(directoryToWatch);
 		}
-		WatchService watcher = pathToWatch.getFileSystem().newWatchService();
+		return pathToWatch;
+	}
 
-		fileWatcher = new WatchQueueReader(watcher, pathToWatch);
+	private WatchService getWatchService() throws IOException {
+		if (watcher == null) {
+			if (getDirectoryToWatch() == null) {
+				throw new UnsupportedOperationException("Directory not found");
+			}
+			watcher = getDirectoryToWatch().getFileSystem().newWatchService();
+		}
+		return watcher;
+	}
+
+	private void startWatcher(Set<String> filesNames) throws IOException {
+		fileWatcher = new WatchQueueReader(getWatchService(), getDirectoryToWatch());
 		fileWatcher.setFilesNames(filesNames);
-		Thread th = new Thread(fileWatcher, "FileWatcher");
-		th.start();
+		stopThread();
+		thread = new Thread(fileWatcher, "FileWatcher");
+		thread.start();
 
-		pathToWatch.register(watcher, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+		pathToWatch.register(getWatchService(), ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
 	}
 
 	private class WatchQueueReader implements Runnable {
@@ -128,6 +143,30 @@ public class FileWatcher {
 
 	private static Path combine(Path path1, Path path2) {
 		return Paths.get(path1.toString(), path2.toString());
+	}
+
+	private void closeFileWatcher() {
+		pathToWatch = null;
+		if (watcher != null) {
+			try {
+				watcher.close();
+			} catch (IOException e) {
+			}
+		}
+		watcher = null;
+	}
+
+	public void setDirectoryToWatch(String directoryToWatch) {
+		if (!directoryToWatch.equals(this.directoryToWatch)) {
+			this.directoryToWatch = directoryToWatch;
+			closeFileWatcher();
+		}
+	}
+
+	public void stopThread() {
+		if (thread != null) {
+			thread.interrupt();
+		}
 	}
 
 }

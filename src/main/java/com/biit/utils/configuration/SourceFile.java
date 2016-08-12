@@ -8,13 +8,13 @@ public abstract class SourceFile<FileType> implements ISourceFile<FileType> {
 	private final String fileName;
 
 	public SourceFile(String fileName) {
-		this.filePath = null;
 		this.fileName = fileName;
+		setFilePath(null);
 	}
 
 	public SourceFile(String filePath, String fileName) {
-		this.filePath = filePath;
 		this.fileName = fileName;
+		setFilePath(filePath);
 	}
 
 	@Override

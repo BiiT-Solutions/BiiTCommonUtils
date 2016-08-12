@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
@@ -51,8 +50,7 @@ public class ConfigurationReader {
 		properties.putAll(propertiesDefault);
 
 		for (IPropertiesSource propertiesSource : propertiesSources) {
-			Properties propertyFile;
-			propertyFile = propertiesSource.loadFile();
+			Properties propertyFile = propertiesSource.loadFile();
 			if (propertyFile != null) {
 				readAllProperties(propertyFile);
 			}
@@ -67,8 +65,7 @@ public class ConfigurationReader {
 	 * @param propertyFile
 	 */
 	private void readAllProperties(Properties propertyFile) {
-		Set<String> propertyIds = new HashSet<String>(properties.keySet());
-		for (String propertyId : propertyIds) {
+		for (String propertyId : new HashSet<String>(properties.keySet())) {
 			String value = propertyFile.getProperty(propertyId, properties.get(propertyId));
 			properties.put(propertyId, value);
 			BiitCommonLogger.debug(this.getClass(), "Property '" + propertyId + "' set as value '" + value + "'.");
