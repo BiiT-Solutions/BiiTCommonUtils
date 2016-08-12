@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
@@ -14,18 +15,26 @@ public class ConfigurationReader {
 
 	private final Map<Class<?>, IValueConverter<?>> converter;
 	private final Map<String, String> propertiesDefault;
-	private final Map<String, String> properties;
+	private final Map<String, String> propertiesFinalValue;
 	private final List<IPropertiesSource> propertiesSources;
+	private final Set<PropertyChangedListener> propertyChangedListeners;
+	private final Map<IPropertiesSource, Map<String, String>> propertiesBySourceValues;
 
 	public ConfigurationReader() {
 		converter = new HashMap<Class<?>, IValueConverter<?>>();
 		propertiesDefault = new HashMap<String, String>();
-		properties = new HashMap<String, String>();
+		propertiesFinalValue = new HashMap<String, String>();
 		propertiesSources = new ArrayList<IPropertiesSource>();
+		propertyChangedListeners = new HashSet<>();
+		propertiesBySourceValues = new HashMap<>();
 
 		addConverter(Boolean.class, new BooleanValueConverter());
 		addConverter(Integer.class, new IntegerValueConverter());
 		addConverter(Double.class, new DoubleValueConverter());
+	}
+
+	public interface PropertyChangedListener {
+		void propertyChanged(String propertyId, String oldValue, String newValue);
 	}
 
 	public <T> void addConverter(Class<T> clazz, IValueConverter<T> valueConverter) {
@@ -46,13 +55,13 @@ public class ConfigurationReader {
 	 * configuration files again.
 	 */
 	public void readConfigurations() {
-		properties.clear();
-		properties.putAll(propertiesDefault);
+		propertiesFinalValue.clear();
+		propertiesFinalValue.putAll(propertiesDefault);
 
 		for (IPropertiesSource propertiesSource : propertiesSources) {
 			Properties propertyFile = propertiesSource.loadFile();
 			if (propertyFile != null) {
-				readAllProperties(propertyFile);
+				readAllProperties(propertyFile, propertiesSource);
 			}
 		}
 	}
@@ -64,10 +73,26 @@ public class ConfigurationReader {
 	 * 
 	 * @param propertyFile
 	 */
-	private void readAllProperties(Properties propertyFile) {
-		for (String propertyId : new HashSet<String>(properties.keySet())) {
-			String value = propertyFile.getProperty(propertyId, properties.get(propertyId));
-			properties.put(propertyId, value);
+	private void readAllProperties(Properties propertyFile, IPropertiesSource propertiesSource) {
+		for (String propertyId : new HashSet<String>(propertiesFinalValue.keySet())) {
+			String value = propertyFile.getProperty(propertyId, propertiesFinalValue.get(propertyId));
+			// Notify property change
+			if (propertiesBySourceValues.get(propertiesSource) == null) {
+				propertiesBySourceValues.put(propertiesSource, new HashMap<String, String>());
+			}
+
+			if (propertiesBySourceValues.get(propertiesSource).get(propertyId) != null
+					&& propertiesBySourceValues.get(propertiesSource).get(propertyId).length() > 0
+					&& !propertiesBySourceValues.get(propertiesSource).get(propertyId).equals(value)) {
+				// Launch listeners.
+				for (PropertyChangedListener propertyChangedListener : propertyChangedListeners) {
+					propertyChangedListener.propertyChanged(propertyId, propertiesFinalValue.get(propertyId), value);
+				}
+				BiitCommonLogger.info(this.getClass(), "Property '" + propertyId + "' updated as '" + value + "'.");
+			}
+			// Store value.
+			propertiesBySourceValues.get(propertiesSource).put(propertyId, value);
+			propertiesFinalValue.put(propertyId, value);
 			BiitCommonLogger.debug(this.getClass(), "Property '" + propertyId + "' set as value '" + value + "'.");
 		}
 	}
@@ -81,20 +106,20 @@ public class ConfigurationReader {
 	public <T> void addProperty(String propertyName, T defaultValue) {
 		if (defaultValue == null) {
 			propertiesDefault.put(propertyName, null);
-			properties.put(propertyName, null);
+			propertiesFinalValue.put(propertyName, null);
 		} else if (defaultValue instanceof String) {
 			propertiesDefault.put(propertyName, new String((String) defaultValue).trim());
-			properties.put(propertyName, new String((String) defaultValue).trim());
+			propertiesFinalValue.put(propertyName, new String((String) defaultValue).trim());
 		} else {
 			propertiesDefault.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
-			properties.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
+			propertiesFinalValue.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
 		}
 	}
 
 	public String getProperty(String propertyName) throws PropertyNotFoundException {
-		if (properties.containsKey(propertyName)) {
-			if (properties.get(propertyName) != null) {
-				return new String(properties.get(propertyName).trim());
+		if (propertiesFinalValue.containsKey(propertyName)) {
+			if (propertiesFinalValue.get(propertyName) != null) {
+				return new String(propertiesFinalValue.get(propertyName).trim());
 			} else {
 				return null;
 			}
@@ -114,5 +139,9 @@ public class ConfigurationReader {
 
 	public List<IPropertiesSource> getPropertiesSources() {
 		return propertiesSources;
+	}
+
+	public void addPropertyChangedListener(PropertyChangedListener propertyChangedListener) {
+		propertyChangedListeners.add(propertyChangedListener);
 	}
 }
