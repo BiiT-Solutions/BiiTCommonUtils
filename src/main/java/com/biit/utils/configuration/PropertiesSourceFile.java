@@ -34,7 +34,7 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 	@Override
 	public void setFilePath(String filePath) {
 		super.setFilePath(filePath);
-		//setWatcher();
+		setWatcher();
 	}
 
 	@Override
