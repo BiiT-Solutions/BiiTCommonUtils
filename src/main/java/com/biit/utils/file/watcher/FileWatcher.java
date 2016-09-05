@@ -5,6 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
@@ -133,6 +134,9 @@ public class FileWatcher {
 				}
 			} catch (InterruptedException e) {
 				BiitCommonLogger.errorMessageNotification(this.getClass(), e);
+			} catch (ClosedWatchServiceException e) {
+				// watcher closed. Do nothing.
+				return;
 			}
 		}
 
@@ -145,12 +149,14 @@ public class FileWatcher {
 		return Paths.get(path1.toString(), path2.toString());
 	}
 
-	private void closeFileWatcher() {
+	public void closeFileWatcher() {
 		pathToWatch = null;
 		if (watcher != null) {
 			try {
 				watcher.close();
+				stopThread();
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		watcher = null;

@@ -78,4 +78,10 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 		}
 	}
+
+	public void stopFileWatcher() {
+		if (fileWatcher != null) {
+			fileWatcher.closeFileWatcher();
+		}
+	}
 }

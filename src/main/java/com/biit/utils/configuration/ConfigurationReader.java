@@ -144,4 +144,17 @@ public class ConfigurationReader {
 	public void addPropertyChangedListener(PropertyChangedListener propertyChangedListener) {
 		propertyChangedListeners.add(propertyChangedListener);
 	}
+
+	/**
+	 * Stops file watchers in from all configuration files. This is necessary in
+	 * projects such as JpaSchemaExporters that waits until all threads are
+	 * closed.
+	 */
+	public void stopFileWatchers() {
+		for (IPropertiesSource sources : propertiesSources) {
+			if (sources instanceof PropertiesSourceFile) {
+				((PropertiesSourceFile) sources).stopFileWatcher();
+			}
+		}
+	}
 }
