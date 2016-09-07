@@ -84,14 +84,17 @@ public class FileWatcher {
 		return watcher;
 	}
 
-	private void startWatcher(Set<String> filesNames) throws IOException {
-		fileWatcher = new WatchQueueReader(getWatchService(), getDirectoryToWatch());
-		fileWatcher.setFilesNames(filesNames);
-		stopThread();
-		thread = new Thread(fileWatcher, "FileWatcher");
-		thread.start();
-
-		pathToWatch.register(getWatchService(), ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+	private void startWatcher(Set<String> filesNames) {
+		try {
+			fileWatcher = new WatchQueueReader(getWatchService(), getDirectoryToWatch());
+			fileWatcher.setFilesNames(filesNames);
+			stopThread();
+			thread = new Thread(fileWatcher, "FileWatcher");
+			thread.start();
+			pathToWatch.register(getWatchService(), ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+		} catch (IOException e) {
+			BiitCommonLogger.severe(this.getClass().getName(), e);
+		}
 	}
 
 	private class WatchQueueReader implements Runnable {

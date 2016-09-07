@@ -42,7 +42,9 @@ public class EmailConfigurationReader extends ConfigurationReader {
 		addProperty(EMAIL_PORT_TAG, DEFAULT_EMAIL_PORT);
 		addProperty(EMAIL_ENABLED_TAG, false);
 		addProperty(EMAIL_TO_TAG, "");
+	}
 
+	private void readConfigurationFiles() {
 		addPropertiesSource(new PropertiesSourceFile(CONFIG_FILE));
 		addPropertiesSource(new SystemVariablePropertiesSourceFile(SYSTEM_VARIABLE_CONFIG, CONFIG_FILE));
 
@@ -54,6 +56,7 @@ public class EmailConfigurationReader extends ConfigurationReader {
 			synchronized (EmailConfigurationReader.class) {
 				if (instance == null) {
 					instance = new EmailConfigurationReader();
+					instance.readConfigurationFiles();
 				}
 			}
 		}
