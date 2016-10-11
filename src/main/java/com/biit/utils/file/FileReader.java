@@ -156,7 +156,8 @@ public class FileReader {
 				outputStream.write(chunk, 0, bytesRead);
 			}
 			outputStream.close();
-
+		} catch (FileNotFoundException e) {
+			throw new MalformedURLException("Invalid url '" + urlname + "'. File not found");
 		} catch (IOException e) {
 			BiitCommonLogger.errorMessageNotification(FileReader.class, e);
 			return null;
