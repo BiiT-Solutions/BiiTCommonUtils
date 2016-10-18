@@ -104,13 +104,17 @@ public abstract class BiitLogger {
 		sendByEmail(logger, className, error);
 	}
 	
-	private static void sendByEmail(Logger logger, String className, String throwable) {
+	public static void sendNotification(Logger logger, String className, String message) {
+		sendByEmail(logger, className, message);
+	}
+	
+	private static void sendByEmail(Logger logger, String className, String message) {
 		try {
 			if (EmailConfigurationReader.getInstance().isEmailEnabled()) {
 				try {
 					SendEmail.sendEmail(EmailConfigurationReader.getInstance().getEmailTo(),
 							ErrorMailGeneration.getSubject(),
-							ErrorMailGeneration.getHtmlMailContent(className, throwable));
+							ErrorMailGeneration.getHtmlMailContent(className, message));
 				} catch (EmailNotSentException | InvalidEmailAddressException e) {
 					severe(logger, BiitLogger.class.getName(), getStackTrace(e));
 				}
