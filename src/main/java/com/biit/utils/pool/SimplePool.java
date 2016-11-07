@@ -3,6 +3,7 @@ package com.biit.utils.pool;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> {
 	// Elements by id;
@@ -38,7 +39,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 						removeElement(elementId);
 						storedObjectId = null;
 					} else {
-						if (elementsById.get(storedObjectId) != null && storedObjectId.equals(elementId)) {
+						if (elementsById.get(storedObjectId) != null && Objects.equals(storedObjectId, elementId)) {
 							// Remove not valid elements.
 							if (isDirty(elementsById.get(storedObjectId))) {
 								removeElement(storedObjectId);
