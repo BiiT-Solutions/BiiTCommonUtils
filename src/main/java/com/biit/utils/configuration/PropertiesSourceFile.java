@@ -46,7 +46,7 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 				return PropertiesFile.load(getFilePath(), getFileName());
 			}
 		} catch (FileNotFoundException e) {
-			BiitCommonLogger.warning(this.getClass(), e.getMessage());
+			BiitCommonLogger.debug(this.getClass(), e.getMessage());
 		} catch (IOException e) {
 			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 		} catch (NullPointerException e) {
