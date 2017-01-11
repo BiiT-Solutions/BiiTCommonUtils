@@ -39,13 +39,13 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 						removeElement(elementId);
 						storedObjectId = null;
 					} else {
-						if (elementsById.get(storedObjectId) != null && Objects.equals(storedObjectId, elementId)) {
+						if (elementsById.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsById.get(storedObjectId))) {
 								removeElement(storedObjectId);
-								return null;
+							} else if (Objects.equals(storedObjectId, elementId)) {
+								return elementsById.get(storedObjectId);
 							}
-							return elementsById.get(storedObjectId);
 						}
 					}
 				}
