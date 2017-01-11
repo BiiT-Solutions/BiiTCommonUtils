@@ -1,9 +1,11 @@
 package com.biit.utils.pool;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> {
 	// Elements by id;
@@ -17,6 +19,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	public void addElement(Type element) {
 		elementsTime.put(element.getId(), System.currentTimeMillis());
 		elementsById.put(element.getId(), element);
+	}
+
+	public Set<Type> getAllPooledElements() {
+		return new HashSet<>(elementsById.values());
 	}
 
 	/**
