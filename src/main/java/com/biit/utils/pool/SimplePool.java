@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> {
+public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> implements ISimplePool<ElementId, Type> {
 	// Elements by id;
 	private Map<ElementId, Long> elementsTime; // user id -> time.
 	private Map<ElementId, Type> elementsById;
@@ -16,11 +16,13 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 		reset();
 	}
 
+	@Override
 	public void addElement(Type element) {
 		elementsTime.put(element.getId(), System.currentTimeMillis());
 		elementsById.put(element.getId(), element);
 	}
 
+	@Override
 	public Set<Type> getAllPooledElements() {
 		return new HashSet<>(elementsById.values());
 	}
@@ -32,6 +34,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	 * @param userId
 	 * @return
 	 */
+	@Override
 	public Type getElement(ElementId elementId) {
 		if (elementId != null) {
 			long now = System.currentTimeMillis();
@@ -60,14 +63,17 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 		return null;
 	}
 
+	@Override
 	public Map<ElementId, Type> getElementsById() {
 		return elementsById;
 	}
 
+	@Override
 	public Map<ElementId, Long> getElementsTime() {
 		return elementsTime;
 	}
 
+	@Override
 	public void removeElement(ElementId elementId) {
 		if (elementId != null) {
 			elementsTime.remove(elementId);
@@ -75,6 +81,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 		}
 	}
 
+	@Override
 	public void reset() {
 		elementsTime = new HashMap<ElementId, Long>();
 		elementsById = new HashMap<ElementId, Type>();
@@ -86,7 +93,9 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	 * @param elementId
 	 * @return
 	 */
+	@Override
 	public abstract boolean isDirty(Type element);
 
+	@Override
 	public abstract long getExpirationTime();
 }
