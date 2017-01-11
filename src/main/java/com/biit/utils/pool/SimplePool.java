@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.biit.logger.BiitCommonLogger;
+
 public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> implements ISimplePool<ElementId, Type> {
 	// Elements by id;
 	private Map<ElementId, Long> elementsTime; // user id -> time.
@@ -51,8 +53,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 						if (elementsById.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsById.get(storedObjectId))) {
+								BiitCommonLogger.debug(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
+								BiitCommonLogger.debug(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " store hit for " + elementId);
 								return elementsById.get(storedObjectId);
 							}
 						}
@@ -60,6 +64,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 				}
 			}
 		}
+		BiitCommonLogger.debug(this.getClass(), "Cache: Object with Id '" + elementId + "' - Miss ");
 		return null;
 	}
 
