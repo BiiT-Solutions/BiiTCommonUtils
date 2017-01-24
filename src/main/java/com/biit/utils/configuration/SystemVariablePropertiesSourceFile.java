@@ -28,7 +28,7 @@ public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile {
 			}
 			return super.loadFile();
 		} else {
-			BiitCommonLogger.warning(this.getClass(), "Environmental variable '" + getEnvironmentVariable() + "' is not set on the system.");
+			BiitCommonLogger.debug(this.getClass(), "Environmental variable '" + getEnvironmentVariable() + "' is not set on the system.");
 			return null;
 		}
 	}
