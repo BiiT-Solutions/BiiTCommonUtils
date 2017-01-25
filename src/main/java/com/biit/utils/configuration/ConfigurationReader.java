@@ -12,7 +12,7 @@ import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 
 public class ConfigurationReader {
-
+	private final static String VALUES_SEPARATOR_REGEX = " *, *";
 	private final Map<Class<?>, IValueConverter<?>> converter;
 	private final Map<String, String> propertiesDefault;
 	private final Map<String, String> propertiesFinalValue;
@@ -156,5 +156,14 @@ public class ConfigurationReader {
 				((PropertiesSourceFile) sources).stopFileWatcher();
 			}
 		}
+	}
+
+	protected String[] getCommaSeparatedValues(String propertyName) throws PropertyNotFoundException {
+		String value = getProperty(propertyName);
+		// Remove useless spaces around commas.
+		value.replaceAll(VALUES_SEPARATOR_REGEX, ",");
+		// Split by commas.
+		return value.split(",");
+
 	}
 }
