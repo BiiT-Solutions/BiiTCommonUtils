@@ -21,8 +21,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	@Override
 	public void addElement(Type element) {
 		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element.getId() + "'.");
-		elementsTime.put(element.getId(), System.currentTimeMillis());
-		elementsById.put(element.getId(), element);
+		if (getExpirationTime() > 0) {
+			elementsTime.put(element.getId(), System.currentTimeMillis());
+			elementsById.put(element.getId(), element);
+		}
 	}
 
 	@Override
@@ -39,7 +41,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	 */
 	@Override
 	public Type getElement(ElementId elementId) {
-		if (elementId != null) {
+		if (elementId != null && getExpirationTime() > 0) {
 			long now = System.currentTimeMillis();
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
@@ -61,7 +63,8 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 								BiitPoolLogger.debug(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " store hit for " + elementId);
+								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " store hit for "
+										+ elementId);
 								return elementsById.get(storedObjectId);
 							}
 						}
