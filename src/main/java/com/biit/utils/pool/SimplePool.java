@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.biit.logger.BiitCommonLogger;
+import com.biit.logger.BiitPoolLogger;
 
 public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> implements ISimplePool<ElementId, Type> {
 	// Elements by id;
@@ -20,6 +20,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 
 	@Override
 	public void addElement(Type element) {
+		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element.getId() + "'.");
 		elementsTime.put(element.getId(), System.currentTimeMillis());
 		elementsById.put(element.getId(), element);
 	}
@@ -42,10 +43,14 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 			long now = System.currentTimeMillis();
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
+				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
 				Iterator<ElementId> groupsIds = new HashMap<ElementId, Long>(elementsTime).keySet().iterator();
 				while (groupsIds.hasNext()) {
 					storedObjectId = groupsIds.next();
 					if (elementsTime.get(storedObjectId) != null && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
+						BiitPoolLogger.debug(this.getClass(),
+								"Element '" + elementId + "' has expired (elapsed time: '" + (now - elementsTime.get(storedObjectId)) + "' > '"
+										+ getExpirationTime() + "'.)");
 						// object has expired
 						removeElement(elementId);
 						storedObjectId = null;
@@ -53,10 +58,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 						if (elementsById.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsById.get(storedObjectId))) {
-								BiitCommonLogger.debug(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " is dirty! ");
+								BiitPoolLogger.debug(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitCommonLogger.debug(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " store hit for " + elementId);
+								BiitPoolLogger.info(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " store hit for " + elementId);
 								return elementsById.get(storedObjectId);
 							}
 						}
@@ -64,7 +69,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 				}
 			}
 		}
-		BiitCommonLogger.debug(this.getClass(), "Cache: Object with Id '" + elementId + "' - Miss ");
+		BiitPoolLogger.debug(this.getClass(), "Object with Id '" + elementId + "' - Cache Miss.");
 		return null;
 	}
 
@@ -81,6 +86,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	@Override
 	public void removeElement(ElementId elementId) {
 		if (elementId != null) {
+			BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
 			elementsTime.remove(elementId);
 			elementsById.remove(elementId);
 		}
@@ -88,6 +94,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 
 	@Override
 	public void reset() {
+		BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
 		elementsTime = new HashMap<ElementId, Long>();
 		elementsById = new HashMap<ElementId, Type>();
 	}
