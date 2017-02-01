@@ -58,10 +58,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 						if (elementsById.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsById.get(storedObjectId))) {
-								BiitPoolLogger.debug(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " is dirty! ");
+								BiitPoolLogger.debug(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: " + storedObjectId.getClass().getName() + " store hit for " + elementId);
+								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " store hit for " + elementId);
 								return elementsById.get(storedObjectId);
 							}
 						}
