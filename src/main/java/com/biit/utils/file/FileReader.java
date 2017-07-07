@@ -25,7 +25,9 @@ public class FileReader {
 
 	public static File getResource(String filename) throws NullPointerException {
 		URL url = FileReader.class.getClassLoader().getResource(filename);
-		BiitCommonLogger.debug(FileReader.class, "Resource to read '" + filename + "' found at url '" + url.toString() + "'.");
+		if (url != null) {
+			BiitCommonLogger.debug(FileReader.class, "Resource to read '" + filename + "' found at url '" + url.toString() + "'.");
+		}
 		File file = null;
 		// Jetty load resource.
 		try {
