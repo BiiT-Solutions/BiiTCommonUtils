@@ -40,7 +40,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 	 * @return
 	 */
 	@Override
-	public Type getElement(ElementId elementId) {
+	public synchronized Type getElement(ElementId elementId) {
 		if (elementId != null && getExpirationTime() > 0) {
 			long now = System.currentTimeMillis();
 			ElementId storedObjectId = null;
