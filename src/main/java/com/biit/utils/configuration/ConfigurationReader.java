@@ -31,6 +31,15 @@ public class ConfigurationReader {
 		addConverter(Boolean.class, new BooleanValueConverter());
 		addConverter(Integer.class, new IntegerValueConverter());
 		addConverter(Double.class, new DoubleValueConverter());
+
+		// Log if any property has changed the value.
+		addPropertyChangedListener(new PropertyChangedListener() {
+
+			@Override
+			public void propertyChanged(String propertyId, String oldValue, String newValue) {
+				BiitCommonLogger.info(this.getClass(), "Property '" + propertyId + "' has changed value from '" + oldValue + "' to '" + newValue + "'.");
+			}
+		});
 	}
 
 	public interface PropertyChangedListener {
