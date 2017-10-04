@@ -180,6 +180,7 @@ public class FileReader {
 			String path = url.getPath();
 			return new File(path).listFiles();
 		}
+		BiitCommonLogger.severe(FileReader.class, "Resource folder not found '" + folderPath + "'.");
 		return null;
 	}
 
