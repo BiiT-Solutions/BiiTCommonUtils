@@ -27,6 +27,8 @@ public class FileReader {
 		URL url = FileReader.class.getClassLoader().getResource(filename);
 		if (url != null) {
 			BiitCommonLogger.debug(FileReader.class, "Resource to read '" + filename + "' found at url '" + url.toString() + "'.");
+		} else {
+			BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + filename + "'.");
 		}
 		File file = null;
 		// Jetty load resource.
