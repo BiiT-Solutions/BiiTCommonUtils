@@ -3,6 +3,7 @@
 	<test name="AbcdTest" enabled="true" preserve-order="true">
 		<groups>
 			<run>
+				<include name="resourceTests" />
 				<include name="configReader" />
 				<include name="imageTests" />
 				<include name="watcherTests" />
@@ -12,6 +13,7 @@
 			<class name="com.biit.utils.ConfigReaderTests" />
 			<class name="com.biit.utils.ImageToolsTest" />
 			<class name="com.biit.utils.WatcherTests" />
+			<class name="com.biit.utils.ResourceTests" />
 		</classes>
 	</test>
 </suite>

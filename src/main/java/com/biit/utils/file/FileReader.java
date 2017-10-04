@@ -169,4 +169,13 @@ public class FileReader {
 		return outputStream.toByteArray();
 	}
 
+	public static File[] getResources(String folderPath) {
+		URL url = FileReader.class.getClassLoader().getResource(folderPath);
+		if (url != null) {
+			BiitCommonLogger.debug(FileReader.class, "Resource to read '" + folderPath + "' found at url '" + url.toString() + "'.");
+		}
+		String path = url.getPath();
+		return new File(path).listFiles();
+	}
+
 }
