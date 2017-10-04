@@ -176,8 +176,11 @@ public class FileReader {
 		if (url != null) {
 			BiitCommonLogger.debug(FileReader.class, "Resource to read '" + folderPath + "' found at url '" + url.toString() + "'.");
 		}
-		String path = url.getPath();
-		return new File(path).listFiles();
+		if (url != null) {
+			String path = url.getPath();
+			return new File(path).listFiles();
+		}
+		return null;
 	}
 
 }
