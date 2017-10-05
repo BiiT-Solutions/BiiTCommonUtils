@@ -76,6 +76,8 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 			});
 		} catch (IOException e) {
 			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
+		} catch (NullPointerException npe) {
+			BiitCommonLogger.warning(this.getClass(), "Directory to watch not found!");
 		}
 	}
 
