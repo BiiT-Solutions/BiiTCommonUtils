@@ -8,13 +8,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.swing.ImageIcon;
 
@@ -49,7 +54,7 @@ public class FileReader {
 							InputStream inputStream = url.openStream();
 							if (inputStream != null) {
 								final File tempFile = File.createTempFile(filename, "_jar");
-								tempFile.deleteOnExit();
+								// tempFile.deleteOnExit();
 								OutputStream os = new FileOutputStream(tempFile);
 								byte[] buffer = new byte[1024];
 								int bytesRead;
@@ -104,7 +109,7 @@ public class FileReader {
 	 */
 	public static List<String> getResouceAsList(String resourceName) throws FileNotFoundException {
 		File file = FileReader.getResource(resourceName);
-		return readFile(file);
+		return readFileAsList(file);
 	}
 
 	/**
@@ -117,10 +122,10 @@ public class FileReader {
 	 */
 	public static List<String> getFileAsList(String filePath) throws FileNotFoundException {
 		File file = new File(filePath);
-		return readFile(file);
+		return readFileAsList(file);
 	}
 
-	private static List<String> readFile(File file) throws FileNotFoundException {
+	private static List<String> readFileAsList(File file) throws FileNotFoundException {
 		Scanner s = new Scanner(file);
 		List<String> lines = new ArrayList<String>();
 		while (s.hasNext()) {
@@ -128,6 +133,16 @@ public class FileReader {
 		}
 		s.close();
 		return lines;
+	}
+
+	public static String readFile(File file) throws FileNotFoundException {
+		Scanner s = new Scanner(file);
+		StringBuilder content = new StringBuilder();
+		while (s.hasNext()) {
+			content.append(s.next());
+		}
+		s.close();
+		return content.toString();
 	}
 
 	public static String getResource(String fileName, Charset charset) throws FileNotFoundException {
@@ -171,17 +186,36 @@ public class FileReader {
 		return outputStream.toByteArray();
 	}
 
-	public static File[] getResources(String folderPath) {
+	public static List<File> getResources(String folderPath) {
 		URL url = FileReader.class.getClassLoader().getResource(folderPath);
-		if (url != null) {
-			BiitCommonLogger.debug(FileReader.class, "Resource to read '" + folderPath + "' found at url '" + url.toString() + "'.");
-		}
-		if (url != null) {
-			String path = url.getPath();
-			return new File(path).listFiles();
+		try {
+			if (url != null) {
+				List<File> files = new ArrayList<>();
+				BiitCommonLogger.debug(FileReader.class, "Resource to read '" + folderPath + "' found at url '" + url.toString() + "'.");
+				URI uri = url.toURI();
+				if (uri.getScheme().equals("jar")) {
+					// Remove 'file:' and '!' in 'jar!'
+					final File jarFile = new File(url.getPath().toString().substring(5, url.toString().indexOf("jar!") - 1));
+					try (final JarFile jar = new JarFile(jarFile)) {
+						// gives ALL entries in jar
+						final Enumeration<JarEntry> entries = jar.entries();
+						while (entries.hasMoreElements()) {
+							final JarEntry jarEntry = entries.nextElement();
+							// filter according to the path
+							if (jarEntry.getName().startsWith(folderPath + "/") && !jarEntry.getName().endsWith(folderPath + "/")) {
+								files.add(getResource(jarEntry.getName().substring(jarEntry.getName().indexOf(folderPath))));
+							}
+						}
+						return files;
+					}
+				} else {
+					return Arrays.asList(new File(url.getPath()).listFiles());
+				}
+			}
+		} catch (IOException | URISyntaxException e) {
+			BiitCommonLogger.errorMessageNotification(FileReader.class, e);
 		}
 		BiitCommonLogger.severe(FileReader.class, "Resource folder not found '" + folderPath + "'.");
-		return null;
+		return new ArrayList<>();
 	}
-
 }

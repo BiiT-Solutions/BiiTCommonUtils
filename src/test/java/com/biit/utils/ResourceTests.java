@@ -3,6 +3,7 @@ package com.biit.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -16,8 +17,8 @@ public class ResourceTests {
 
 	@Test
 	public void listFilesInFolder() {
-		File[] resources = FileReader.getResources(RESOURCE_FOLDER);
-		Assert.assertEquals(2, resources.length);
+		List<File> resources = FileReader.getResources(RESOURCE_FOLDER);
+		Assert.assertEquals(2, resources.size());
 	}
 
 	@Test
