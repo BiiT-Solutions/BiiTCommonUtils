@@ -136,12 +136,14 @@ public class FileReader {
 	}
 
 	public static String readFile(File file) throws FileNotFoundException {
-		Scanner s = new Scanner(file);
+		Scanner scanner = new Scanner(file, "UTF-8");
+		// Change delimiter or it will removes all white spaces.
+		scanner.useDelimiter("\\A");
 		StringBuilder content = new StringBuilder();
-		while (s.hasNext()) {
-			content.append(s.next());
+		while (scanner.hasNext()) {
+			content.append(scanner.next().trim());
 		}
-		s.close();
+		scanner.close();
 		return content.toString();
 	}
 
