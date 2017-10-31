@@ -48,7 +48,7 @@ public class FileReader {
 				} catch (IllegalArgumentException e) {
 					// Resource inside a jar.
 					if (url.toString().contains(".jar!")) {
-						BiitCommonLogger.warning(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
+						BiitCommonLogger.debug(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
 						// Copy to a temp file and return it.
 						try {
 							InputStream inputStream = url.openStream();
