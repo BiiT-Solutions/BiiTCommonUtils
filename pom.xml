@@ -62,13 +62,6 @@
 			<version>${org.testng.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Testing -->
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>${org.testng.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	
 	<build>
