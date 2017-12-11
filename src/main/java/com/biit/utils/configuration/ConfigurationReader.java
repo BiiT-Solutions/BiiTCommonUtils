@@ -133,7 +133,7 @@ public class ConfigurationReader {
 				return null;
 			}
 		} else {
-			throw new PropertyNotFoundException("Property not defined in the configuration reader");
+			throw new PropertyNotFoundException("Property '" + propertyName + "' not defined in the configuration reader");
 		}
 	}
 
