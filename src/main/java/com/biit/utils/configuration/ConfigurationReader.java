@@ -1,6 +1,7 @@
 package com.biit.utils.configuration;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 
 public class ConfigurationReader {
 	private final static String VALUES_SEPARATOR_REGEX = " *, *";
+	private final static char PREFIX_SEPARATOR_CHAR = '.';
 	private final Map<Class<?>, IValueConverter<?>> converter;
 	private final Map<String, String> propertiesDefault;
 	private final Map<String, String> propertiesFinalValue;
@@ -123,6 +125,43 @@ public class ConfigurationReader {
 			propertiesDefault.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
 			propertiesFinalValue.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
 		}
+	}
+
+	/**
+	 * Read all properties and set an empty string as default value.
+	 */
+	public void initializeAllProperties() {
+		for (IPropertiesSource propertiesSource : propertiesSources) {
+			Properties propertyFile = propertiesSource.loadFile();
+			if (propertyFile != null) {
+				Enumeration<?> enumerator = propertyFile.propertyNames();
+				while (enumerator.hasMoreElements()) {
+					addProperty((String) enumerator.nextElement(), "");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets all defined prefix for the properties.
+	 * 
+	 * @return
+	 */
+	public Set<String> getAllPropertiesPrefixes() {
+		Set<String> prefixes = new HashSet<>();
+		for (IPropertiesSource propertiesSource : propertiesSources) {
+			Properties propertyFile = propertiesSource.loadFile();
+			if (propertyFile != null) {
+				Enumeration<?> enumerator = propertyFile.propertyNames();
+				while (enumerator.hasMoreElements()) {
+					String element = (String) enumerator.nextElement();
+					if (element.contains(String.valueOf(PREFIX_SEPARATOR_CHAR))) {
+						prefixes.add(element.substring(0, element.indexOf(PREFIX_SEPARATOR_CHAR)));
+					}
+				}
+			}
+		}
+		return prefixes;
 	}
 
 	public String getProperty(String propertyName) throws PropertyNotFoundException {
