@@ -209,7 +209,7 @@ public class ConfigurationReader {
 	protected String[] getCommaSeparatedValues(String propertyName) throws PropertyNotFoundException {
 		String value = getProperty(propertyName);
 		// Remove useless spaces around commas.
-		value.replaceAll(VALUES_SEPARATOR_REGEX, ",");
+		value = value.replaceAll(VALUES_SEPARATOR_REGEX, ",");
 		// Split by commas.
 		return value.split(",");
 
