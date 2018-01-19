@@ -12,8 +12,8 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
-import com.biit.utils.file.watcher.FileWatcher.FileCreationListener;
-import com.biit.utils.file.watcher.FileWatcher.FileDeletionListener;
+import com.biit.utils.file.watcher.FileWatcher.FileAddedListener;
+import com.biit.utils.file.watcher.FileWatcher.FileRemovedListener;
 import com.biit.utils.file.watcher.FileWatcher.FileModifiedListener;
 
 @Test(groups = { "fileWatcherTests" })
@@ -73,7 +73,7 @@ public class FileWatcherTests {
 		// Create a file.
 		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { fileName }));
 		FileWatcher fileWatcher = new FileWatcher(folder, checkedFiles);
-		fileWatcher.addFileCreationListener(new FileCreationListener() {
+		fileWatcher.addFileAddedListener(new FileAddedListener() {
 
 			@Override
 			public void fileCreated(Path pathToFile) {
@@ -103,7 +103,7 @@ public class FileWatcherTests {
 		// Create a file.
 		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { fileName }));
 		FileWatcher fileWatcher = new FileWatcher(folder, checkedFiles);
-		fileWatcher.addFileDeletionListener(new FileDeletionListener() {
+		fileWatcher.addFileRemovedListener(new FileRemovedListener() {
 
 			@Override
 			public void fileDeleted(Path pathToFile) {

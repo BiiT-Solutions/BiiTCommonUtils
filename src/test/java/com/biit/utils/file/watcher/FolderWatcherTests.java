@@ -9,8 +9,8 @@ import java.nio.file.StandardOpenOption;
 
 import org.testng.annotations.Test;
 
-import com.biit.utils.file.watcher.FolderWatcher.FileAddedListener;
-import com.biit.utils.file.watcher.FolderWatcher.FileRemovedListener;
+import com.biit.utils.file.watcher.FileWatcher.FileAddedListener;
+import com.biit.utils.file.watcher.FileWatcher.FileRemovedListener;
 
 @Test(groups = { "folderWatcherTests" })
 public class FolderWatcherTests {
@@ -37,11 +37,11 @@ public class FolderWatcherTests {
 		folder.deleteOnExit();
 
 		// Register the folder.
-		FolderWatcher folderWatcher = new FolderWatcher(folderPath);
+		FileWatcher folderWatcher = new FileWatcher(folderPath);
 		folderWatcher.addFileAddedListener(new FileAddedListener() {
 
 			@Override
-			public void fileAdded(Path pathToFile) {
+			public void fileCreated(Path pathToFile) {
 				fileAddedDetected = true;
 			}
 		});
@@ -74,12 +74,13 @@ public class FolderWatcherTests {
 		file.deleteOnExit();
 
 		// Register the folder.
-		FolderWatcher folderWatcher = new FolderWatcher(folderPath);
+		FileWatcher folderWatcher = new FileWatcher(folderPath);
 		folderWatcher.addFileRemovedListener(new FileRemovedListener() {
 
 			@Override
-			public void fileRemoved(Path pathToFile) {
+			public void fileDeleted(Path pathToFile) {
 				fileRemovedDetected = true;
+
 			}
 		});
 

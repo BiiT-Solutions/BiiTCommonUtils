@@ -3,10 +3,10 @@
 	<test name="AbcdTest" enabled="true" preserve-order="true">
 		<groups>
 			<run>
-				<exclude name="resourceTests" />
-				<exclude name="configReader" />
-				<exclude name="imageTests" />
-				<exclude name="fileWatcherTests" />
+				<include name="resourceTests" />
+				<include name="configReader" />
+				<include name="imageTests" />
+				<include name="fileWatcherTests" />
 				<include name="folderWatcherTests" />
 			</run>
 		</groups>

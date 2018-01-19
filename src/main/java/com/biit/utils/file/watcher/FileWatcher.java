@@ -18,8 +18,8 @@ public class FileWatcher {
 	private WatchQueueReader fileWatcher = null;
 	public String directoryToWatch = null;
 	private Set<FileModifiedListener> fileModifiedListeners;
-	private Set<FileCreationListener> fileCreationListeners;
-	private Set<FileDeletionListener> fileDeletionListeners;
+	private Set<FileAddedListener> fileAddedListeners;
+	private Set<FileRemovedListener> fileRemovedListeners;
 	private Thread thread;
 	private Path pathToWatch = null;
 	private WatchService watcher = null;
@@ -28,11 +28,11 @@ public class FileWatcher {
 		void changeDetected(Path pathToFile);
 	}
 
-	public interface FileCreationListener {
+	public interface FileAddedListener {
 		void fileCreated(Path pathToFile);
 	}
 
-	public interface FileDeletionListener {
+	public interface FileRemovedListener {
 		void fileDeleted(Path pathToFile);
 	}
 
@@ -45,8 +45,8 @@ public class FileWatcher {
 	public FileWatcher(Set<String> filesNames) throws IOException {
 		setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
 		fileModifiedListeners = new HashSet<>();
-		fileCreationListeners = new HashSet<>();
-		fileDeletionListeners = new HashSet<>();
+		fileAddedListeners = new HashSet<>();
+		fileRemovedListeners = new HashSet<>();
 		startWatcher(filesNames);
 	}
 
@@ -62,21 +62,36 @@ public class FileWatcher {
 	public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
 		setDirectoryToWatch(directoryToWatch);
 		fileModifiedListeners = new HashSet<>();
-		fileCreationListeners = new HashSet<>();
-		fileDeletionListeners = new HashSet<>();
+		fileAddedListeners = new HashSet<>();
+		fileRemovedListeners = new HashSet<>();
 		startWatcher(filesNames);
+	}
+
+	/**
+	 * Only check for a directory. Watch if any file is added, updated or
+	 * deleted.
+	 * 
+	 * @param directoryToWatch
+	 * @throws IOException
+	 */
+	public FileWatcher(String directoryToWatch) throws IOException {
+		setDirectoryToWatch(directoryToWatch);
+		fileModifiedListeners = new HashSet<>();
+		fileAddedListeners = new HashSet<>();
+		fileRemovedListeners = new HashSet<>();
+		startWatcher(null);
 	}
 
 	public void addFileModifiedListener(FileModifiedListener listener) {
 		fileModifiedListeners.add(listener);
 	}
 
-	public void addFileCreationListener(FileCreationListener listener) {
-		fileCreationListeners.add(listener);
+	public void addFileAddedListener(FileAddedListener listener) {
+		fileAddedListeners.add(listener);
 	}
 
-	public void addFileDeletionListener(FileDeletionListener listener) {
-		fileDeletionListeners.add(listener);
+	public void addFileRemovedListener(FileRemovedListener listener) {
+		fileRemovedListeners.add(listener);
 	}
 
 	private Path getDirectoryToWatch() {
@@ -129,17 +144,18 @@ public class FileWatcher {
 					// We have a polled event, now we traverse it and receive
 					// all the states from it
 					for (WatchEvent<?> event : key.pollEvents()) {
-						if (filesNames != null && filesNames.contains(event.context().toString())) {
+						// Event on a directory or a set of files.
+						if (filesNames == null || (filesNames != null && filesNames.contains(event.context().toString()))) {
 							if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
 								for (FileModifiedListener fileModifiedListener : new HashSet<>(fileModifiedListeners)) {
 									fileModifiedListener.changeDetected(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-								for (FileCreationListener fileCreationListener : new HashSet<>(fileCreationListeners)) {
+								for (FileAddedListener fileCreationListener : new HashSet<>(fileAddedListeners)) {
 									fileCreationListener.fileCreated(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-								for (FileDeletionListener fileDeletionListener : new HashSet<>(fileDeletionListeners)) {
+								for (FileRemovedListener fileDeletionListener : new HashSet<>(fileRemovedListeners)) {
 									fileDeletionListener.fileDeleted(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(StandardWatchEventKinds.OVERFLOW)) {
@@ -163,7 +179,7 @@ public class FileWatcher {
 		}
 	}
 
-	private static Path combine(Path path1, Path path2) {
+	protected static Path combine(Path path1, Path path2) {
 		return Paths.get(path1.toString(), path2.toString());
 	}
 
