@@ -3,16 +3,18 @@
 	<test name="AbcdTest" enabled="true" preserve-order="true">
 		<groups>
 			<run>
-				<include name="resourceTests" />
-				<include name="configReader" />
-				<include name="imageTests" />
-				<include name="watcherTests" />
+				<exclude name="resourceTests" />
+				<exclude name="configReader" />
+				<exclude name="imageTests" />
+				<exclude name="fileWatcherTests" />
+				<include name="folderWatcherTests" />
 			</run>
 		</groups>
 		<classes>
 			<class name="com.biit.utils.ConfigReaderTests" />
 			<class name="com.biit.utils.ImageToolsTest" />
-			<class name="com.biit.utils.WatcherTests" />
+			<class name="com.biit.utils.file.watcher.FileWatcherTests" />
+			<class name="com.biit.utils.file.watcher.FolderWatcherTests" />
 			<class name="com.biit.utils.ResourceTests" />
 		</classes>
 	</test>

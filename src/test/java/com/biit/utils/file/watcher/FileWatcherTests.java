@@ -1,4 +1,4 @@
-package com.biit.utils;
+package com.biit.utils.file.watcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,13 +12,12 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
-import com.biit.utils.file.watcher.FileWatcher;
 import com.biit.utils.file.watcher.FileWatcher.FileCreationListener;
 import com.biit.utils.file.watcher.FileWatcher.FileDeletionListener;
 import com.biit.utils.file.watcher.FileWatcher.FileModifiedListener;
 
-@Test(groups = { "watcherTests" })
-public class WatcherTests {
+@Test(groups = { "fileWatcherTests" })
+public class FileWatcherTests {
 	private boolean fileModificationDetected = false;
 	private boolean fileCreationDetected = false;
 	private boolean fileDeletionDetected = false;
@@ -35,13 +34,9 @@ public class WatcherTests {
 		private static final long serialVersionUID = 4567824418370310105L;
 	}
 
-	@Test
-	public void getResourceFolderPath() {
-		// System.out.println(FileWatcher.class.getClassLoader().getResource("."));
-	}
-
 	@Test(expectedExceptions = { FileModified.class })
 	public void checkFileModificationListener() throws IOException, FileModified, InterruptedException {
+		fileModificationDetected = false;
 
 		// Create a file.
 		File file = File.createTempFile("watcherTest", ".tmp");
@@ -61,7 +56,7 @@ public class WatcherTests {
 
 		// Check change alert!
 		for (int i = 0; i < 10; i++) {
-			if (fileModificationDetected == true) {
+			if (fileModificationDetected) {
 				throw new FileModified();
 			}
 			Thread.sleep(100);
@@ -70,6 +65,8 @@ public class WatcherTests {
 
 	@Test(expectedExceptions = { FileCreated.class })
 	public void checkFileCreationListener() throws IOException, InterruptedException, FileCreated {
+		fileCreationDetected = true;
+
 		String folder = System.getProperty("java.io.tmpdir");
 		String fileName = "fileCreated.txt";
 
@@ -89,7 +86,7 @@ public class WatcherTests {
 
 		// Check change alert!
 		for (int i = 0; i < 10; i++) {
-			if (fileCreationDetected == true) {
+			if (fileCreationDetected) {
 				throw new FileCreated();
 			}
 			Thread.sleep(100);
@@ -98,6 +95,8 @@ public class WatcherTests {
 
 	@Test(expectedExceptions = { FileDeleted.class })
 	public void checkFileDeletionListener() throws IOException, InterruptedException, FileCreated, FileDeleted {
+		fileDeletionDetected = false;
+
 		String folder = System.getProperty("java.io.tmpdir");
 		String fileName = "fileDeleted.txt";
 
@@ -117,7 +116,7 @@ public class WatcherTests {
 
 		// Check change alert!
 		for (int i = 0; i < 10; i++) {
-			if (fileDeletionDetected == true) {
+			if (fileDeletionDetected) {
 				throw new FileDeleted();
 			}
 			Thread.sleep(100);

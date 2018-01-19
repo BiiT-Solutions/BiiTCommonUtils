@@ -1,13 +1,10 @@
 package com.biit.utils.file.watcher;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -39,6 +36,12 @@ public class FileWatcher {
 		void fileDeleted(Path pathToFile);
 	}
 
+	/**
+	 * Check some files in the resource directory.
+	 * 
+	 * @param filesNames
+	 * @throws IOException
+	 */
 	public FileWatcher(Set<String> filesNames) throws IOException {
 		setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
 		fileModifiedListeners = new HashSet<>();
@@ -47,6 +50,15 @@ public class FileWatcher {
 		startWatcher(filesNames);
 	}
 
+	/**
+	 * Check some files in a specific path
+	 * 
+	 * @param directoryToWatch
+	 *            directory where the files are stored.
+	 * @param filesNames
+	 *            the files to check
+	 * @throws IOException
+	 */
 	public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
 		setDirectoryToWatch(directoryToWatch);
 		fileModifiedListeners = new HashSet<>();
@@ -91,7 +103,8 @@ public class FileWatcher {
 			stopThread();
 			thread = new Thread(fileWatcher, "FileWatcher");
 			thread.start();
-			pathToWatch.register(getWatchService(), ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+			pathToWatch.register(getWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
+					StandardWatchEventKinds.ENTRY_DELETE);
 		} catch (IOException e) {
 			BiitCommonLogger.severe(this.getClass().getName(), e);
 		}
@@ -117,18 +130,20 @@ public class FileWatcher {
 					// all the states from it
 					for (WatchEvent<?> event : key.pollEvents()) {
 						if (filesNames != null && filesNames.contains(event.context().toString())) {
-							if (event.kind().equals(ENTRY_MODIFY)) {
+							if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
 								for (FileModifiedListener fileModifiedListener : new HashSet<>(fileModifiedListeners)) {
 									fileModifiedListener.changeDetected(combine(pathToWatch, (Path) event.context()));
 								}
-							} else if (event.kind().equals(ENTRY_CREATE)) {
+							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
 								for (FileCreationListener fileCreationListener : new HashSet<>(fileCreationListeners)) {
 									fileCreationListener.fileCreated(combine(pathToWatch, (Path) event.context()));
 								}
-							} else if (event.kind().equals(ENTRY_DELETE)) {
+							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
 								for (FileDeletionListener fileDeletionListener : new HashSet<>(fileDeletionListeners)) {
 									fileDeletionListener.fileDeleted(combine(pathToWatch, (Path) event.context()));
 								}
+							} else if (event.kind().equals(StandardWatchEventKinds.OVERFLOW)) {
+								BiitCommonLogger.errorMessageNotification(this.getClass(), "File Watcher events vents may have been lost or discarded.");
 							}
 						}
 					}
@@ -159,7 +174,7 @@ public class FileWatcher {
 				watcher.close();
 				stopThread();
 			} catch (IOException e) {
-				e.printStackTrace();
+				BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 			}
 		}
 		watcher = null;
