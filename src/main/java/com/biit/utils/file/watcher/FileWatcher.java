@@ -37,20 +37,6 @@ public class FileWatcher {
 	}
 
 	/**
-	 * Check some files in the resource directory.
-	 * 
-	 * @param filesNames
-	 * @throws IOException
-	 */
-	public FileWatcher(Set<String> filesNames) throws IOException {
-		setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
-		fileModifiedListeners = new HashSet<>();
-		fileAddedListeners = new HashSet<>();
-		fileRemovedListeners = new HashSet<>();
-		startWatcher(filesNames);
-	}
-
-	/**
 	 * Check some files in a specific path
 	 * 
 	 * @param directoryToWatch
@@ -60,11 +46,25 @@ public class FileWatcher {
 	 * @throws IOException
 	 */
 	public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
-		setDirectoryToWatch(directoryToWatch);
+		if (directoryToWatch != null) {
+			setDirectoryToWatch(directoryToWatch);
+		} else {
+			setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
+		}
 		fileModifiedListeners = new HashSet<>();
 		fileAddedListeners = new HashSet<>();
 		fileRemovedListeners = new HashSet<>();
 		startWatcher(filesNames);
+	}
+
+	/**
+	 * Check some files in the resource directory.
+	 * 
+	 * @param filesNames
+	 * @throws IOException
+	 */
+	public FileWatcher(Set<String> filesNames) throws IOException {
+		this(null, filesNames);
 	}
 
 	/**
@@ -75,11 +75,7 @@ public class FileWatcher {
 	 * @throws IOException
 	 */
 	public FileWatcher(String directoryToWatch) throws IOException {
-		setDirectoryToWatch(directoryToWatch);
-		fileModifiedListeners = new HashSet<>();
-		fileAddedListeners = new HashSet<>();
-		fileRemovedListeners = new HashSet<>();
-		startWatcher(null);
+		this(directoryToWatch, null);
 	}
 
 	public void addFileModifiedListener(FileModifiedListener listener) {
