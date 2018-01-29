@@ -220,4 +220,13 @@ public class FileReader {
 		BiitCommonLogger.severe(FileReader.class, "Resource folder not found '" + folderPath + "'.");
 		return new ArrayList<>();
 	}
+
+	public static List<File> getFiles(String folderPath) {
+		File folder = new File(folderPath);
+		return getFiles(folder);
+	}
+
+	public static List<File> getFiles(File folder) {
+		return new ArrayList<File>(Arrays.asList(folder.listFiles()));
+	}
 }
