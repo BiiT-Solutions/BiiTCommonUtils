@@ -33,6 +33,7 @@ public class FileReader {
 	}
 
 	public static File getResource(Class<?> classWithResources, String fileName) throws NullPointerException {
+		System.out.println("# " + fileName);
 		URL url = classWithResources.getClassLoader().getResource(fileName);
 		if (url != null) {
 			BiitCommonLogger.info(FileReader.class, "Resource to read '" + fileName + "' found at url '" + url.toString() + "'.");
@@ -46,6 +47,7 @@ public class FileReader {
 			// Apache load resource
 			if (!file.exists()) {
 				try {
+					System.out.println("#### " + url.toURI());
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
