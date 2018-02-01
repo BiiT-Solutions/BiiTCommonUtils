@@ -48,7 +48,6 @@ public class FileReader {
 				try {
 					file = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					e.printStackTrace();
 					BiitCommonLogger.errorMessageNotification(FileReader.class, "File not found or invalid '" + FileReader.convert2OsPath(url) + "'");
 				} catch (IllegalArgumentException e) {
 					// Resource inside a jar.
