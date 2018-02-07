@@ -1,7 +1,10 @@
 package com.biit.utils.file;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipFile;
 
 import javax.swing.ImageIcon;
 
@@ -232,5 +236,44 @@ public class FileReader {
 
 	public static List<File> getFiles(File folder) {
 		return new ArrayList<File>(Arrays.asList(folder.listFiles()));
+	}
+
+	/**
+	 * Determine whether a file is a JAR File.
+	 */
+	public static boolean isJarFile(String path) throws IOException {
+		return isJarFile(new File(path));
+	}
+
+	/**
+	 * Determine whether a file is a JAR File.
+	 */
+	public static boolean isJarFile(File file) throws IOException {
+		if (!isZipFile(file)) {
+			return false;
+		}
+		ZipFile zip = new ZipFile(file);
+		boolean manifest = zip.getEntry("META-INF/MANIFEST.MF") != null;
+		zip.close();
+		return manifest;
+	}
+
+	/**
+	 * Determine whether a file is a ZIP File.
+	 */
+	public static boolean isZipFile(File file) throws IOException {
+		if (file.isDirectory()) {
+			return false;
+		}
+		if (!file.canRead()) {
+			throw new IOException("Cannot read file " + file.getAbsolutePath());
+		}
+		if (file.length() < 4) {
+			return false;
+		}
+		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+		int test = in.readInt();
+		in.close();
+		return test == 0x504b0304;
 	}
 }
