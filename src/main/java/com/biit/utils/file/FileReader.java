@@ -49,37 +49,32 @@ public class FileReader {
 			file = new File(FileReader.convert2OsPath(url));
 			// Apache load resource
 			if (!file.exists()) {
-				try {
-					file = new File(url.toURI());
-				} catch (URISyntaxException e) {
-					BiitCommonLogger.errorMessageNotification(FileReader.class, "File not found or invalid '" + FileReader.convert2OsPath(url) + "'");
-				} catch (IllegalArgumentException e) {
-					// Resource inside a jar.
-					if (url.toString().contains(".jar!")) {
-						BiitCommonLogger.info(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
-						// Copy to a temp file and return it.
-						try {
-							InputStream inputStream = url.openStream();
-							if (inputStream != null) {
-								final File tempFile = File.createTempFile(fileName, "_jar");
-								// tempFile.deleteOnExit();
-								OutputStream os = new FileOutputStream(tempFile);
-								byte[] buffer = new byte[1024];
-								int bytesRead;
-								// read from is to buffer
-								while ((bytesRead = inputStream.read(buffer)) != -1) {
-									os.write(buffer, 0, bytesRead);
-								}
-								inputStream.close();
-								os.close();
-								return tempFile;
+				file = new File(url.getPath());
+				// Resource inside a jar.
+				if (url.toString().contains(".jar!")) {
+					BiitCommonLogger.info(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
+					// Copy to a temp file and return it.
+					try {
+						InputStream inputStream = url.openStream();
+						if (inputStream != null) {
+							final File tempFile = File.createTempFile(fileName, "_jar");
+							// tempFile.deleteOnExit();
+							OutputStream os = new FileOutputStream(tempFile);
+							byte[] buffer = new byte[1024];
+							int bytesRead;
+							// read from is to buffer
+							while ((bytesRead = inputStream.read(buffer)) != -1) {
+								os.write(buffer, 0, bytesRead);
 							}
-						} catch (Exception e1) {
-							BiitCommonLogger.severe(FileReader.class.getName(), e1);
+							inputStream.close();
+							os.close();
+							return tempFile;
 						}
+					} catch (Exception e1) {
+						BiitCommonLogger.severe(FileReader.class.getName(), e1);
 					}
-					BiitCommonLogger.severe(FileReader.class, "File not found '" + FileReader.convert2OsPath(url) + "'.");
 				}
+				BiitCommonLogger.severe(FileReader.class, "File not found '" + FileReader.convert2OsPath(url) + "'.");
 			}
 		} catch (NullPointerException npe) {
 			throw new NullPointerException("File '" + fileName + "' does not exist.");
