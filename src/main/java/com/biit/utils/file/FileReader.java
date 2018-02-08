@@ -10,10 +10,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -46,38 +48,51 @@ public class FileReader {
 		File file = null;
 		// Jetty load resource.
 		try {
+			String path = URLDecoder.decode(url.getPath(), "UTF-8");
 			file = new File(FileReader.convert2OsPath(url));
 			// Apache load resource
 			if (!file.exists()) {
-				file = new File(url.getPath());
+				file = new File(path);
 				// Resource inside a jar.
-				if (url.toString().contains(".jar!")) {
+				if (path.contains(".jar!")) {
 					BiitCommonLogger.info(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
 					// Copy to a temp file and return it.
 					try {
+						//InputStream inputStream = new FileInputStream(file);
 						InputStream inputStream = url.openStream();
-						if (inputStream != null) {
-							final File tempFile = File.createTempFile(fileName, "_jar");
-							// tempFile.deleteOnExit();
-							OutputStream os = new FileOutputStream(tempFile);
-							byte[] buffer = new byte[1024];
-							int bytesRead;
-							// read from is to buffer
-							while ((bytesRead = inputStream.read(buffer)) != -1) {
-								os.write(buffer, 0, bytesRead);
+						try {
+							if (inputStream != null) {
+								final File tempFile = File.createTempFile(fileName, "_jar");
+								// tempFile.deleteOnExit();
+								OutputStream os = new FileOutputStream(tempFile);
+								byte[] buffer = new byte[1024];
+								int bytesRead;
+								// read from is to buffer
+								while ((bytesRead = inputStream.read(buffer)) != -1) {
+									os.write(buffer, 0, bytesRead);
+								}
+								os.close();
+								return tempFile;
 							}
-							inputStream.close();
-							os.close();
-							return tempFile;
+						} finally {
+							try {
+								inputStream.close();
+							} catch (Exception e) {
+								// Do nothing.
+							}
 						}
-					} catch (Exception e1) {
+					} catch (FileNotFoundException e1) {
 						BiitCommonLogger.severe(FileReader.class.getName(), e1);
+					} catch (IOException e) {
+						BiitCommonLogger.severe(FileReader.class.getName(), e);
 					}
 				}
-				BiitCommonLogger.severe(FileReader.class, "File not found '" + FileReader.convert2OsPath(url) + "'.");
+				BiitCommonLogger.severe(FileReader.class, "File not found '" + path + "'.");
 			}
 		} catch (NullPointerException npe) {
 			throw new NullPointerException("File '" + fileName + "' does not exist.");
+		} catch (UnsupportedEncodingException ue) {
+			BiitCommonLogger.errorMessageNotification(FileReader.class, ue);
 		}
 		return file;
 	}
