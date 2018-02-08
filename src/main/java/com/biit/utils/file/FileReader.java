@@ -48,6 +48,7 @@ public class FileReader {
 		File file = null;
 		// Jetty load resource.
 		try {
+			//We use path to remove URI special codification that is not allowed for File. 
 			String path = URLDecoder.decode(url.getPath(), "UTF-8");
 			file = new File(FileReader.convert2OsPath(url));
 			// Apache load resource
@@ -58,7 +59,7 @@ public class FileReader {
 					BiitCommonLogger.info(FileReader.class, "Resource inside a jar. Copy to a temporal file.");
 					// Copy to a temp file and return it.
 					try {
-						//InputStream inputStream = new FileInputStream(file);
+						//Url has the absolute path with the correct codification for an InputStream. 
 						InputStream inputStream = url.openStream();
 						try {
 							if (inputStream != null) {
