@@ -116,6 +116,17 @@ public class FileWatcher {
 			thread.start();
 			pathToWatch.register(getWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
 					StandardWatchEventKinds.ENTRY_DELETE);
+			// Ensure to close the watcher.
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					try {
+						BiitCommonLogger.info(this.getClass(), "Closing filewatcher for '" + directoryToWatch + "'.");
+						watcher.close();
+					} catch (Exception e) {
+						// Do nothing, program ended.
+					}
+				}
+			});
 		} catch (IOException e) {
 			BiitCommonLogger.severe(this.getClass().getName(), e);
 		}
