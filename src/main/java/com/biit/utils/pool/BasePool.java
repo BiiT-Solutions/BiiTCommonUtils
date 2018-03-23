@@ -99,7 +99,7 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 							if (isDirty(elementsById.get(storedObjectId))) {
 								BiitPoolLogger.debug(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
-							} else if (Objects.equals(elementsTime.get(storedObjectId), element)) {
+							} else if (Objects.equals(elementsById.get(storedObjectId), element)) {
 								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " store hit for "
 										+ element);
 								return storedObjectId;
