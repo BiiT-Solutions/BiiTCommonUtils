@@ -20,10 +20,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 
 	@Override
 	public void addElement(Type element) {
-		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element.getPoolId() + "'.");
+		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element.getUniqueId() + "'.");
 		if (getExpirationTime() > 0) {
-			elementsTime.put(element.getPoolId(), System.currentTimeMillis());
-			elementsById.put(element.getPoolId(), element);
+			elementsTime.put(element.getUniqueId(), System.currentTimeMillis());
+			elementsById.put(element.getUniqueId(), element);
 		}
 	}
 
