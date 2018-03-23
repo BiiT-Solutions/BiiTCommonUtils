@@ -1,0 +1,26 @@
+package com.biit.utils.pool;
+
+import java.util.Map;
+import java.util.Set;
+
+public interface IBasePool<ElementId, Type> {
+
+	void addElement(Type element, ElementId key);
+
+	void reset();
+
+	long getExpirationTime();
+
+	Set<Type> getAllPooledElements();
+
+	Map<ElementId, Long> getElementsTime();
+
+	Map<ElementId, Type> getElementsById();
+
+	void removeElement(ElementId elementId);
+
+	boolean isDirty(Type element);
+
+	Type getElement(ElementId elementId);
+
+}
