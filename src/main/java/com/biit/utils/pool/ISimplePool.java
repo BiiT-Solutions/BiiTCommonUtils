@@ -23,4 +23,6 @@ public interface ISimplePool<ElementId, Type extends PoolElement<ElementId>> {
 
 	long getExpirationTime();
 
+	void addElement(Type element, ElementId key);
+
 }
