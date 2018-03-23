@@ -23,4 +23,6 @@ public interface IBasePool<ElementId, Type> {
 
 	Type getElement(ElementId elementId);
 
+	ElementId getKey(Type element);
+
 }
