@@ -37,9 +37,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	/**
 	 * Gets all previously stored elements of a user in a site.
 	 * 
-	 * @param siteId
-	 * @param userId
-	 * @return
+	 * @param elementId element key for the pool. 
+	 * @return the element that has the selected key.
 	 */
 	@Override
 	public synchronized Type getElement(ElementId elementId) {
@@ -143,8 +142,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	/**
 	 * An element is dirty if cannot be used by the pool any more.
 	 * 
-	 * @param elementId
-	 * @return
+	 * @param element element to check
+	 * @return if it is dirty or not.
 	 */
 	@Override
 	public abstract boolean isDirty(Type element);

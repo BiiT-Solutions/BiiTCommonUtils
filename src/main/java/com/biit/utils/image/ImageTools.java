@@ -36,7 +36,7 @@ public class ImageTools {
 	/**
 	 * Loads an image from a specific path
 	 * 
-	 * @param path
+	 * @param path the path of the image
 	 * @return
 	 * @throws IOException
 	 */
