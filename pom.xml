@@ -11,7 +11,7 @@
         <distributionManagement>
                 <repository>
                         <id>central</id>
-                        <name>biit-releases</name>
+                        <name>libs-releases</name>
                         <url>https://dev.biit-solutions.com/artifactory/libs-release</url>
                 </repository>
                 <snapshotRepository>
