@@ -8,18 +8,19 @@
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
-	<distributionManagement>
-		<repository>
-			<id>central</id>
-			<name>biit-releases</name>
-			<url>https://git.biit-solutions.com:8443/artifactory/ext-release-local</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>libs-snapshot</name>
-			<url>https://git.biit-solutions.com:8443/artifactory/libs-snapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
+        <distributionManagement>
+                <repository>
+                        <id>central</id>
+                        <name>biit-releases</name>
+                        <url>https://dev.biit-solutions.com/artifactory/libs-release</url>
+                </repository>
+                <snapshotRepository>
+                        <id>snapshots</id>
+                        <name>libs-snapshot</name>
+                        <url>https://dev.biit-solutions.com/artifactory/libs-snapshot</url>
+                </snapshotRepository>
+        </distributionManagement>
+
 
 	<scm>
 		<connection>scm:git:git.biit-solutions.com:BiiTCommonUtils.git</connection>
