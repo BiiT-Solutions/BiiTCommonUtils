@@ -149,12 +149,13 @@ public class FileReader {
 	}
 
 	private static List<String> readFileAsList(File file) throws FileNotFoundException {
-		Scanner s = new Scanner(file);
+		Scanner scanner = new Scanner(file);
+		scanner.useDelimiter("\\A");
 		List<String> lines = new ArrayList<String>();
-		while (s.hasNext()) {
-			lines.add(s.next());
+		while (scanner.hasNext()) {
+			lines.add(scanner.next());
 		}
-		s.close();
+		scanner.close();
 		return lines;
 	}
 
