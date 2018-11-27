@@ -1,4 +1,4 @@
-package com.biit.utils.Interfaces;
+package com.biit.utils.interfaces;
 
 public interface Identifiable {
 	String getId();
