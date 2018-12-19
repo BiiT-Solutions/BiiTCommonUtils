@@ -185,6 +185,10 @@ public class ConfigurationReader {
 		}
 	}
 
+	public Map<String, String> getAllProperties(){
+		return this.propertiesFinalValue;
+	}
+
 	public List<IPropertiesSource> getPropertiesSources() {
 		return propertiesSources;
 	}

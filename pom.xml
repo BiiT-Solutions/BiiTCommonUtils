@@ -4,7 +4,7 @@
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4.159-SNAPSHOT</version>
+	<version>0.4.167-SNAPSHOT</version>
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
@@ -81,6 +81,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire.version}</version>
 				<configuration>
+					<!-- DUE TO BUG IN SUREFIRE
+					https://twitter.com/fheremans/status/1057214797417271296
+					https://github.com/GoogleCloudPlatform/cloud-opensource-java/pull/201
+					-->
+					<useSystemClassLoader>false</useSystemClassLoader>
 					<useFile>false</useFile>
 					<trimStackTrace>false</trimStackTrace>
 					<suiteXmlFiles>
