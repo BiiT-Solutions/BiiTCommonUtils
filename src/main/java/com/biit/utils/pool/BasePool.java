@@ -1,11 +1,11 @@
 package com.biit.utils.pool;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.biit.logger.BiitPoolLogger;
 
@@ -21,12 +21,12 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	@Override
 	public void reset() {
 		BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
-		elementsTime = new HashMap<ElementId, Long>();
-		elementsById = new HashMap<ElementId, Type>();
+		elementsTime = new ConcurrentHashMap<ElementId, Long>();
+		elementsById = new ConcurrentHashMap<ElementId, Type>();
 	}
 
 	@Override
-	public void addElement(Type element, ElementId key) {
+	public synchronized void addElement(Type element, ElementId key) {
 		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
 		if (getExpirationTime() > 0) {
 			elementsTime.put(key, System.currentTimeMillis());
@@ -37,7 +37,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	/**
 	 * Gets all previously stored elements of a user in a site.
 	 * 
-	 * @param elementId element key for the pool. 
+	 * @param elementId
+	 *            element key for the pool.
 	 * @return the element that has the selected key.
 	 */
 	@Override
@@ -47,8 +48,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
 				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				HashMap<ElementId, Long> elementsByTimeChecked = new HashMap<>(elementsTime);
-				HashMap<ElementId, Type> elementsByIdChecked = new HashMap<>(elementsById);
+				Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
+				Map<ElementId, Type> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
 				Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
 				while (elementByTime.hasNext()) {
 					storedObjectId = elementByTime.next();
@@ -65,8 +66,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 								BiitPoolLogger.debug(this.getClass(), "Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName() + " store hit for "
-										+ elementId);
+								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
+										+ " store hit for " + elementId);
 								return elementsByIdChecked.get(storedObjectId);
 							}
 						}
@@ -85,7 +86,7 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
 				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				Iterator<ElementId> groupsIds = new HashMap<ElementId, Long>(elementsTime).keySet().iterator();
+				Iterator<ElementId> groupsIds = new ConcurrentHashMap<ElementId, Long>(elementsTime).keySet().iterator();
 				while (groupsIds.hasNext()) {
 					storedObjectId = groupsIds.next();
 					if (elementsTime.get(storedObjectId) != null && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
@@ -133,7 +134,7 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	}
 
 	@Override
-	public void removeElement(ElementId elementId) {
+	public synchronized void removeElement(ElementId elementId) {
 		if (elementId != null) {
 			BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
 			elementsTime.remove(elementId);
@@ -144,7 +145,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	/**
 	 * An element is dirty if cannot be used by the pool any more.
 	 * 
-	 * @param element element to check
+	 * @param element
+	 *            element to check
 	 * @return if it is dirty or not.
 	 */
 	@Override
