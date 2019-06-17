@@ -1,6 +1,9 @@
 package com.biit.utils.pool;
 
-public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> extends BasePool<ElementId, Type> implements ISimplePool<ElementId, Type> {
+import java.util.Collection;
+
+public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>> extends BasePool<ElementId, Type>
+		implements ISimplePool<ElementId, Type> {
 
 	public SimplePool() {
 		reset();
@@ -11,4 +14,10 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 		addElement(element, element.getUniqueId());
 	}
 
+	@Override
+	public void addElements(Collection<Type> elements) {
+		for (Type element : elements) {
+			addElement(element);
+		}
+	}
 }

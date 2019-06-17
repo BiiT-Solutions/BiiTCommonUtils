@@ -1,0 +1,27 @@
+package com.biit.utils.pool;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+public interface ICollectionPool<ElementId, Type> {
+
+	void reset();
+
+	Collection<Type> getElement(ElementId elementId);
+
+	long getExpirationTime();
+
+	Map<ElementId, Collection<Type>> getElementsById();
+
+	Set<Collection<Type>> getAllPooledElements();
+
+	void removeElement(ElementId elementId);
+
+	boolean isDirty(Collection<Type> element);
+
+	Map<ElementId, Long> getElementsTime();
+
+	void addElement(Collection<Type> element, ElementId key);
+
+}

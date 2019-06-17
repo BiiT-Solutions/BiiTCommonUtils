@@ -134,12 +134,13 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	}
 
 	@Override
-	public synchronized void removeElement(ElementId elementId) {
+	public synchronized Type removeElement(ElementId elementId) {
 		if (elementId != null) {
 			BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
 			elementsTime.remove(elementId);
-			elementsById.remove(elementId);
+			return elementsById.remove(elementId);
 		}
+		return null;
 	}
 
 	/**
