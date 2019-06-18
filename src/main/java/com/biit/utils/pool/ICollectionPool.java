@@ -16,12 +16,14 @@ public interface ICollectionPool<ElementId, Type> {
 
 	Set<Collection<Type>> getAllPooledElements();
 
-	void removeElement(ElementId elementId);
+	Collection<Type> removeElement(ElementId elementId);
 
 	boolean isDirty(Collection<Type> element);
 
 	Map<ElementId, Long> getElementsTime();
 
 	void addElement(Collection<Type> element, ElementId key);
+
+	boolean removeElement(ElementId elementId, Type element);
 
 }

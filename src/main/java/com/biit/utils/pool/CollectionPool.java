@@ -104,12 +104,22 @@ public abstract class CollectionPool<ElementId, Type> implements ICollectionPool
 	}
 
 	@Override
-	public synchronized void removeElement(ElementId elementId) {
+	public synchronized Collection<Type> removeElement(ElementId elementId) {
 		if (elementId != null) {
 			BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
 			elementsTime.remove(elementId);
-			elementsById.remove(elementId);
+			return elementsById.remove(elementId);
 		}
+		return null;
+	}
+
+	@Override
+	public synchronized boolean removeElement(ElementId elementId, Type element) {
+		if (elementId != null && element != null) {
+			BiitPoolLogger.debug(this.getClass(), "Removing element '" + element + "' of '" + elementId + "'.");
+			return elementsById.get(elementId).remove(element);
+		}
+		return false;
 	}
 
 	/**
