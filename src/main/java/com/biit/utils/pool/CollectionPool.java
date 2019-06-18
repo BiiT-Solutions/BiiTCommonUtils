@@ -27,8 +27,32 @@ public abstract class CollectionPool<ElementId, Type> implements ICollectionPool
 	}
 
 	@Override
-	public synchronized void addElement(Collection<Type> element, ElementId key) {
-		BiitPoolLogger.debug(this.getClass(), "Adding collection '" + element + "' with key '" + key + "'.");
+	public synchronized void addElement(Type element, ElementId key) {
+		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
+		if (getExpirationTime() > 0) {
+			elementsTime.put(key, System.currentTimeMillis());
+			if (elementsById.get(key) == null) {
+				elementsById.put(key, new HashSet<Type>());
+			}
+			elementsById.get(key).add(element);
+		}
+	}
+
+	@Override
+	public synchronized void addElements(Collection<Type> elements, ElementId key) {
+		BiitPoolLogger.debug(this.getClass(), "Adding collection '" + elements + "' with key '" + key + "'.");
+		if (getExpirationTime() > 0) {
+			elementsTime.put(key, System.currentTimeMillis());
+			if (elementsById.get(key) == null) {
+				elementsById.put(key, new HashSet<Type>());
+			}
+			elementsById.get(key).addAll(elements);
+		}
+	}
+
+	@Override
+	public synchronized void setElements(Collection<Type> element, ElementId key) {
+		BiitPoolLogger.debug(this.getClass(), "Setting collection '" + element + "' with key '" + key + "'.");
 		if (getExpirationTime() > 0) {
 			elementsTime.put(key, System.currentTimeMillis());
 			elementsById.put(key, element);

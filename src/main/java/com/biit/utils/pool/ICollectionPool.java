@@ -22,8 +22,12 @@ public interface ICollectionPool<ElementId, Type> {
 
 	Map<ElementId, Long> getElementsTime();
 
-	void addElement(Collection<Type> element, ElementId key);
+	void addElements(Collection<Type> element, ElementId key);
 
 	boolean removeElement(ElementId elementId, Type element);
+
+	void addElement(Type element, ElementId key);
+
+	void setElements(Collection<Type> element, ElementId key);
 
 }

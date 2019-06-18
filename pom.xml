@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
@@ -8,18 +9,18 @@
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
-        <distributionManagement>
-                <repository>
-                        <id>central</id>
-                        <name>libs-releases</name>
-                        <url>https://dev.biit-solutions.com/artifactory/libs-release</url>
-                </repository>
-                <snapshotRepository>
-                        <id>snapshots</id>
-                        <name>libs-snapshot</name>
-                        <url>https://dev.biit-solutions.com/artifactory/libs-snapshot</url>
-                </snapshotRepository>
-        </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>libs-releases</name>
+			<url>https://dev.biit-solutions.com/artifactory/libs-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>libs-snapshot</name>
+			<url>https://dev.biit-solutions.com/artifactory/libs-snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 
 	<scm>
@@ -27,7 +28,7 @@
 		<developerConnection>scm:git:git.biit-solutions.com:BiiTCommonUtils.git</developerConnection>
 		<tag>common-utils</tag>
 	</scm>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.jdk.version>1.7</java.jdk.version>
@@ -64,7 +65,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -81,10 +82,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire.version}</version>
 				<configuration>
-					<!-- DUE TO BUG IN SUREFIRE
-					https://twitter.com/fheremans/status/1057214797417271296
-					https://github.com/GoogleCloudPlatform/cloud-opensource-java/pull/201
-					-->
+					<!-- DUE TO BUG IN SUREFIRE https://twitter.com/fheremans/status/1057214797417271296 
+						https://github.com/GoogleCloudPlatform/cloud-opensource-java/pull/201 -->
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<useFile>false</useFile>
 					<trimStackTrace>false</trimStackTrace>
@@ -117,6 +116,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>
 
