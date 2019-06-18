@@ -1,6 +1,5 @@
 package com.biit.utils.pool;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +24,5 @@ public interface IBasePool<ElementId, Type> {
 	Type getElement(ElementId elementId);
 
 	ElementId getKey(Type element);
-
-	void addElements(Collection<Type> elements);
 
 }
