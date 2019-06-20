@@ -32,8 +32,9 @@ public class TextSourceFile extends SourceFile<String> {
 				// return PropertiesFile.load(getFilePath(), getFileName());
 				return readFile(getFilePath() + File.separator + getFileName(), StandardCharsets.UTF_8);
 			}
-		} catch (NoSuchFileException Nsfe) {
-			BiitCommonLogger.warning(this.getClass(), "File not found '" + getFilePath() + File.separator + getFileName() + "'.");
+		} catch (NoSuchFileException nsfe) {
+			BiitCommonLogger.warning(this.getClass(), "File not found '" + getFilePath() + File.separator
+					+ getFileName() + "'.");
 		} catch (IOException e) {
 			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
 		} catch (NullPointerException e) {
