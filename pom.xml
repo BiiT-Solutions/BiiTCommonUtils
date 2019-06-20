@@ -32,7 +32,7 @@
 		<main.basedir>${project.basedir}</main.basedir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.jdk.version>1.8</java.jdk.version>
-		<plugin.compiler.version>2.3.2</plugin.compiler.version>
+		<plugin.compiler.version>3.8.1</plugin.compiler.version>
 		<plugin.exec.version>1.2.1</plugin.exec.version>
 		<org.testng.version>6.8</org.testng.version>
 		<maven-surefire.version>2.17</maven-surefire.version>
