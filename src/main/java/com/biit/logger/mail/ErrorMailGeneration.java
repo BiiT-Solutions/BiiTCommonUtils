@@ -10,7 +10,7 @@ import java.util.Date;
  * 
  */
 public class ErrorMailGeneration {
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	private static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 	private static String localhostName;
 
 	public static String getSubject() {
@@ -18,7 +18,7 @@ public class ErrorMailGeneration {
 	}
 
 	public static String getHtmlMailContent(String className, String errorStackTrace) {
-		String htmlMailContent = new String();
+		String htmlMailContent = "";
 		htmlMailContent += generateHtmlMailTitle();
 		htmlMailContent += generateMailBody(className, errorStackTrace);
 
@@ -40,17 +40,19 @@ public class ErrorMailGeneration {
 	}
 
 	private static String getLocalHostName() {
-		if (localhostName == null)
+		if (localhostName == null) {
 			try {
 				localhostName = java.net.InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
 				localhostName = "unknown";
 			}
+		}
 		return localhostName;
 	}
 
 	private static String getDate() {
-		Date date = new Date();
+		final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		final Date date = new Date();
 		return dateFormat.format(date);
 	}
 }

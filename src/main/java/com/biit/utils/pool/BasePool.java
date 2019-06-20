@@ -3,6 +3,7 @@ package com.biit.utils.pool;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +20,7 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	}
 
 	@Override
-	public void reset() {
+	public synchronized void reset() {
 		BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
 		elementsTime = new ConcurrentHashMap<ElementId, Long>();
 		elementsById = new ConcurrentHashMap<ElementId, Type>();
@@ -44,18 +45,21 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	@Override
 	public synchronized Type getElement(ElementId elementId) {
 		if (elementId != null && getExpirationTime() > 0) {
-			long now = System.currentTimeMillis();
+			final long now = System.currentTimeMillis();
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
 				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
-				Map<ElementId, Type> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
-				Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
-				while (elementByTime.hasNext()) {
+				final Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
+				final Map<ElementId, Type> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
+				final Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
+
+				for (final Entry<ElementId, Long> elementsByTimeEntry : elementsByTimeChecked.entrySet()) {
 					storedObjectId = elementByTime.next();
-					if (elementsByTimeChecked.get(storedObjectId) != null && (now - elementsByTimeChecked.get(storedObjectId)) > getExpirationTime()) {
-						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeChecked.get(storedObjectId) + "' has expired (elapsed time: '"
-								+ (now - elementsByTimeChecked.get(storedObjectId)) + "' > '" + getExpirationTime() + "'.)");
+					if (elementsByTimeEntry.getValue() != null
+							&& (now - elementsByTimeEntry.getValue()) > getExpirationTime()) {
+						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeEntry.getValue()
+								+ "' has expired (elapsed time: '" + (now - elementsByTimeEntry.getValue()) + "' > '"
+								+ getExpirationTime() + "'.)");
 						// object has expired
 						removeElement(storedObjectId);
 						storedObjectId = null;
@@ -63,10 +67,13 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 						if (elementsByIdChecked.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsByIdChecked.get(storedObjectId))) {
-								BiitPoolLogger.debug(this.getClass(), "Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName() + " is dirty! ");
+								BiitPoolLogger.debug(this.getClass(),
+										"Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
+												+ " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
+								BiitPoolLogger.info(this.getClass(), "Cache: "
+										+ elementsByIdChecked.get(storedObjectId).getClass().getName()
 										+ " store hit for " + elementId);
 								return elementsByIdChecked.get(storedObjectId);
 							}
@@ -82,16 +89,19 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 	@Override
 	public synchronized ElementId getKey(Type element) {
 		if (element != null && getExpirationTime() > 0) {
-			long now = System.currentTimeMillis();
+			final long now = System.currentTimeMillis();
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
 				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				Iterator<ElementId> groupsIds = new ConcurrentHashMap<ElementId, Long>(elementsTime).keySet().iterator();
+				final Iterator<ElementId> groupsIds = new ConcurrentHashMap<ElementId, Long>(elementsTime).keySet()
+						.iterator();
 				while (groupsIds.hasNext()) {
 					storedObjectId = groupsIds.next();
-					if (elementsTime.get(storedObjectId) != null && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
-						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId) + "' has expired (elapsed time: '"
-								+ (now - elementsTime.get(storedObjectId)) + "' > '" + getExpirationTime() + "'.)");
+					if (elementsTime.get(storedObjectId) != null
+							&& (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
+						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId)
+								+ "' has expired (elapsed time: '" + (now - elementsTime.get(storedObjectId)) + "' > '"
+								+ getExpirationTime() + "'.)");
 						// object has expired
 						removeElement(storedObjectId);
 						storedObjectId = null;
@@ -99,10 +109,12 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
 						if (elementsById.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsById.get(storedObjectId))) {
-								BiitPoolLogger.debug(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
+								BiitPoolLogger.debug(this.getClass(), "Cache: "
+										+ elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(elementsById.get(storedObjectId), element)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: " + elementsById.get(storedObjectId).getClass().getName() + " store hit for "
+								BiitPoolLogger.info(this.getClass(), "Cache: "
+										+ elementsById.get(storedObjectId).getClass().getName() + " store hit for "
 										+ element);
 								return storedObjectId;
 							}

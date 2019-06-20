@@ -18,12 +18,12 @@ public class PropertiesFile {
 	}
 
 	public static Properties load(String path, String fileName) throws IOException {
-		File file = new File(path, fileName);
+		final File file = new File(path, fileName);
 		return load(file);
 	}
 
 	public static Properties load(String fileName) throws IOException {
-		File file = FileReader.getResource(fileName);
+		final File file = FileReader.getResource(fileName);
 		return load(file);
 	}
 
@@ -39,13 +39,13 @@ public class PropertiesFile {
 		if (url == null) {
 			throw new IllegalArgumentException("Url is not set.");
 		} else {
-			URLConnection connection = url.openConnection();
+			final URLConnection connection = url.openConnection();
 			return load(connection.getInputStream());
 		}
 	}
 
 	public static Properties load(InputStream inputStream) throws IOException {
-		Properties properties = new Properties();
+		final Properties properties = new Properties();
 		if (inputStream == null) {
 			throw new IllegalArgumentException("InputStream is not set.");
 		}
@@ -58,14 +58,15 @@ public class PropertiesFile {
 		return properties;
 	}
 
-	public static void store(Properties properties, String fileName) throws IOException {
+	public static boolean store(Properties properties, String fileName) throws IOException {
 		if (fileName != null) {
-			File file = new File(fileName);
+			final File file = new File(fileName);
 			if (!file.exists()) {
-				file.createNewFile();
+				return file.createNewFile();
 			}
 			store(properties, file);
 		}
+		return false;
 	}
 
 	public static void store(Properties properties, File file) throws IOException {
@@ -76,7 +77,7 @@ public class PropertiesFile {
 		if (url == null) {
 			throw new IllegalArgumentException("Url is not set.");
 		} else {
-			URLConnection connection = url.openConnection();
+			final URLConnection connection = url.openConnection();
 			connection.setDoOutput(true);
 			store(properties, connection.getOutputStream());
 		}

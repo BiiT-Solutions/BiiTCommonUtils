@@ -4,7 +4,7 @@ public class DoubleValueConverter implements IValueConverter<Double> {
 
 	@Override
 	public Double convertFromString(String value) {
-		if(value!=null){
+		if (value != null) {
 			return Double.parseDouble(value);
 		}
 		return null;
@@ -17,5 +17,4 @@ public class DoubleValueConverter implements IValueConverter<Double> {
 		}
 		return null;
 	}
-
 }

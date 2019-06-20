@@ -32,11 +32,13 @@ import com.biit.utils.file.FileReader;
 import com.biit.utils.image.exceptions.InvalidRemoteImageDefinition;
 
 public class ImageTools {
+	private static final int MIN_SIZE = 200;
 
 	/**
 	 * Loads an image from a specific path
 	 * 
-	 * @param path the path of the image
+	 * @param path
+	 *            the path of the image
 	 * @return
 	 * @throws IOException
 	 */
@@ -45,15 +47,15 @@ public class ImageTools {
 	}
 
 	public static byte[] loadImageFromAbsolutePath(String pathToImage) throws IOException {
-		Path path = Paths.get(pathToImage);
-		byte[] data = Files.readAllBytes(path);
+		final Path path = Paths.get(pathToImage);
+		final byte[] data = Files.readAllBytes(path);
 		return data;
 	}
 
 	public static byte[] loadImageFromResource(String resourceName) throws IOException {
-		URL url = FileReader.class.getClassLoader().getResource(resourceName);
-		Path path = Paths.get(FileReader.convert2OsPath(url));
-		byte[] data = Files.readAllBytes(path);
+		final URL url = FileReader.class.getClassLoader().getResource(resourceName);
+		final Path path = Paths.get(FileReader.convert2OsPath(url));
+		final byte[] data = Files.readAllBytes(path);
 		return data;
 	}
 
@@ -69,10 +71,10 @@ public class ImageTools {
 	 * @throws IOException
 	 */
 	public static byte[] getBytes(BufferedImage image, String format) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(image, format, baos);
 		baos.flush();
-		byte[] imageInByte = baos.toByteArray();
+		final byte[] imageInByte = baos.toByteArray();
 		baos.close();
 		return imageInByte;
 	}
@@ -85,8 +87,8 @@ public class ImageTools {
 	 * @throws IOException
 	 */
 	public static BufferedImage getImage(byte[] imageInBytes) throws IOException {
-		InputStream in = new ByteArrayInputStream(imageInBytes);
-		BufferedImage bufferedImage = ImageIO.read(in);
+		final InputStream in = new ByteArrayInputStream(imageInBytes);
+		final BufferedImage bufferedImage = ImageIO.read(in);
 		return bufferedImage;
 	}
 
@@ -151,8 +153,8 @@ public class ImageTools {
 	 */
 	public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh,
 			boolean preserveAlpha) {
-		BufferedImage resizedImage;
-		int finalHeigh, finalWidth;
+		final BufferedImage resizedImage;
+		final int finalHeigh, finalWidth;
 		if (((double) originalImage.getHeight()) / scaledHeigh < ((double) originalImage.getWidth()) / scaledWidth) {
 			finalWidth = scaledWidth;
 			finalHeigh = (int) (originalImage.getHeight() * scaledWidth / (double) originalImage.getWidth());
@@ -160,9 +162,9 @@ public class ImageTools {
 			finalWidth = (int) (originalImage.getWidth() * scaledHeigh / (double) originalImage.getHeight());
 			finalHeigh = scaledHeigh;
 		}
-		int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+		final int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
 		resizedImage = new BufferedImage(finalWidth, finalHeigh, imageType);
-		Graphics2D graphic = resizedImage.createGraphics();
+		final Graphics2D graphic = resizedImage.createGraphics();
 		graphic.setComposite(AlphaComposite.Src);
 		graphic.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		graphic.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -186,11 +188,11 @@ public class ImageTools {
 		}
 
 		// Create a buffered image with transparency
-		BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null),
+		final BufferedImage bufferedimage = new BufferedImage(image.getWidth(null), image.getHeight(null),
 				BufferedImage.TYPE_INT_ARGB);
 
 		// Draw the image on to the buffered image
-		Graphics2D graphic = bufferedimage.createGraphics();
+		final Graphics2D graphic = bufferedimage.createGraphics();
 		graphic.drawImage(image, 0, 0, null);
 		graphic.dispose();
 
@@ -205,14 +207,13 @@ public class ImageTools {
 	 */
 
 	public static byte[] createDefaultImage(int imageWidth, int imageHeight, String text) {
-		int MIN_SIZE = 200;
 		ByteArrayOutputStream imagebuffer = null;
 		// No data (because there is not any flow).
 		// HEIGHT discount the top margin of panel.
-		int width = imageWidth < MIN_SIZE ? MIN_SIZE : imageWidth;
-		int height = imageHeight < MIN_SIZE ? MIN_SIZE : imageHeight;
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics drawable = image.getGraphics();
+		final int width = imageWidth < MIN_SIZE ? MIN_SIZE : imageWidth;
+		final int height = imageHeight < MIN_SIZE ? MIN_SIZE : imageHeight;
+		final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		final Graphics drawable = image.getGraphics();
 		drawable.setColor(Color.WHITE);
 		drawable.fillRect(0, 0, (int) width, height);
 		drawable.setColor(Color.black);
@@ -243,7 +244,7 @@ public class ImageTools {
 	 */
 	public static byte[] getImageFromUrl(String url) throws InvalidRemoteImageDefinition {
 		try {
-			URL urlPath = new URL(url);
+			final URL urlPath = new URL(url);
 			return getImageFromUrl(urlPath);
 		} catch (IOException e) {
 			BiitCommonLogger.severe(ImageTools.class.getName(), e);
@@ -266,15 +267,15 @@ public class ImageTools {
 			return null;
 		}
 		// Read the image ...
-		InputStream inputStream;
+		final InputStream inputStream;
 
 		// Configure secure connections.
 		if (url.toString().startsWith("https")) {
 			try {
 				// Ignore untrusted certificates in SSL.
-				SSLContext sslContext = SSLContext.getInstance("SSL");
-				sslContext.init(new KeyManager[0], new TrustManager[] { new DefaultTrustManager() },
-						new SecureRandom());
+				final SSLContext sslContext = SSLContext.getInstance("SSL");
+				sslContext
+						.init(new KeyManager[0], new TrustManager[] { new DefaultTrustManager() }, new SecureRandom());
 				SSLContext.setDefault(sslContext);
 				HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 			} catch (Exception e) {
@@ -284,8 +285,8 @@ public class ImageTools {
 		// Obtain the image.
 		inputStream = url.openStream();
 
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		final byte[] buffer = new byte[1024];
 
 		int n = 0;
 		while (-1 != (n = inputStream.read(buffer))) {
@@ -293,7 +294,7 @@ public class ImageTools {
 		}
 		inputStream.close();
 
-		byte[] data = output.toByteArray();
+		final byte[] data = output.toByteArray();
 		output.close();
 
 		return data;

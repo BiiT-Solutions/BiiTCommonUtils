@@ -26,5 +26,4 @@ public class BooleanValueConverter implements IValueConverter<Boolean> {
 		}
 		return null;
 	}
-
 }

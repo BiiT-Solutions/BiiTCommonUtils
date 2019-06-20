@@ -40,7 +40,7 @@ public abstract class SourceFile<FileType> implements ISourceFile<FileType> {
 	}
 
 	public static String readEnvironmentVariable(String environmentVariable) {
-		Map<String, String> env = System.getenv();
+		final Map<String, String> env = System.getenv();
 		return env.get(environmentVariable);
 	}
 }

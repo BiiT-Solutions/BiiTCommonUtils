@@ -15,44 +15,48 @@ import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 public abstract class BiitLogger {
 
 	/**
-	 * Shows not critical errors. I.e. Email address not found, permissions not allowed for this user, ...
+	 * Shows not critical errors. I.e. Email address not found, permissions not
+	 * allowed for this user, ...
 	 * 
 	 * @param message
 	 */
 	public static void warning(Logger logger, String message) {
 		logger.warn(message);
 	}
-	
+
 	/**
-	 * Shows not critical errors. I.e. Email address not found, permissions not allowed for this user, ...
+	 * Shows not critical errors. I.e. Email address not found, permissions not
+	 * allowed for this user, ...
 	 * 
 	 * @param message
 	 */
 	public static void warning(Logger logger, String className, String message) {
-		logger.warn(className+": "+message);
+		logger.warn(className + ": " + message);
 	}
-	
+
 	/**
-	 * Events that have business meaning (i.e. creating category, deleting form, ...). To follow user actions.
+	 * Events that have business meaning (i.e. creating category, deleting form,
+	 * ...). To follow user actions.
 	 * 
 	 * @param message
 	 */
-	public static void info(Logger logger, String message){
+	public static void info(Logger logger, String message) {
 		logger.info(message);
 	}
-	
+
 	/**
-	 * Events that have business meaning (i.e. creating category, deleting form, ...). To follow user actions.
+	 * Events that have business meaning (i.e. creating category, deleting form,
+	 * ...). To follow user actions.
 	 * 
 	 * @param message
 	 */
-	public static void info(Logger logger, String className, String message){
-		info(logger,className+": "+message);
+	public static void info(Logger logger, String className, String message) {
+		info(logger, className + ": " + message);
 	}
-	
+
 	/**
-	 * For following the trace of the execution. I.e. Knowing if the application access to a method, opening database
-	 * connection, etc.
+	 * For following the trace of the execution. I.e. Knowing if the application
+	 * access to a method, opening database connection, etc.
 	 * 
 	 * @param message
 	 */
@@ -61,29 +65,29 @@ public abstract class BiitLogger {
 			logger.debug(message);
 		}
 	}
-	
+
 	/**
-	 * For following the trace of the execution. I.e. Knowing if the application access to a method, opening database
-	 * connection, etc.
+	 * For following the trace of the execution. I.e. Knowing if the application
+	 * access to a method, opening database connection, etc.
 	 * 
 	 * @param message
 	 */
 	public static void debug(Logger logger, String className, String message) {
 		if (logger.isDebugEnabled()) {
-			logger.debug(className+": "+message);
+			logger.debug(className + ": " + message);
 		}
 	}
-	
+
 	/**
-	 * To log any not expected error that can cause application malfunctions. I.e. couldn't open database connection,
-	 * etc..
+	 * To log any not expected error that can cause application malfunctions.
+	 * I.e. couldn't open database connection, etc..
 	 * 
 	 * @param message
 	 */
 	protected static void severe(Logger logger, String message) {
 		logger.error(message);
 	}
-	
+
 	/**
 	 * To log any not expected error that can cause application malfunctions.
 	 * 
@@ -92,9 +96,10 @@ public abstract class BiitLogger {
 	public static void severe(Logger logger, String className, String message) {
 		severe(logger, className + ": " + message);
 	}
-	
+
 	/**
-	 * Logs an error and send an email to the email configured in settings.conf file.
+	 * Logs an error and send an email to the email configured in settings.conf
+	 * file.
 	 * 
 	 * @param className
 	 * @param error
@@ -103,11 +108,11 @@ public abstract class BiitLogger {
 		severe(logger, className, error);
 		sendByEmail(logger, className, error);
 	}
-	
+
 	public static void sendNotification(Logger logger, String className, String message) {
 		sendByEmail(logger, className, message);
 	}
-	
+
 	private static void sendByEmail(Logger logger, String className, String message) {
 		try {
 			if (EmailConfigurationReader.getInstance().isEmailEnabled()) {
@@ -125,8 +130,8 @@ public abstract class BiitLogger {
 	}
 
 	public static String getStackTrace(Throwable throwable) {
-		Writer writer = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(writer);
+		final Writer writer = new StringWriter();
+		final PrintWriter printWriter = new PrintWriter(writer);
 		throwable.printStackTrace(printWriter);
 		return writer.toString();
 	}

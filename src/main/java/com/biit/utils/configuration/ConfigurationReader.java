@@ -13,8 +13,8 @@ import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 
 public class ConfigurationReader {
-	private final static String VALUES_SEPARATOR_REGEX = " *, *";
-	private final static char PREFIX_SEPARATOR_CHAR = '.';
+	private static final String VALUES_SEPARATOR_REGEX = " *, *";
+	private static final char PREFIX_SEPARATOR_CHAR = '.';
 	private final Map<Class<?>, IValueConverter<?>> converter;
 	private final Map<String, String> propertiesDefault;
 	private final Map<String, String> propertiesFinalValue;
@@ -39,7 +39,8 @@ public class ConfigurationReader {
 
 			@Override
 			public void propertyChanged(String propertyId, String oldValue, String newValue) {
-				BiitCommonLogger.info(this.getClass(), "Property '" + propertyId + "' has changed value from '" + oldValue + "' to '" + newValue + "'.");
+				BiitCommonLogger.info(this.getClass(), "Property '" + propertyId + "' has changed value from '"
+						+ oldValue + "' to '" + newValue + "'.");
 			}
 		});
 	}
@@ -69,8 +70,8 @@ public class ConfigurationReader {
 		propertiesFinalValue.clear();
 		propertiesFinalValue.putAll(propertiesDefault);
 
-		for (IPropertiesSource propertiesSource : propertiesSources) {
-			Properties propertyFile = propertiesSource.loadFile();
+		for (final IPropertiesSource propertiesSource : propertiesSources) {
+			final Properties propertyFile = propertiesSource.loadFile();
 			if (propertyFile != null) {
 				readAllProperties(propertyFile, propertiesSource);
 			}
@@ -85,8 +86,8 @@ public class ConfigurationReader {
 	 * @param propertyFile
 	 */
 	private void readAllProperties(Properties propertyFile, IPropertiesSource propertiesSource) {
-		for (String propertyId : new HashSet<String>(propertiesFinalValue.keySet())) {
-			String value = propertyFile.getProperty(propertyId, propertiesFinalValue.get(propertyId));
+		for (final String propertyId : new HashSet<String>(propertiesFinalValue.keySet())) {
+			final String value = propertyFile.getProperty(propertyId, propertiesFinalValue.get(propertyId));
 			// Notify property change
 			if (propertiesBySourceValues.get(propertiesSource) == null) {
 				propertiesBySourceValues.put(propertiesSource, new HashMap<String, String>());
@@ -96,7 +97,7 @@ public class ConfigurationReader {
 					&& propertiesBySourceValues.get(propertiesSource).get(propertyId).length() > 0
 					&& !propertiesBySourceValues.get(propertiesSource).get(propertyId).equals(value)) {
 				// Launch listeners.
-				for (PropertyChangedListener propertyChangedListener : propertyChangedListeners) {
+				for (final PropertyChangedListener propertyChangedListener : propertyChangedListeners) {
 					propertyChangedListener.propertyChanged(propertyId, propertiesFinalValue.get(propertyId), value);
 				}
 				BiitCommonLogger.info(this.getClass(), "Property '" + propertyId + "' updated as '" + value + "'.");
@@ -119,8 +120,8 @@ public class ConfigurationReader {
 			propertiesDefault.put(propertyName, null);
 			propertiesFinalValue.put(propertyName, null);
 		} else if (defaultValue instanceof String) {
-			propertiesDefault.put(propertyName, new String((String) defaultValue).trim());
-			propertiesFinalValue.put(propertyName, new String((String) defaultValue).trim());
+			propertiesDefault.put(propertyName, ((String) defaultValue).trim());
+			propertiesFinalValue.put(propertyName, ((String) defaultValue).trim());
 		} else {
 			propertiesDefault.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
 			propertiesFinalValue.put(propertyName, getConverter(defaultValue.getClass()).convertToString(defaultValue));
@@ -131,10 +132,10 @@ public class ConfigurationReader {
 	 * Read all properties and set an empty string as default value.
 	 */
 	public void initializeAllProperties() {
-		for (IPropertiesSource propertiesSource : propertiesSources) {
-			Properties propertyFile = propertiesSource.loadFile();
+		for (final IPropertiesSource propertiesSource : propertiesSources) {
+			final Properties propertyFile = propertiesSource.loadFile();
 			if (propertyFile != null) {
-				Enumeration<?> enumerator = propertyFile.propertyNames();
+				final Enumeration<?> enumerator = propertyFile.propertyNames();
 				while (enumerator.hasMoreElements()) {
 					addProperty((String) enumerator.nextElement(), "");
 				}
@@ -148,13 +149,13 @@ public class ConfigurationReader {
 	 * @return
 	 */
 	public Set<String> getAllPropertiesPrefixes() {
-		Set<String> prefixes = new HashSet<>();
-		for (IPropertiesSource propertiesSource : propertiesSources) {
-			Properties propertyFile = propertiesSource.loadFile();
+		final Set<String> prefixes = new HashSet<>();
+		for (final IPropertiesSource propertiesSource : propertiesSources) {
+			final Properties propertyFile = propertiesSource.loadFile();
 			if (propertyFile != null) {
-				Enumeration<?> enumerator = propertyFile.propertyNames();
+				final Enumeration<?> enumerator = propertyFile.propertyNames();
 				while (enumerator.hasMoreElements()) {
-					String element = (String) enumerator.nextElement();
+					final String element = (String) enumerator.nextElement();
 					if (element.contains(String.valueOf(PREFIX_SEPARATOR_CHAR))) {
 						prefixes.add(element.substring(0, element.indexOf(PREFIX_SEPARATOR_CHAR)));
 					}
@@ -167,17 +168,18 @@ public class ConfigurationReader {
 	public String getProperty(String propertyName) throws PropertyNotFoundException {
 		if (propertiesFinalValue.containsKey(propertyName)) {
 			if (propertiesFinalValue.get(propertyName) != null) {
-				return new String(propertiesFinalValue.get(propertyName).trim());
+				return propertiesFinalValue.get(propertyName).trim();
 			} else {
 				return null;
 			}
 		} else {
-			throw new PropertyNotFoundException("Property '" + propertyName + "' not defined in the configuration reader");
+			throw new PropertyNotFoundException("Property '" + propertyName
+					+ "' not defined in the configuration reader");
 		}
 	}
 
 	public <T> T getProperty(String propertyName, Class<? extends T> type) throws PropertyNotFoundException {
-		String stringValue = getProperty(propertyName);
+		final String stringValue = getProperty(propertyName);
 		if (stringValue != null) {
 			return getConverter(type).convertFromString(stringValue);
 		} else {
@@ -185,7 +187,7 @@ public class ConfigurationReader {
 		}
 	}
 
-	public Map<String, String> getAllProperties(){
+	public Map<String, String> getAllProperties() {
 		return this.propertiesFinalValue;
 	}
 
@@ -203,7 +205,7 @@ public class ConfigurationReader {
 	 * closed.
 	 */
 	public void stopFileWatchers() {
-		for (IPropertiesSource sources : propertiesSources) {
+		for (final IPropertiesSource sources : propertiesSources) {
 			if (sources instanceof PropertiesSourceFile) {
 				((PropertiesSourceFile) sources).stopFileWatcher();
 			}

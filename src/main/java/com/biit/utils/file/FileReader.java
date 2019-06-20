@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,16 +33,17 @@ import javax.swing.ImageIcon;
 import com.biit.logger.BiitCommonLogger;
 
 public class FileReader {
-	private final static String ICON_FOLDER = "icons";
+	private static final String ICON_FOLDER = "icons";
 
 	public static File getResource(String fileName) throws NullPointerException {
 		return getResource(FileReader.class, fileName);
 	}
 
 	public static File getResource(Class<?> classWithResources, String fileName) throws NullPointerException {
-		URL url = classWithResources.getClassLoader().getResource(fileName);
+		final URL url = classWithResources.getClassLoader().getResource(fileName);
 		if (url != null) {
-			BiitCommonLogger.info(FileReader.class, "Resource to read '" + fileName + "' found at url '" + url.toString() + "'.");
+			BiitCommonLogger.info(FileReader.class,
+					"Resource to read '" + fileName + "' found at url '" + url.toString() + "'.");
 		} else {
 			BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + fileName + "'.");
 		}
@@ -50,7 +52,7 @@ public class FileReader {
 		try {
 			// We use path to remove URI special codification that is not
 			// allowed for File.
-			String path = URLDecoder.decode(url.getPath(), "UTF-8");
+			final String path = URLDecoder.decode(url.getPath(), "UTF-8");
 			file = new File(FileReader.convert2OsPath(url));
 			// Apache load resource
 			if (!file.exists()) {
@@ -62,13 +64,13 @@ public class FileReader {
 					try {
 						// Url has the absolute path with the correct
 						// codification for an InputStream.
-						InputStream inputStream = url.openStream();
+						final InputStream inputStream = url.openStream();
 						try {
 							if (inputStream != null) {
 								final File tempFile = File.createTempFile(fileName, "_jar");
 								// tempFile.deleteOnExit();
-								OutputStream os = new FileOutputStream(tempFile);
-								byte[] buffer = new byte[1024];
+								final OutputStream os = new FileOutputStream(tempFile);
+								final byte[] buffer = new byte[1024];
 								int bytesRead;
 								// read from is to buffer
 								while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -119,7 +121,8 @@ public class FileReader {
 	}
 
 	public static ImageIcon getIcon(String iconFile) {
-		return new ImageIcon(FileReader.class.getClassLoader().getResource(File.separator + ICON_FOLDER + File.separator + iconFile));
+		return new ImageIcon(FileReader.class.getClassLoader().getResource(
+				File.separator + ICON_FOLDER + File.separator + iconFile));
 	}
 
 	/**
@@ -131,7 +134,7 @@ public class FileReader {
 	 * @throws FileNotFoundException
 	 */
 	public static List<String> getResouceAsList(String resourceName) throws FileNotFoundException {
-		File file = FileReader.getResource(resourceName);
+		final File file = FileReader.getResource(resourceName);
 		return readFileAsList(file);
 	}
 
@@ -144,14 +147,14 @@ public class FileReader {
 	 * @throws FileNotFoundException
 	 */
 	public static List<String> getFileAsList(String filePath) throws FileNotFoundException {
-		File file = new File(filePath);
+		final File file = new File(filePath);
 		return readFileAsList(file);
 	}
 
 	private static List<String> readFileAsList(File file) throws FileNotFoundException {
-		Scanner scanner = new Scanner(file);
+		final Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.name());
 		scanner.useDelimiter("\\A");
-		List<String> lines = new ArrayList<String>();
+		final List<String> lines = new ArrayList<String>();
 		while (scanner.hasNext()) {
 			lines.add(scanner.next());
 		}
@@ -160,10 +163,10 @@ public class FileReader {
 	}
 
 	public static String readFile(File file) throws FileNotFoundException {
-		Scanner scanner = new Scanner(file, "UTF-8");
+		final Scanner scanner = new Scanner(file, "UTF-8");
 		// Change delimiter or it will removes all white spaces.
 		scanner.useDelimiter("\\A");
-		StringBuilder content = new StringBuilder();
+		final StringBuilder content = new StringBuilder();
 		while (scanner.hasNext()) {
 			content.append(scanner.next().trim());
 		}
@@ -172,12 +175,12 @@ public class FileReader {
 	}
 
 	public static String getResource(String fileName, Charset charset) throws FileNotFoundException {
-		StringBuilder result = new StringBuilder("");
+		final StringBuilder result = new StringBuilder("");
 		// Get file from resources folder
 		try {
-			File file = getResource(fileName);
+			final File file = getResource(fileName);
 			try {
-				for (String line : Files.readAllLines(file.toPath(), charset)) {
+				for (final String line : Files.readAllLines(file.toPath(), charset)) {
 					result.append(line).append("\n");
 				}
 			} catch (IOException e) {
@@ -190,13 +193,13 @@ public class FileReader {
 	}
 
 	public static byte[] downloadUrl(String urlname) throws MalformedURLException {
-		URL url = new URL(urlname);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		final URL url = new URL(urlname);
+		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		try {
-			byte[] chunk = new byte[4096];
+			final byte[] chunk = new byte[4096];
 			int bytesRead;
-			InputStream stream = url.openStream();
+			final InputStream stream = url.openStream();
 
 			while ((bytesRead = stream.read(chunk)) > 0) {
 				outputStream.write(chunk, 0, bytesRead);
@@ -213,29 +216,36 @@ public class FileReader {
 	}
 
 	public static List<File> getResources(String folderPath) {
-		URL url = FileReader.class.getClassLoader().getResource(folderPath);
+		final URL url = FileReader.class.getClassLoader().getResource(folderPath);
 		try {
 			if (url != null) {
-				List<File> files = new ArrayList<>();
-				BiitCommonLogger.debug(FileReader.class, "Resource to read '" + folderPath + "' found at url '" + url.toString() + "'.");
-				URI uri = url.toURI();
+				final List<File> files = new ArrayList<>();
+				BiitCommonLogger.debug(FileReader.class,
+						"Resource to read '" + folderPath + "' found at url '" + url.toString() + "'.");
+				final URI uri = url.toURI();
 				if (uri.getScheme().equals("jar")) {
 					// Remove 'file:' and '!' in 'jar!'
-					final File jarFile = new File(url.getPath().toString().substring(5, url.toString().indexOf("jar!") - 1));
+					final File jarFile = new File(url.getPath().toString()
+							.substring(5, url.toString().indexOf("jar!") - 1));
 					try (final JarFile jar = new JarFile(jarFile)) {
 						// gives ALL entries in jar
 						final Enumeration<JarEntry> entries = jar.entries();
 						while (entries.hasMoreElements()) {
 							final JarEntry jarEntry = entries.nextElement();
 							// filter according to the path
-							if (jarEntry.getName().startsWith(folderPath + "/") && !jarEntry.getName().endsWith(folderPath + "/")) {
-								files.add(getResource(jarEntry.getName().substring(jarEntry.getName().indexOf(folderPath))));
+							if (jarEntry.getName().startsWith(folderPath + "/")
+									&& !jarEntry.getName().endsWith(folderPath + "/")) {
+								files.add(getResource(jarEntry.getName().substring(
+										jarEntry.getName().indexOf(folderPath))));
 							}
 						}
 						return files;
 					}
 				} else {
-					return Arrays.asList(new File(url.getPath()).listFiles());
+					final File[] fileList = new File(url.getPath()).listFiles();
+					if (fileList != null) {
+						return Arrays.asList(fileList);
+					}
 				}
 			}
 		} catch (IOException | URISyntaxException e) {
@@ -246,12 +256,16 @@ public class FileReader {
 	}
 
 	public static List<File> getFiles(String folderPath) {
-		File folder = new File(folderPath);
+		final File folder = new File(folderPath);
 		return getFiles(folder);
 	}
 
 	public static List<File> getFiles(File folder) {
-		return new ArrayList<File>(Arrays.asList(folder.listFiles()));
+		final File[] fileList = folder.listFiles();
+		if (fileList != null) {
+			return new ArrayList<File>(Arrays.asList(fileList));
+		}
+		return new ArrayList<File>();
 	}
 
 	/**
@@ -268,8 +282,8 @@ public class FileReader {
 		if (!isZipFile(file)) {
 			return false;
 		}
-		ZipFile zip = new ZipFile(file);
-		boolean manifest = zip.getEntry("META-INF/MANIFEST.MF") != null;
+		final ZipFile zip = new ZipFile(file);
+		final boolean manifest = zip.getEntry("META-INF/MANIFEST.MF") != null;
 		zip.close();
 		return manifest;
 	}
@@ -287,8 +301,8 @@ public class FileReader {
 		if (file.length() < 4) {
 			return false;
 		}
-		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-		int test = in.readInt();
+		final DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+		final int test = in.readInt();
 		in.close();
 		return test == 0x504b0304;
 	}

@@ -60,7 +60,7 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 	}
 
 	private void setWatcher() {
-		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { getFileName() }));
+		final Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { getFileName() }));
 
 		try {
 			fileWatcher = new FileWatcher(getDirectoryToWatch(), checkedFiles);
@@ -69,7 +69,7 @@ public class PropertiesSourceFile extends SourceFile<Properties> implements IPro
 				@Override
 				public void changeDetected(Path pathToFile) {
 					// Pass the listener to current listeners.S
-					for (FileModifiedListener fileModifiedListener : fileModifiedListeners) {
+					for (final FileModifiedListener fileModifiedListener : fileModifiedListeners) {
 						fileModifiedListener.changeDetected(pathToFile);
 					}
 				}

@@ -18,7 +18,7 @@ public class SystemVariableTextSourceFile extends TextSourceFile {
 
 	@Override
 	public String loadFile() throws FileNotFoundException {
-		String environmentVariableValue = SourceFile.readEnvironmentVariable(getEnvironmentVariable());
+		final String environmentVariableValue = SourceFile.readEnvironmentVariable(getEnvironmentVariable());
 		if (environmentVariableValue != null) {
 			BiitCommonLogger.debug(this.getClass(), "Environmental variable '" + getEnvironmentVariable() + "' values is: '" + environmentVariableValue + "'.");
 			setFilePath(environmentVariableValue);

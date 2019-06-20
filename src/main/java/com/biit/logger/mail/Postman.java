@@ -50,28 +50,28 @@ public class Postman {
 	}
 
 	public void addText(String text) throws MessagingException {
-		BodyPart messageBodyPart = new MimeBodyPart();
+		final BodyPart messageBodyPart = new MimeBodyPart();
 		messageBodyPart.setText(text);
 		multipart.addBodyPart(messageBodyPart);
 	}
 
 	public void addHtml(String html) throws MessagingException {
-		BodyPart messageBodyPart = new MimeBodyPart();
+		final BodyPart messageBodyPart = new MimeBodyPart();
 		messageBodyPart.setContent(html, "text/html; charset=utf-8");
 		multipart.addBodyPart(messageBodyPart);
 	}
 
 	public void addAttachment(String filename) throws MessagingException {
-		BodyPart messageBodyPart = new MimeBodyPart();
-		DataSource source = new FileDataSource(filename);
+		final BodyPart messageBodyPart = new MimeBodyPart();
+		final DataSource source = new FileDataSource(filename);
 		messageBodyPart.setDataHandler(new DataHandler(source));
 		messageBodyPart.setFileName(filename);
 		multipart.addBodyPart(messageBodyPart);
 	}
 
 	public void addAttachment(File file, String filename) throws MessagingException {
-		BodyPart messageBodyPart = new MimeBodyPart();
-		DataSource source = new FileDataSource(file);
+		final BodyPart messageBodyPart = new MimeBodyPart();
+		final DataSource source = new FileDataSource(file);
 		messageBodyPart.setDataHandler(new DataHandler(source));
 		messageBodyPart.setFileName(filename);
 		multipart.addBodyPart(messageBodyPart);
@@ -87,18 +87,18 @@ public class Postman {
 	}
 
 	public void sendMail(List<String> to, List<String> toCC, List<String> toCCO, String from) throws AddressException, MessagingException {
-		MimeMessage message = new MimeMessage(session);
+		final MimeMessage message = new MimeMessage(session);
 		message.setFrom(new InternetAddress(from));
-		for (String singleTo : to) {
+		for (final String singleTo : to) {
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(singleTo));
 		}
 		if (toCC != null) {
-			for (String singleTo : toCC) {
+			for (final String singleTo : toCC) {
 				message.addRecipient(Message.RecipientType.CC, new InternetAddress(singleTo));
 			}
 		}
 		if (toCCO != null) {
-			for (String singleTo : toCCO) {
+			for (final String singleTo : toCCO) {
 				message.addRecipient(Message.RecipientType.BCC, new InternetAddress(singleTo));
 			}
 		}

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.biit.logger.BiitPoolLogger;
@@ -20,7 +21,7 @@ public abstract class CollectionPool<ElementId, Type> implements ICollectionPool
 	}
 
 	@Override
-	public void reset() {
+	public synchronized void reset() {
 		BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
 		elementsTime = new ConcurrentHashMap<ElementId, Long>();
 		elementsById = new ConcurrentHashMap<ElementId, Collection<Type>>();
@@ -69,20 +70,21 @@ public abstract class CollectionPool<ElementId, Type> implements ICollectionPool
 	@Override
 	public synchronized Collection<Type> getElement(ElementId elementId) {
 		if (elementId != null && getExpirationTime() > 0) {
-			long now = System.currentTimeMillis();
+			final long now = System.currentTimeMillis();
 			ElementId storedObjectId = null;
 			if (elementsTime.size() > 0) {
 				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
-				Map<ElementId, Collection<Type>> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
-				Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
-				while (elementByTime.hasNext()) {
+				final Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
+				final Map<ElementId, Collection<Type>> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
+				final Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
+
+				for (final Entry<ElementId, Long> elementsByTimeEntry : elementsByTimeChecked.entrySet()) {
 					storedObjectId = elementByTime.next();
-					if (elementsByTimeChecked.get(storedObjectId) != null
-							&& (now - elementsByTimeChecked.get(storedObjectId)) > getExpirationTime()) {
-						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeChecked.get(storedObjectId)
-								+ "' has expired (elapsed time: '" + (now - elementsByTimeChecked.get(storedObjectId))
-								+ "' > '" + getExpirationTime() + "'.)");
+					if (elementsByTimeEntry.getValue() != null
+							&& (now - elementsByTimeEntry.getValue()) > getExpirationTime()) {
+						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeEntry.getValue()
+								+ "' has expired (elapsed time: '" + (now - elementsByTimeEntry.getValue()) + "' > '"
+								+ getExpirationTime() + "'.)");
 						// object has expired
 						removeElement(storedObjectId);
 						storedObjectId = null;

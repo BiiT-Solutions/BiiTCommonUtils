@@ -67,7 +67,7 @@ public class ConfigReaderTests {
 
 	@Test
 	public void configRead() throws PropertyNotFoundException {
-		TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
+		final TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
 
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_PATH), PROPERTY_PATH_DEFAULT_VALUE);
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_INT, Integer.class), PROPERTY_INT_DEFAULT_VALUE);
@@ -94,7 +94,7 @@ public class ConfigReaderTests {
 
 	@Test(expectedExceptions = { PropertyNotFoundException.class })
 	public void configReadVariableNotDefined() throws PropertyNotFoundException {
-		TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
+		final TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
 
 		System.out.println("<START of expected debug and info warning messages>");
 		testConfigurationReader.readConfigurations();

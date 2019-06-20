@@ -16,19 +16,19 @@ public class EmailConfigurationReader extends ConfigurationReader {
 	private static final String CONFIG_FILE = "settings.conf";
 	private static final String SYSTEM_VARIABLE_CONFIG = "BIIT_LOGGER_CONFIG";
 
-	private final static String EMAIL_ENABLED_TAG = "mail.enabled";
-	private final static String EMAIL_TO_TAG = "mail.to";
-	private final static String EMAIL_SMTP_SERVER_TAG = "mail.smtpserver";
-	private final static String EMAIL_USERNAME_TAG = "mail.username";
-	private final static String EMAIL_PASSWORD_TAG = "mail.password";
-	private final static String EMAIL_SENDER_TAG = "mail.sender";
-	private final static String EMAIL_PORT_TAG = "mail.port";
+	private static final String EMAIL_ENABLED_TAG = "mail.enabled";
+	private static final String EMAIL_TO_TAG = "mail.to";
+	private static final String EMAIL_SMTP_SERVER_TAG = "mail.smtpserver";
+	private static final String EMAIL_USERNAME_TAG = "mail.username";
+	private static final String EMAIL_PASSWORD_TAG = "mail.password";
+	private static final String EMAIL_SENDER_TAG = "mail.sender";
+	private static final String EMAIL_PORT_TAG = "mail.port";
 
-	private final static String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
-	private final static String DEFAULT_EMAIL_PORT = "587";
-	private final static String DEFAULT_EMAIL_USERNAME = "noreply@email.com";
-	private final static String DEFAULT_EMAIL_PASSWORD = "password";
-	private final static String DEFAULT_EMAIL_SENDER = "info@biit-solutions.com";
+	private static final String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
+	private static final String DEFAULT_EMAIL_PORT = "587";
+	private static final String DEFAULT_EMAIL_USERNAME = "noreply@email.com";
+	private static final String DEFAULT_EMAIL_PASSWORD = "password";
+	private static final String DEFAULT_EMAIL_SENDER = "info@biit-solutions.com";
 
 	private static EmailConfigurationReader instance;
 
@@ -51,13 +51,11 @@ public class EmailConfigurationReader extends ConfigurationReader {
 		readConfigurations();
 	}
 
-	public static EmailConfigurationReader getInstance() {
+	public static synchronized EmailConfigurationReader getInstance() {
 		if (instance == null) {
 			synchronized (EmailConfigurationReader.class) {
-				if (instance == null) {
-					instance = new EmailConfigurationReader();
-					instance.readConfigurationFiles();
-				}
+				instance = new EmailConfigurationReader();
+				instance.readConfigurationFiles();
 			}
 		}
 		return instance;
@@ -101,11 +99,11 @@ public class EmailConfigurationReader extends ConfigurationReader {
 	}
 
 	public List<String> getEmailTo() {
-		String emailToListCommaSeparated = getPropertyLogException(EMAIL_TO_TAG);
-		List<String> emailToList = new ArrayList<>();
+		final String emailToListCommaSeparated = getPropertyLogException(EMAIL_TO_TAG);
+		final List<String> emailToList = new ArrayList<>();
 		if (emailToListCommaSeparated != null && emailToListCommaSeparated.length() > 0) {
-			String[] users = emailToListCommaSeparated.split(",");
-			for (String user : users) {
+			final String[] users = emailToListCommaSeparated.split(",");
+			for (final String user : users) {
 				emailToList.add(user.trim());
 			}
 		}

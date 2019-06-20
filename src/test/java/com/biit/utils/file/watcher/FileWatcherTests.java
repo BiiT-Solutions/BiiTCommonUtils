@@ -39,10 +39,10 @@ public class FileWatcherTests {
 		fileModificationDetected = false;
 
 		// Create a file.
-		File file = File.createTempFile("watcherTest", ".tmp");
+		final File file = File.createTempFile("watcherTest", ".tmp");
 		file.deleteOnExit();
-		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { file.getName() }));
-		FileWatcher fileWatcher = new FileWatcher(file.getParent(), checkedFiles);
+		final Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { file.getName() }));
+		final FileWatcher fileWatcher = new FileWatcher(file.getParent(), checkedFiles);
 		fileWatcher.addFileModifiedListener(new FileModifiedListener() {
 
 			@Override
@@ -67,12 +67,12 @@ public class FileWatcherTests {
 	public void checkFileCreationListener() throws IOException, InterruptedException, FileCreated {
 		fileCreationDetected = true;
 
-		String folder = System.getProperty("java.io.tmpdir");
-		String fileName = "fileCreated.txt";
+		final String folder = System.getProperty("java.io.tmpdir");
+		final String fileName = "fileCreated.txt";
 
 		// Create a file.
-		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { fileName }));
-		FileWatcher fileWatcher = new FileWatcher(folder, checkedFiles);
+		final Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { fileName }));
+		final FileWatcher fileWatcher = new FileWatcher(folder, checkedFiles);
 		fileWatcher.addFileAddedListener(new FileAddedListener() {
 
 			@Override
@@ -81,7 +81,7 @@ public class FileWatcherTests {
 			}
 		});
 
-		File file = new File(Files.write(Paths.get(folder + File.separator + fileName), "NewFile".getBytes(), StandardOpenOption.CREATE_NEW).toString());
+		final File file = new File(Files.write(Paths.get(folder + File.separator + fileName), "NewFile".getBytes(), StandardOpenOption.CREATE_NEW).toString());
 		file.deleteOnExit();
 
 		// Check change alert!
@@ -97,12 +97,12 @@ public class FileWatcherTests {
 	public void checkFileDeletionListener() throws IOException, InterruptedException, FileCreated, FileDeleted {
 		fileDeletionDetected = false;
 
-		String folder = System.getProperty("java.io.tmpdir");
-		String fileName = "fileDeleted.txt";
+		final String folder = System.getProperty("java.io.tmpdir");
+		final String fileName = "fileDeleted.txt";
 
 		// Create a file.
-		Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { fileName }));
-		FileWatcher fileWatcher = new FileWatcher(folder, checkedFiles);
+		final Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { fileName }));
+		final FileWatcher fileWatcher = new FileWatcher(folder, checkedFiles);
 		fileWatcher.addFileRemovedListener(new FileRemovedListener() {
 
 			@Override
@@ -111,7 +111,7 @@ public class FileWatcherTests {
 			}
 		});
 
-		File file = new File(Files.write(Paths.get(folder + File.separator + fileName), "NewFile".getBytes(), StandardOpenOption.CREATE_NEW).toString());
+		final File file = new File(Files.write(Paths.get(folder + File.separator + fileName), "NewFile".getBytes(), StandardOpenOption.CREATE_NEW).toString());
 		file.delete();
 
 		// Check change alert!

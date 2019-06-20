@@ -14,8 +14,8 @@ public class BiitCommonLogger extends BiitLogger {
 		info(logger, message);
 	}
 
-	public static void errorMessageNotification(Class<?> clazz,	Throwable e) {
-		errorMessageNotification(logger, clazz.getName(), BiitLogger.getStackTrace(e));	
+	public static void errorMessageNotification(Class<?> clazz, Throwable e) {
+		errorMessageNotification(logger, clazz.getName(), BiitLogger.getStackTrace(e));
 	}
 
 	public static void warning(Class<?> clazz, String message) {
@@ -31,7 +31,7 @@ public class BiitCommonLogger extends BiitLogger {
 	}
 
 	public static void debug(Class<?> clazz, String message) {
-		debug(logger, clazz.getName(),message);
+		debug(logger, clazz.getName(), message);
 	}
-	
+
 }

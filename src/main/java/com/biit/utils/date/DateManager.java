@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateManager {
-	public final static String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-	public final static String DATE_FORMAT_SIMPLE = "yyyy-MM-dd";
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_FORMAT_SIMPLE = "yyyy-MM-dd";
 
 	public static String convertDateToString(Date date, String dateFormat) {
 		if (date == null) {
@@ -29,17 +29,17 @@ public class DateManager {
 		if (time == null) {
 			return "";
 		}
-		Date date = new Date(time.getTime());
+		final Date date = new Date(time.getTime());
 		return convertDateToString(date, DATE_FORMAT);
 	}
 
 	public static String convertDateToString(Timestamp time) {
-		Date date = new Date(time.getTime());
+		final Date date = new Date(time.getTime());
 		return convertDateToString(date, DATE_FORMAT_SIMPLE);
 	}
 
 	public static Date incrementDateOneDay(Date date) {
-		Calendar c = Calendar.getInstance();
+		final Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		c.add(Calendar.DATE, 1); // number of days to add
 		return c.getTime();
@@ -50,10 +50,10 @@ public class DateManager {
 	}
 
 	public static Date getDate(String date, String format) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		final SimpleDateFormat formatter = new SimpleDateFormat(format);
 		return formatter.parse(date);
 	}
-	
+
 	public static String convertDateToString(Date date, String dateFormat, Locale locale) {
 		if (locale == null) {
 			locale = Locale.ENGLISH;
@@ -83,12 +83,13 @@ public class DateManager {
 	}
 
 	public static String convertDateToString(Timestamp time, Locale locale) {
-		Date date = new Date(time.getTime());
+		final Date date = new Date(time.getTime());
 		return convertDateToString(date, DATE_FORMAT_SIMPLE, locale);
 	}
 
 	public static String formatStringDate(String date, String originFormat, String destinyFormat) throws ParseException {
-		return convertDateToString(new Date(new SimpleDateFormat(originFormat).parse(date).getTime()), destinyFormat, null);
+		return convertDateToString(new Date(new SimpleDateFormat(originFormat).parse(date).getTime()), destinyFormat,
+				null);
 	}
 
 	public static String formatStringDate(Timestamp date, String destinyFormat) throws ParseException {

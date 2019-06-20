@@ -114,8 +114,8 @@ public class FileWatcher {
 			stopThread();
 			thread = new Thread(fileWatcher, "FileWatcher");
 			thread.start();
-			pathToWatch.register(getWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
-					StandardWatchEventKinds.ENTRY_DELETE);
+			pathToWatch.register(getWatchService(), StandardWatchEventKinds.ENTRY_CREATE,
+					StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
 			// Ensure to close the watcher.
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				public void run() {
@@ -123,7 +123,7 @@ public class FileWatcher {
 						BiitCommonLogger.info(this.getClass(), "Closing filewatcher for '" + directoryToWatch + "'.");
 						watcher.close();
 					} catch (Exception e) {
-						// Do nothing, program ended.
+						BiitCommonLogger.severe(this.getClass().getName(), e);
 					}
 				}
 			});
@@ -150,23 +150,26 @@ public class FileWatcher {
 				while (key != null) {
 					// We have a polled event, now we traverse it and receive
 					// all the states from it
-					for (WatchEvent<?> event : key.pollEvents()) {
+					for (final WatchEvent<?> event : key.pollEvents()) {
 						// Event on a directory or a set of files.
-						if (filesNames == null || (filesNames != null && filesNames.contains(event.context().toString()))) {
+						if (filesNames == null || (filesNames.contains(event.context().toString()))) {
 							if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-								for (FileModifiedListener fileModifiedListener : new HashSet<>(fileModifiedListeners)) {
+								for (final FileModifiedListener fileModifiedListener : new HashSet<>(
+										fileModifiedListeners)) {
 									fileModifiedListener.changeDetected(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-								for (FileAddedListener fileCreationListener : new HashSet<>(fileAddedListeners)) {
+								for (final FileAddedListener fileCreationListener : new HashSet<>(fileAddedListeners)) {
 									fileCreationListener.fileCreated(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-								for (FileRemovedListener fileDeletionListener : new HashSet<>(fileRemovedListeners)) {
+								for (final FileRemovedListener fileDeletionListener : new HashSet<>(
+										fileRemovedListeners)) {
 									fileDeletionListener.fileDeleted(combine(pathToWatch, (Path) event.context()));
 								}
 							} else if (event.kind().equals(StandardWatchEventKinds.OVERFLOW)) {
-								BiitCommonLogger.errorMessageNotification(this.getClass(), "File Watcher events vents may have been lost or discarded.");
+								BiitCommonLogger.errorMessageNotification(this.getClass(),
+										"File Watcher events vents may have been lost or discarded.");
 							}
 						}
 					}

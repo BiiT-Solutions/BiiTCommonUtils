@@ -15,7 +15,7 @@ import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 public class SendEmail {
 
 	public static void sendEmail(List<String> mailToList, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-		for (String mailTo : mailToList) {
+		for (final String mailTo : mailToList) {
 			sendEmail(mailTo, subject, htmlContent);
 			BiitCommonLogger.info(SendEmail.class, "Sending email to " + mailTo);
 		}
@@ -47,7 +47,7 @@ public class SendEmail {
 		}
 
 		try {
-			SendEmailThread sendEmailThread = new SendEmailThread();
+			final SendEmailThread sendEmailThread = new SendEmailThread();
 
 			sendEmailThread.setSmtpServer(smtpServer);
 			sendEmailThread.setEmailUser(emailUser);
@@ -61,7 +61,7 @@ public class SendEmail {
 			sendEmailThread.run();
 		} catch (Throwable exc) {
 			BiitCommonLogger.severe(SendEmail.class.getName(), exc);
-			EmailNotSentException emailNotSentException = new EmailNotSentException(exc.getMessage());
+			final EmailNotSentException emailNotSentException = new EmailNotSentException(exc.getMessage());
 			emailNotSentException.setStackTrace(exc.getStackTrace());
 			throw emailNotSentException;
 		}
@@ -77,7 +77,7 @@ public class SendEmail {
 	public static boolean isValidEmailAddress(String email) {
 		boolean result = true;
 		try {
-			InternetAddress emailAddr = new InternetAddress(email);
+			final InternetAddress emailAddr = new InternetAddress(email);
 			emailAddr.validate();
 		} catch (NullPointerException | AddressException ex) {
 			result = false;
@@ -87,8 +87,8 @@ public class SendEmail {
 
 	public static void basicMailSender(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo,
 			String subject, String htmlContent) throws MessagingException {
-		Postman postman = new Postman(smtpServer, smtpPort, emailUser, emailPassword);
-		List<String> to = Arrays.asList(new String[] { mailTo });
+		final Postman postman = new Postman(smtpServer, smtpPort, emailUser, emailPassword);
+		final List<String> to = Arrays.asList(new String[] { mailTo });
 		postman.setSubject(subject);
 		postman.addHtml(htmlContent);
 		// Avoiding javax.activation.UnsupportedDataTypeException: no object

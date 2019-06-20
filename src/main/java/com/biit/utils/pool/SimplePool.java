@@ -16,7 +16,7 @@ public abstract class SimplePool<ElementId, Type extends PoolElement<ElementId>>
 
 	@Override
 	public void addElements(Collection<Type> elements) {
-		for (Type element : elements) {
+		for (final Type element : elements) {
 			addElement(element);
 		}
 	}

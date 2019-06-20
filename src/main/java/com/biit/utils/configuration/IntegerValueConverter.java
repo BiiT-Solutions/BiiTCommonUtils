@@ -4,7 +4,7 @@ public class IntegerValueConverter implements IValueConverter<Integer> {
 
 	@Override
 	public Integer convertFromString(String value) {
-		if(value!=null){
+		if (value != null) {
 			return Integer.parseInt(value);
 		}
 		return null;
@@ -12,7 +12,7 @@ public class IntegerValueConverter implements IValueConverter<Integer> {
 
 	@Override
 	public String convertToString(Object value) {
-		if(value!=null){
+		if (value != null) {
 			return value.toString();
 		}
 		return null;

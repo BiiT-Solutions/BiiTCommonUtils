@@ -19,11 +19,11 @@ public class SystemVariablePropertiesSourceFile extends PropertiesSourceFile {
 
 	@Override
 	public Properties loadFile() {
-		String environmentVariableValue = SourceFile.readEnvironmentVariable(getEnvironmentVariable());
+		final String environmentVariableValue = SourceFile.readEnvironmentVariable(getEnvironmentVariable());
 		if (environmentVariableValue != null) {
 			BiitCommonLogger.debug(this.getClass(), "Environmental variable '" + getEnvironmentVariable() + "' values is: '" + environmentVariableValue + "'.");
 			// Update file watcher.
-			if (environmentVariableValue != getFilePath()) {
+			if (!environmentVariableValue.equals(getFilePath())) {
 				setFilePath(environmentVariableValue);
 			}
 			return super.loadFile();
