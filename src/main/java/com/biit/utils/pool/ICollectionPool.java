@@ -34,4 +34,20 @@ public interface ICollectionPool<ElementId, Type> {
 
 	Set<Map<ElementId, Type>> getAllPooledElements();
 
+	Type removeElementById(ElementId elementId, ElementId collectedElementId);
+
+	/**
+	 * Removes an element inside of the mapped collection.
+	 * 
+	 * @param collectedElementId
+	 */
+	void removeCollectedElementById(ElementId collectedElementId);
+
+	/**
+	 * Updates an element inside of a mapped collection.
+	 * 
+	 * @param collectedItem
+	 */
+	void update(Type collectedItem);
+
 }

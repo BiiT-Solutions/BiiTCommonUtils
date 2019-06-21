@@ -168,6 +168,59 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 		return null;
 	}
 
+	@Override
+	public synchronized void update(Type collectedItem) {
+		if (collectedItem == null) {
+			return;
+		}
+		ElementId collectionId = null;
+		for (final Entry<ElementId, Map<ElementId, Type>> collectionsOfElements : getElementsById().entrySet()) {
+			if (collectionId != null) {
+				break;
+			}
+			for (final Entry<ElementId, Type> entry : collectionsOfElements.getValue().entrySet()) {
+				if (Objects.equals(entry.getValue().getUniqueId(), collectedItem.getUniqueId())) {
+					collectionId = collectionsOfElements.getKey();
+					break;
+				}
+			}
+			// Override the element.
+			getElementsById().get(collectionId).put(collectedItem.getUniqueId(), collectedItem);
+		}
+	}
+
+	@Override
+	public synchronized void removeCollectedElementById(ElementId collectedElementId) {
+		if (collectedElementId == null) {
+			return;
+		}
+		ElementId collectionId = null;
+		for (final Entry<ElementId, Map<ElementId, Type>> collectionsOfElements : getElementsById().entrySet()) {
+			if (collectionId != null) {
+				break;
+			}
+			for (final Entry<ElementId, Type> entry : collectionsOfElements.getValue().entrySet()) {
+				if (Objects.equals(entry.getValue().getUniqueId(), collectedElementId)) {
+					collectionId = collectionsOfElements.getKey();
+					break;
+				}
+			}
+			if (collectionId != null) {
+				removeElementById(collectionId, collectedElementId);
+			}
+		}
+	}
+
+	@Override
+	public synchronized Type removeElementById(ElementId elementId, ElementId collectedElementId) {
+		if (elementId != null && collectedElementId != null) {
+			BiitPoolLogger.debug(this.getClass(), "Removing element with Id '" + collectedElementId + "' of '"
+					+ elementId + "'.");
+			return elementsById.get(elementId).remove(collectedElementId);
+		}
+		return null;
+	}
+
 	/**
 	 * An element is dirty if cannot be used by the pool any more.
 	 * 
