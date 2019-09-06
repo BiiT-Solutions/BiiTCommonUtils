@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.biit.logger.BiitPoolLogger;
 
-public abstract class CollectionPool<ElementId, Type extends PoolElement<ElementId>> implements
-		ICollectionPool<ElementId, Type> {
+public abstract class CollectionPool<ElementId, Type extends PoolElement<ElementId>>
+		implements ICollectionPool<ElementId, Type> {
 	// Elements by id;
 	private Map<ElementId, Long> elementsTime; // user id -> time.
 	private Map<ElementId, Map<ElementId, Type>> elementsById;
@@ -31,13 +31,11 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 
 	@Override
 	public synchronized void addElement(Type element, ElementId key) {
-		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
 		if (getExpirationTime() > 0) {
-			elementsTime.put(key, System.currentTimeMillis());
-			if (elementsById.get(key) == null) {
-				elementsById.put(key, new HashMap<ElementId, Type>());
+			BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
+			if (elementsById.get(key) != null) {
+				elementsById.get(key).put(element.getUniqueId(), element);
 			}
-			elementsById.get(key).put(element.getUniqueId(), element);
 		}
 	}
 
@@ -83,8 +81,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	/**
 	 * Gets all previously stored elements of a user in a site.
 	 * 
-	 * @param elementId
-	 *            element key for the pool.
+	 * @param elementId element key for the pool.
 	 * @return the element that has the selected key.
 	 */
 	@Override
@@ -102,9 +99,10 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 					storedObjectId = elementByTime.next();
 					if (elementsByTimeEntry.getValue() != null
 							&& (now - elementsByTimeEntry.getValue()) > getExpirationTime()) {
-						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeEntry.getValue()
-								+ "' has expired (elapsed time: '" + (now - elementsByTimeEntry.getValue()) + "' > '"
-								+ getExpirationTime() + "'.)");
+						BiitPoolLogger.debug(this.getClass(),
+								"Element '" + elementsByTimeEntry.getValue() + "' has expired (elapsed time: '"
+										+ (now - elementsByTimeEntry.getValue()) + "' > '" + getExpirationTime()
+										+ "'.)");
 						// object has expired
 						removeElement(storedObjectId);
 						storedObjectId = null;
@@ -112,14 +110,13 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 						if (elementsByIdChecked.get(storedObjectId) != null) {
 							// Remove not valid elements.
 							if (isDirty(elementsByIdChecked.get(storedObjectId).values())) {
-								BiitPoolLogger.debug(this.getClass(),
-										"Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
-												+ " is dirty! ");
+								BiitPoolLogger.debug(this.getClass(), "Cache: "
+										+ elementsByIdChecked.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
 							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: "
-										+ elementsByIdChecked.get(storedObjectId).getClass().getName()
-										+ " store hit for " + elementId);
+								BiitPoolLogger.info(this.getClass(),
+										"Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
+												+ " store hit for " + elementId);
 								return elementsByIdChecked.get(storedObjectId).values();
 							}
 						}
@@ -214,8 +211,8 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	@Override
 	public synchronized Type removeElementById(ElementId elementId, ElementId collectedElementId) {
 		if (elementId != null && collectedElementId != null) {
-			BiitPoolLogger.debug(this.getClass(), "Removing element with Id '" + collectedElementId + "' of '"
-					+ elementId + "'.");
+			BiitPoolLogger.debug(this.getClass(),
+					"Removing element with Id '" + collectedElementId + "' of '" + elementId + "'.");
 			return elementsById.get(elementId).remove(collectedElementId);
 		}
 		return null;
@@ -224,8 +221,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	/**
 	 * An element is dirty if cannot be used by the pool any more.
 	 * 
-	 * @param element
-	 *            element to check
+	 * @param element element to check
 	 * @return if it is dirty or not.
 	 */
 	@Override
