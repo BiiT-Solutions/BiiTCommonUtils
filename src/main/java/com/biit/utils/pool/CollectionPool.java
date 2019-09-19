@@ -12,11 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.biit.logger.BiitPoolLogger;
 
-public abstract class CollectionPool<ElementId, Type extends PoolElement<ElementId>>
-		implements ICollectionPool<ElementId, Type> {
+public abstract class CollectionPool<KeyId, ElementId, Type extends PoolElement<ElementId>>
+		implements ICollectionPool<KeyId, ElementId, Type> {
 	// Elements by id;
-	private Map<ElementId, Long> elementsTime; // user id -> time.
-	private Map<ElementId, Map<ElementId, Type>> elementsById;
+	private Map<KeyId, Long> elementsTime; // main id -> time.
+	private Map<KeyId, Map<ElementId, Type>> elementsById;
 
 	public CollectionPool() {
 		reset();
@@ -25,12 +25,12 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	@Override
 	public synchronized void reset() {
 		BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
-		elementsTime = new ConcurrentHashMap<ElementId, Long>();
-		elementsById = new ConcurrentHashMap<ElementId, Map<ElementId, Type>>();
+		elementsTime = new ConcurrentHashMap<KeyId, Long>();
+		elementsById = new ConcurrentHashMap<KeyId, Map<ElementId, Type>>();
 	}
 
 	@Override
-	public synchronized void addElement(Type element, ElementId key) {
+	public synchronized void addElement(Type element, KeyId key) {
 		if (getExpirationTime() > 0) {
 			BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
 			if (elementsById.get(key) != null) {
@@ -40,7 +40,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	}
 
 	@Override
-	public synchronized void addElements(Collection<Type> elements, ElementId key) {
+	public synchronized void addElements(Collection<Type> elements, KeyId key) {
 		final Map<ElementId, Type> mappedElements = new HashMap<>();
 		elements.stream().forEach(element -> {
 			mappedElements.put(element.getUniqueId(), element);
@@ -49,7 +49,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	}
 
 	@Override
-	public synchronized void addElements(Map<ElementId, Type> elements, ElementId key) {
+	public synchronized void addElements(Map<ElementId, Type> elements, KeyId key) {
 		BiitPoolLogger.debug(this.getClass(), "Adding collection '" + elements + "' with key '" + key + "'.");
 		if (getExpirationTime() > 0) {
 			elementsTime.put(key, System.currentTimeMillis());
@@ -61,7 +61,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	}
 
 	@Override
-	public synchronized void setElements(Collection<Type> elements, ElementId key) {
+	public synchronized void setElements(Collection<Type> elements, KeyId key) {
 		final Map<ElementId, Type> mappedElements = new HashMap<>();
 		elements.stream().forEach(element -> {
 			mappedElements.put(element.getUniqueId(), element);
@@ -70,7 +70,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	}
 
 	@Override
-	public synchronized void setElements(Map<ElementId, Type> elements, ElementId key) {
+	public synchronized void setElements(Map<ElementId, Type> elements, KeyId key) {
 		BiitPoolLogger.debug(this.getClass(), "Setting map '" + elements + "' with key '" + key + "'.");
 		if (getExpirationTime() > 0) {
 			elementsTime.put(key, System.currentTimeMillis());
@@ -85,17 +85,17 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	 * @return the element that has the selected key.
 	 */
 	@Override
-	public synchronized Collection<Type> getElement(ElementId elementId) {
+	public synchronized Collection<Type> getElements(KeyId elementId) {
 		if (elementId != null && getExpirationTime() > 0) {
 			final long now = System.currentTimeMillis();
-			ElementId storedObjectId = null;
+			KeyId storedObjectId = null;
 			if (elementsTime.size() > 0) {
 				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				final Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
-				final Map<ElementId, Map<ElementId, Type>> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
-				final Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
+				final Map<KeyId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
+				final Map<KeyId, Map<ElementId, Type>> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
+				final Iterator<KeyId> elementByTime = elementsByTimeChecked.keySet().iterator();
 
-				for (final Entry<ElementId, Long> elementsByTimeEntry : elementsByTimeChecked.entrySet()) {
+				for (final Entry<KeyId, Long> elementsByTimeEntry : elementsByTimeChecked.entrySet()) {
 					storedObjectId = elementByTime.next();
 					if (elementsByTimeEntry.getValue() != null
 							&& (now - elementsByTimeEntry.getValue()) > getExpirationTime()) {
@@ -137,30 +137,30 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 	}
 
 	@Override
-	public Map<ElementId, Map<ElementId, Type>> getElementsById() {
+	public Map<KeyId, Map<ElementId, Type>> getElementsByKey() {
 		return elementsById;
 	}
 
 	@Override
-	public Map<ElementId, Long> getElementsTime() {
+	public Map<KeyId, Long> getElementsTime() {
 		return elementsTime;
 	}
 
 	@Override
-	public synchronized Map<ElementId, Type> removeElement(ElementId elementId) {
-		if (elementId != null) {
-			BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
-			elementsTime.remove(elementId);
-			return elementsById.remove(elementId);
+	public synchronized Map<ElementId, Type> removeElement(KeyId key) {
+		if (key != null) {
+			BiitPoolLogger.debug(this.getClass(), "Removing element '" + key + "'.");
+			elementsTime.remove(key);
+			return elementsById.remove(key);
 		}
 		return null;
 	}
 
 	@Override
-	public synchronized Type removeElement(ElementId elementId, Type element) {
-		if (elementId != null && element != null) {
-			BiitPoolLogger.debug(this.getClass(), "Removing element '" + element + "' of '" + elementId + "'.");
-			return elementsById.get(elementId).remove(element.getUniqueId());
+	public synchronized Type removeElement(KeyId key, Type element) {
+		if (key != null && element != null) {
+			BiitPoolLogger.debug(this.getClass(), "Removing element '" + element + "' of '" + key + "'.");
+			return elementsById.get(key).remove(element.getUniqueId());
 		}
 		return null;
 	}
@@ -170,8 +170,8 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 		if (collectedItem == null) {
 			return;
 		}
-		ElementId collectionId = null;
-		for (final Entry<ElementId, Map<ElementId, Type>> collectionsOfElements : getElementsById().entrySet()) {
+		KeyId collectionId = null;
+		for (final Entry<KeyId, Map<ElementId, Type>> collectionsOfElements : getElementsByKey().entrySet()) {
 			if (collectionId != null) {
 				break;
 			}
@@ -182,7 +182,7 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 				}
 			}
 			// Override the element.
-			getElementsById().get(collectionId).put(collectedItem.getUniqueId(), collectedItem);
+			getElementsByKey().get(collectionId).put(collectedItem.getUniqueId(), collectedItem);
 		}
 	}
 
@@ -191,8 +191,8 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 		if (collectedElementId == null) {
 			return;
 		}
-		ElementId collectionId = null;
-		for (final Entry<ElementId, Map<ElementId, Type>> collectionsOfElements : getElementsById().entrySet()) {
+		KeyId collectionId = null;
+		for (final Entry<KeyId, Map<ElementId, Type>> collectionsOfElements : getElementsByKey().entrySet()) {
 			if (collectionId != null) {
 				break;
 			}
@@ -203,17 +203,17 @@ public abstract class CollectionPool<ElementId, Type extends PoolElement<Element
 				}
 			}
 			if (collectionId != null) {
-				removeElementById(collectionId, collectedElementId);
+				removeElementByKey(collectionId, collectedElementId);
 			}
 		}
 	}
 
 	@Override
-	public synchronized Type removeElementById(ElementId elementId, ElementId collectedElementId) {
-		if (elementId != null && collectedElementId != null) {
+	public synchronized Type removeElementByKey(KeyId key, ElementId collectedElementId) {
+		if (key != null && collectedElementId != null) {
 			BiitPoolLogger.debug(this.getClass(),
-					"Removing element with Id '" + collectedElementId + "' of '" + elementId + "'.");
-			return elementsById.get(elementId).remove(collectedElementId);
+					"Removing element with Id '" + collectedElementId + "' of '" + key + "'.");
+			return elementsById.get(key).remove(collectedElementId);
 		}
 		return null;
 	}

@@ -4,37 +4,37 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public interface ICollectionPool<ElementId, Type> {
+public interface ICollectionPool<KeyId, ElementId, Type> {
 
 	void reset();
 
-	Collection<Type> getElement(ElementId elementId);
+	Collection<Type> getElements(KeyId elementId);
 
 	long getExpirationTime();
 
-	public Map<ElementId, Map<ElementId, Type>> getElementsById();
+	public Map<KeyId, Map<ElementId, Type>> getElementsByKey();
 
-	public Map<ElementId, Type> removeElement(ElementId elementId);
+	public Map<ElementId, Type> removeElement(KeyId elementId);
 
 	boolean isDirty(Collection<Type> element);
 
-	Map<ElementId, Long> getElementsTime();
+	Map<KeyId, Long> getElementsTime();
 
-	void addElements(Map<ElementId, Type> elements, ElementId key);
+	void addElements(Map<ElementId, Type> elements, KeyId key);
 
-	Type removeElement(ElementId elementId, Type element);
+	Type removeElement(KeyId key, Type element);
 
-	void addElement(Type element, ElementId key);
+	void addElement(Type element, KeyId key);
 
-	void setElements(Map<ElementId, Type> elements, ElementId key);
+	void setElements(Map<ElementId, Type> elements, KeyId key);
 
-	void addElements(Collection<Type> elements, ElementId key);
+	void addElements(Collection<Type> elements, KeyId key);
 
-	void setElements(Collection<Type> elements, ElementId key);
+	void setElements(Collection<Type> elements, KeyId key);
 
 	Set<Map<ElementId, Type>> getAllPooledElements();
 
-	Type removeElementById(ElementId elementId, ElementId collectedElementId);
+	Type removeElementByKey(KeyId key, ElementId collectedElementId);
 
 	/**
 	 * Removes an element inside of the mapped collection.
