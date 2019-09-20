@@ -81,12 +81,12 @@ public abstract class CollectionPool<KeyId, ElementId, Type extends PoolElement<
 	/**
 	 * Gets all previously stored elements of a user in a site.
 	 * 
-	 * @param elementId element key for the pool.
+	 * @param keyId element key for the pool.
 	 * @return the element that has the selected key.
 	 */
 	@Override
-	public synchronized Collection<Type> getElements(KeyId elementId) {
-		if (elementId != null && getExpirationTime() > 0) {
+	public synchronized Collection<Type> getElements(KeyId keyId) {
+		if (keyId != null && getExpirationTime() > 0) {
 			final long now = System.currentTimeMillis();
 			KeyId storedObjectId = null;
 			if (elementsTime.size() > 0) {
@@ -113,10 +113,10 @@ public abstract class CollectionPool<KeyId, ElementId, Type extends PoolElement<
 								BiitPoolLogger.debug(this.getClass(), "Cache: "
 										+ elementsByIdChecked.get(storedObjectId).getClass().getName() + " is dirty! ");
 								removeElement(storedObjectId);
-							} else if (Objects.equals(storedObjectId, elementId)) {
+							} else if (Objects.equals(storedObjectId, keyId)) {
 								BiitPoolLogger.info(this.getClass(),
 										"Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
-												+ " store hit for " + elementId);
+												+ " store hit for " + keyId);
 								return elementsByIdChecked.get(storedObjectId).values();
 							}
 						}
@@ -124,7 +124,7 @@ public abstract class CollectionPool<KeyId, ElementId, Type extends PoolElement<
 				}
 			}
 		}
-		BiitPoolLogger.debug(this.getClass(), "Object with Id '" + elementId + "' - Cache Miss.");
+		BiitPoolLogger.debug(this.getClass(), "Object with Id '" + keyId + "' - Cache Miss.");
 		return null;
 	}
 

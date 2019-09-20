@@ -4,6 +4,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Stores a collection of elements in a key.
+ *
+ * @param <KeyId>     The key type to store and retrieve the collection
+ * @param <ElementId> The id type for each element
+ * @param <Type>      The elements type to be stored.
+ */
 public interface ICollectionPool<KeyId, ElementId, Type> {
 
 	void reset();
