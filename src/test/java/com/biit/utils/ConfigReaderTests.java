@@ -1,10 +1,10 @@
 package com.biit.utils;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.biit.utils.configuration.ConfigurationReader;
+import com.biit.utils.configuration.ConfigurationReader.Case;
 import com.biit.utils.configuration.PropertiesSourceFile;
 import com.biit.utils.configuration.SystemVariablePropertiesSourceFile;
 import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
@@ -17,16 +17,19 @@ public class ConfigReaderTests {
 	private static final String PROPERTY_DOUBLE = "sample.double";
 	private static final String PROPERTY_BOOLEAN = "sample.boolean";
 	private static final String PROPERTY_PATH_DEFAULT_VALUE = "default";
-	private static final Integer PROPERTY_INT_DEFAULT_VALUE = new Integer(-1);
-	private static final Double PROPERTY_DOUBLE_DEFAULT_VALUE = new Double(-2.0);
+	private static final Integer PROPERTY_INT_DEFAULT_VALUE = Integer.valueOf(-1);
+	private static final Double PROPERTY_DOUBLE_DEFAULT_VALUE = Double.valueOf(-2);
 	private static final Boolean PROPERTY_BOOLEAN_DEFAULT_VALUE = true;
+	private static final String PROPERTY_CASE = "case.value";
+	private static final String PROPERTY_CASE_INSENSITIVE = "cAsE.vaLUe";
+	private static final String PROPERTY_CASE_DEFAULT_VALUE = "I am a case test";
 
 	private static final String PROPERTY_REWRITE_1 = "rewrite1.sample.path";
 	private static final String PROPERTY_REWRITE_2 = "rewrite2.sample.int";
 	private static final String PROPERTY_REWRITE_12 = "rewrite12.sample.double";
 	private static final Object PROPERTY_REWRITE_1_DEFAULT_VALUE = "default/rewrite";
-	private static final Object PROPERTY_REWRITE_2_DEFAULT_VALUE = new Integer(-15);
-	private static final Object PROPERTY_REWRITE_12_DEFAULT_VALUE = new Double(-7.5);
+	private static final Object PROPERTY_REWRITE_2_DEFAULT_VALUE = Integer.valueOf(-15);
+	private static final Object PROPERTY_REWRITE_12_DEFAULT_VALUE = Double.valueOf(-7.5);
 
 	private static final String PROPERTY_NOT_USED = "not.used";
 
@@ -34,12 +37,12 @@ public class ConfigReaderTests {
 	private static final String FILE_2 = "settings2.conf";
 	private static final String FILE_3 = "settings3.conf";
 	private static final String PROPERTY_PATH_FILE_0 = "../test/test";
-	private static final Integer PROPERTY_INT_FILE_0 = new Integer(1);
-	private static final Double PROPERTY_DOUBLE_FILE_0 = new Double(2.0);
+	private static final Integer PROPERTY_INT_FILE_0 = Integer.valueOf(1);
+	private static final Double PROPERTY_DOUBLE_FILE_0 = Double.valueOf(2.0);
 	private static final Boolean PROPERTY_BOOLEAN_FILE_0 = true;
 	private static final String PROPERTY_REWRITE_1_FILE_1 = "../test2/test2";
-	private static final Integer PROPERTY_REWRITE_2_FILE_2 = new Integer(3);
-	private static final Double PROPERTY_REWRITE_12_FILE_2 = new Double(4.0);
+	private static final Integer PROPERTY_REWRITE_2_FILE_2 = Integer.valueOf(3);
+	private static final Double PROPERTY_REWRITE_12_FILE_2 = Double.valueOf(4.0);
 	private static final String BAD_VARIABLE = "BAD_VARIABLE";
 	private static final String BAD_FILE = "BAD_FILE";
 
@@ -48,6 +51,7 @@ public class ConfigReaderTests {
 			super();
 
 			addProperty(PROPERTY_PATH, PROPERTY_PATH_DEFAULT_VALUE);
+			addProperty(PROPERTY_CASE, PROPERTY_CASE_DEFAULT_VALUE);
 			addProperty(PROPERTY_INT, PROPERTY_INT_DEFAULT_VALUE);
 			addProperty(PROPERTY_DOUBLE, PROPERTY_DOUBLE_DEFAULT_VALUE);
 			addProperty(PROPERTY_BOOLEAN, PROPERTY_BOOLEAN_DEFAULT_VALUE);
@@ -66,30 +70,56 @@ public class ConfigReaderTests {
 	}
 
 	@Test
+	public void configReadCaseInsensitive() throws PropertyNotFoundException {
+		final TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
+		testConfigurationReader.readConfigurations(Case.INSENSITIVE);
+
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_CASE), PROPERTY_CASE_DEFAULT_VALUE);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_CASE_INSENSITIVE),
+				PROPERTY_CASE_DEFAULT_VALUE);
+	}
+
+	@Test(expectedExceptions = PropertyNotFoundException.class)
+	public void configReadCaseSensitive() throws PropertyNotFoundException {
+		final TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
+		testConfigurationReader.readConfigurations(Case.SENSITIVE);
+
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_CASE), PROPERTY_CASE_DEFAULT_VALUE);
+		Assert.assertNotEquals(testConfigurationReader.getProperty(PROPERTY_CASE_INSENSITIVE),
+				PROPERTY_CASE_DEFAULT_VALUE);
+	}
+
+	@Test
 	public void configRead() throws PropertyNotFoundException {
 		final TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
 
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_PATH), PROPERTY_PATH_DEFAULT_VALUE);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_INT, Integer.class), PROPERTY_INT_DEFAULT_VALUE);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_DOUBLE, Double.class), PROPERTY_DOUBLE_DEFAULT_VALUE);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_BOOLEAN, Boolean.class), PROPERTY_BOOLEAN_DEFAULT_VALUE);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_INT, Integer.class),
+				PROPERTY_INT_DEFAULT_VALUE);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_DOUBLE, Double.class),
+				PROPERTY_DOUBLE_DEFAULT_VALUE);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_BOOLEAN, Boolean.class),
+				PROPERTY_BOOLEAN_DEFAULT_VALUE);
 
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_1), PROPERTY_REWRITE_1_DEFAULT_VALUE);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_2, Integer.class), PROPERTY_REWRITE_2_DEFAULT_VALUE);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_12, Double.class), PROPERTY_REWRITE_12_DEFAULT_VALUE);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_2, Integer.class),
+				PROPERTY_REWRITE_2_DEFAULT_VALUE);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_12, Double.class),
+				PROPERTY_REWRITE_12_DEFAULT_VALUE);
 
-		System.out.println("<START of expected debug and info warning messages>");
 		testConfigurationReader.readConfigurations();
-		System.out.println("<END of expected debug and info warning messages>");
 
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_PATH), PROPERTY_PATH_FILE_0);
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_INT, Integer.class), PROPERTY_INT_FILE_0);
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_DOUBLE, Double.class), PROPERTY_DOUBLE_FILE_0);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_BOOLEAN, Boolean.class), PROPERTY_BOOLEAN_FILE_0);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_BOOLEAN, Boolean.class),
+				PROPERTY_BOOLEAN_FILE_0);
 
 		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_1), PROPERTY_REWRITE_1_FILE_1);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_2, Integer.class), PROPERTY_REWRITE_2_FILE_2);
-		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_12, Double.class), PROPERTY_REWRITE_12_FILE_2);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_2, Integer.class),
+				PROPERTY_REWRITE_2_FILE_2);
+		Assert.assertEquals(testConfigurationReader.getProperty(PROPERTY_REWRITE_12, Double.class),
+				PROPERTY_REWRITE_12_FILE_2);
 	}
 
 	@Test(expectedExceptions = { PropertyNotFoundException.class })
