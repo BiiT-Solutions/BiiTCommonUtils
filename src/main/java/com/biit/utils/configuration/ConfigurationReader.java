@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.biit.logger.BiitCommonLogger;
 import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
@@ -17,10 +18,14 @@ public class ConfigurationReader {
 	private static final char PREFIX_SEPARATOR_CHAR = '.';
 	private final Map<Class<?>, IValueConverter<?>> converter;
 	private final Map<String, String> propertiesDefault;
-	private final Map<String, String> propertiesFinalValue;
+	private Map<String, String> propertiesFinalValue;
 	private final List<IPropertiesSource> propertiesSources;
 	private final Set<PropertyChangedListener> propertyChangedListeners;
 	private final Map<IPropertiesSource, Map<String, String>> propertiesBySourceValues;
+
+	public enum Case {
+		SENSITIVE, INSENSITIVE;
+	}
 
 	public ConfigurationReader() {
 		converter = new HashMap<Class<?>, IValueConverter<?>>();
@@ -67,7 +72,18 @@ public class ConfigurationReader {
 	 * configuration files again.
 	 */
 	public void readConfigurations() {
-		propertiesFinalValue.clear();
+		readConfigurations(Case.SENSITIVE);
+	}
+
+	public void readConfigurations(Case caseMode) {
+		switch (caseMode) {
+		case SENSITIVE:
+			propertiesFinalValue = new HashMap<String, String>();
+			break;
+		case INSENSITIVE:
+			propertiesFinalValue = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+			break;
+		}
 		propertiesFinalValue.putAll(propertiesDefault);
 
 		for (final IPropertiesSource propertiesSource : propertiesSources) {
@@ -80,8 +96,8 @@ public class ConfigurationReader {
 
 	/**
 	 * Reads all properties configured in this configuration reader from
-	 * propertyFile. If they doesn't exist, then the current value is mantained
-	 * as default value.
+	 * propertyFile. If they doesn't exist, then the current value is mantained as
+	 * default value.
 	 * 
 	 * @param propertyFile
 	 */
@@ -173,8 +189,8 @@ public class ConfigurationReader {
 				return null;
 			}
 		} else {
-			throw new PropertyNotFoundException("Property '" + propertyName
-					+ "' not defined in the configuration reader");
+			throw new PropertyNotFoundException(
+					"Property '" + propertyName + "' not defined in the configuration reader");
 		}
 	}
 
@@ -201,8 +217,7 @@ public class ConfigurationReader {
 
 	/**
 	 * Stops file watchers in from all configuration files. This is necessary in
-	 * projects such as JpaSchemaExporters that waits until all threads are
-	 * closed.
+	 * projects such as JpaSchemaExporters that waits until all threads are closed.
 	 */
 	public void stopFileWatchers() {
 		for (final IPropertiesSource sources : propertiesSources) {
