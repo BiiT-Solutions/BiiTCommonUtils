@@ -33,9 +33,11 @@ public abstract class CollectionPool<KeyId, ElementId, Type extends PoolElement<
 	public synchronized void addElement(Type element, KeyId key) {
 		if (getExpirationTime() > 0) {
 			BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
-			if (elementsById.get(key) != null) {
-				elementsById.get(key).put(element.getUniqueId(), element);
+			elementsTime.put(key, System.currentTimeMillis());
+			if (elementsById.get(key) == null) {
+				elementsById.put(key, new HashMap<ElementId, Type>());
 			}
+			elementsById.get(key).put(element.getUniqueId(), element);
 		}
 	}
 
