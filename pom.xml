@@ -4,38 +4,22 @@
 	<groupId>com.biit</groupId>
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.9-SNAPSHOT</version>
+	<version>1.0.8-SNAPSHOT</version>
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
-    <profiles>
-        <profile>
-            <id>dev-azure-com-maisteringbv-mbv-val-artifacts</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <repository>
-                    <id>dev-azure-com-maisteringbv-mbv-val-artifacts</id>
-                    <name>libs-releases</name>
-                    <url>https://pkgs.dev.azure.com/maisteringbv/_packaging/MBV-VAL-ARTIFACTS/maven/v1</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
-
-    <repositories>
-        <repository>
-            <id>dev-azure-com-maisteringbv-mbv-val-artifacts</id>
-            <url>https://pkgs.dev.azure.com/maisteringbv/_packaging/MBV-VAL-ARTIFACTS/maven/v1</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>libs-releases</name>
+			<url>https://dev.biit-solutions.com/artifactory/libs-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>libs-snapshot</name>
+			<url>https://dev.biit-solutions.com/artifactory/libs-snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 
 	<scm>
