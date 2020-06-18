@@ -96,13 +96,13 @@ public class ConfigurationReader {
 
 	/**
 	 * Reads all properties configured in this configuration reader from
-	 * propertyFile. If they doesn't exist, then the current value is mantained as
+	 * propertyFile. If they doesn't exist, then the current value is maintained as
 	 * default value.
 	 * 
 	 * @param propertyFile
 	 */
 	private void readAllProperties(Properties propertyFile, IPropertiesSource propertiesSource) {
-		for (final String propertyId : new HashSet<String>(propertiesFinalValue.keySet())) {
+		for (final String propertyId : new HashMap<String, String>(propertiesFinalValue).keySet()) {
 			final String value = propertyFile.getProperty(propertyId, propertiesFinalValue.get(propertyId));
 			// Notify property change
 			if (propertiesBySourceValues.get(propertiesSource) == null) {
