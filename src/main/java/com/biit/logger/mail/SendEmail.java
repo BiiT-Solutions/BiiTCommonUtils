@@ -14,46 +14,48 @@ import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 
 public class SendEmail {
 
-	public static void sendEmail(List<String> mailToList, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-		for (final String mailTo : mailToList) {
-			sendEmail(mailTo, subject, htmlContent);
-			BiitCommonLogger.info(SendEmail.class, "Sending email to " + mailTo);
+	public static void sendEmail(List<String> mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
+		if (EmailConfigurationReader.getInstance().getEmailCopy() != null) {
+			sendEmail(mailTo, null, Arrays.asList(new String[] { EmailConfigurationReader.getInstance().getEmailCopy() }), subject, htmlContent);
+		} else {
+			sendEmail(mailTo, null, null, subject, htmlContent);
 		}
 	}
 
 	public static void sendEmail(String mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance().getEmailPort(), EmailConfigurationReader
-				.getInstance().getEmailUser(), EmailConfigurationReader.getInstance().getEmailPassword(), EmailConfigurationReader.getInstance()
-				.getEmailSender(), mailTo, subject, htmlContent);
+		sendEmail(Arrays.asList(new String[] { mailTo }), subject, htmlContent);
 	}
 
-	/**
-	 * Sends Mail
-	 * 
-	 * @param smtpServer
-	 * @param emailUser
-	 * @param emailPassword
-	 * @param emailSender
-	 * @param mailTo
-	 * @param subject
-	 * @param htmlContent
-	 * @throws EmailNotSentException
-	 * @throws InvalidEmailAddressException
-	 */
-	public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo, String subject,
-			String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
+	public static void sendEmail(List<String> mailTo, List<String> mailCc, List<String> mailCco, String subject, String htmlContent)
+			throws EmailNotSentException, InvalidEmailAddressException {
+		sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance().getEmailPort(),
+				EmailConfigurationReader.getInstance().getEmailUser(), EmailConfigurationReader.getInstance().getEmailPassword(),
+				EmailConfigurationReader.getInstance().getEmailSender(), mailTo, mailCc, mailCco, subject, htmlContent);
+	}
+
+	public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo, String mailCc,
+			String mailCco, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
+		sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, Arrays.asList(new String[] { mailTo }), Arrays.asList(new String[] { mailCc }),
+				Arrays.asList(new String[] { mailCco }), subject, htmlContent);
+	}
+
+	public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
+			List<String> mailCc, List<String> mailCco, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
 		if (!isValidEmailAddress(emailSender)) {
 			throw new InvalidEmailAddressException("Address email '" + emailSender + "' is invalid");
 		}
 
 		try {
+			BiitCommonLogger.info(SendEmail.class, "Sending email to " + mailTo);
 			final SendEmailThread sendEmailThread = new SendEmailThread();
 
 			sendEmailThread.setSmtpServer(smtpServer);
 			sendEmailThread.setEmailUser(emailUser);
 			sendEmailThread.setEmailPassword(emailPassword);
 			sendEmailThread.setEmailSender(emailSender);
-			sendEmailThread.setMailTo(mailTo);
+			sendEmailThread.setEmailCco(mailCco);
+			sendEmailThread.setEmailCc(mailCc);
+			sendEmailThread.setEmailTo(mailTo);
 			sendEmailThread.setSubject(subject);
 			sendEmailThread.setHtmlContent(htmlContent);
 			sendEmailThread.setEmailPort(smtpPort);
@@ -68,8 +70,8 @@ public class SendEmail {
 	}
 
 	/**
-	 * This method is not too strong, some invalid emails will pass this test.
-	 * Only for very basic validation of email
+	 * This method is not too strong, some invalid emails will pass this test. Only
+	 * for very basic validation of email
 	 * 
 	 * @param email
 	 * @return

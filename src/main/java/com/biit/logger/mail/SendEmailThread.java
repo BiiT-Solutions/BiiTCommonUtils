@@ -1,6 +1,5 @@
 package com.biit.logger.mail;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +11,9 @@ import com.biit.logger.BiitCommonLogger;
 public class SendEmailThread implements Runnable {
 	private String smtpServer;
 	private String emailUser;
-	private String mailTo;
+	private List<String> emailTo;
+	private List<String> emailCc;
+	private List<String> emailCco;
 	private String emailPassword;
 	private String emailPort;
 	private String emailSender;
@@ -33,8 +34,8 @@ public class SendEmailThread implements Runnable {
 		exceptionListeners.add(listener);
 	}
 
+	@Override
 	public void run() {
-		final List<String> to = Arrays.asList(new String[] { mailTo });
 		final Postman postman = new Postman(smtpServer, emailPort, emailUser, emailPassword);
 		try {
 			postman.setSubject(subject);
@@ -42,10 +43,14 @@ public class SendEmailThread implements Runnable {
 			// Avoiding javax.activation.UnsupportedDataTypeException: no object
 			// DCH for MIME type multipart/mixed;
 			Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
-			postman.sendMail(to, null, null, emailSender);
+			if ((emailTo != null && !emailTo.isEmpty()) || (emailCc != null && !emailCc.isEmpty()) || (emailCco != null && !emailCco.isEmpty())) {
+				postman.sendMail(emailTo, emailCc, emailCco, emailSender);
+			} else {
+				BiitCommonLogger.warning(this.getClass(), "Sending email failed. No destination emails sets!");
+			}
 		} catch (MessagingException e) {
-			BiitCommonLogger.severe(this.getClass(), "Sending email failed: smtpServer '" + smtpServer + "', emailUser '" + emailUser + "', emailPassword '"
-					+ emailPassword + "' ");
+			BiitCommonLogger.severe(this.getClass(),
+					"Sending email failed: smtpServer '" + smtpServer + "', emailUser '" + emailUser + "', emailPassword '" + emailPassword + "' ");
 			// throw new EmailNotSentException(e.getMessage());
 			for (final ThreadExceptionListener listener : exceptionListeners) {
 				listener.exceptionLaunched(e);
@@ -59,10 +64,6 @@ public class SendEmailThread implements Runnable {
 
 	public void setEmailUser(String emailUser) {
 		this.emailUser = emailUser;
-	}
-
-	public void setMailTo(String mailTo) {
-		this.mailTo = mailTo;
 	}
 
 	public void setEmailPassword(String emailPassword) {
@@ -87,6 +88,24 @@ public class SendEmailThread implements Runnable {
 
 	public void setEmailPort(String emailPort) {
 		this.emailPort = emailPort;
+	}
+
+	public void setEmailTo(List<String> emailTo) {
+		while (emailTo.remove(null))
+			;
+		this.emailTo = emailTo;
+	}
+
+	public void setEmailCc(List<String> emailCc) {
+		while (emailTo.remove(null))
+			;
+		this.emailCc = emailCc;
+	}
+
+	public void setEmailCco(List<String> emailCco) {
+		while (emailTo.remove(null))
+			;
+		this.emailCco = emailCco;
 	}
 
 }

@@ -22,6 +22,7 @@ public class EmailConfigurationReader extends ConfigurationReader {
 	private static final String EMAIL_USERNAME_TAG = "mail.username";
 	private static final String EMAIL_PASSWORD_TAG = "mail.password";
 	private static final String EMAIL_SENDER_TAG = "mail.sender";
+	private static final String EMAIL_COPY_ADDRESS = "mail.copy";
 	private static final String EMAIL_PORT_TAG = "mail.port";
 
 	private static final String DEFAULT_EMAIL_SMTP_SERVER = "smtp.mail.com";
@@ -84,6 +85,10 @@ public class EmailConfigurationReader extends ConfigurationReader {
 
 	public synchronized String getEmailSender() {
 		return getPropertyLogException(EMAIL_SENDER_TAG);
+	}
+	
+	public synchronized String getEmailCopy() {
+		return getPropertyLogException(EMAIL_COPY_ADDRESS);
 	}
 
 	public synchronized String getEmailPort() {
