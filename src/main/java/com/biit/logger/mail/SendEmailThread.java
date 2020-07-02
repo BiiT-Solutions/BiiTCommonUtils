@@ -97,13 +97,13 @@ public class SendEmailThread implements Runnable {
 	}
 
 	public void setEmailCc(List<String> emailCc) {
-		while (emailTo.remove(null))
+		while (emailCc.remove(null))
 			;
 		this.emailCc = emailCc;
 	}
 
 	public void setEmailCco(List<String> emailCco) {
-		while (emailTo.remove(null))
+		while (emailCco.remove(null))
 			;
 		this.emailCco = emailCco;
 	}
