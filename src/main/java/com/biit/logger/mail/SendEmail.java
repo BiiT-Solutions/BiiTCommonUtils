@@ -1,5 +1,6 @@
 package com.biit.logger.mail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,14 +17,15 @@ public class SendEmail {
 
 	public static void sendEmail(List<String> mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
 		if (EmailConfigurationReader.getInstance().getEmailCopy() != null) {
-			sendEmail(mailTo, null, Arrays.asList(new String[] { EmailConfigurationReader.getInstance().getEmailCopy() }), subject, htmlContent);
+			sendEmail(mailTo, null, new ArrayList<>(Arrays.asList(new String[] { EmailConfigurationReader.getInstance().getEmailCopy() })), subject,
+					htmlContent);
 		} else {
 			sendEmail(mailTo, null, null, subject, htmlContent);
 		}
 	}
 
 	public static void sendEmail(String mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-		sendEmail(Arrays.asList(new String[] { mailTo }), subject, htmlContent);
+		sendEmail(new ArrayList<>(Arrays.asList(new String[] { mailTo })), subject, htmlContent);
 	}
 
 	public static void sendEmail(List<String> mailTo, List<String> mailCc, List<String> mailCco, String subject, String htmlContent)
@@ -35,8 +37,8 @@ public class SendEmail {
 
 	public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo, String mailCc,
 			String mailCco, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-		sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, Arrays.asList(new String[] { mailTo }), Arrays.asList(new String[] { mailCc }),
-				Arrays.asList(new String[] { mailCco }), subject, htmlContent);
+		sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, new ArrayList<>(Arrays.asList(new String[] { mailTo })),
+				new ArrayList<>(Arrays.asList(new String[] { mailCc })), new ArrayList<>(Arrays.asList(new String[] { mailCco })), subject, htmlContent);
 	}
 
 	public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
@@ -90,7 +92,7 @@ public class SendEmail {
 	public static void basicMailSender(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo,
 			String subject, String htmlContent) throws MessagingException {
 		final Postman postman = new Postman(smtpServer, smtpPort, emailUser, emailPassword);
-		final List<String> to = Arrays.asList(new String[] { mailTo });
+		final List<String> to = new ArrayList<>(Arrays.asList(new String[] { mailTo }));
 		postman.setSubject(subject);
 		postman.addHtml(htmlContent);
 		// Avoiding javax.activation.UnsupportedDataTypeException: no object
