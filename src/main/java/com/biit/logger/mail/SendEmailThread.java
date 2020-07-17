@@ -43,14 +43,15 @@ public class SendEmailThread implements Runnable {
 			// Avoiding javax.activation.UnsupportedDataTypeException: no object
 			// DCH for MIME type multipart/mixed;
 			Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
-			if ((emailTo != null && !emailTo.isEmpty()) || (emailCc != null && !emailCc.isEmpty()) || (emailCco != null && !emailCco.isEmpty())) {
+			if ((emailTo != null && !emailTo.isEmpty()) || (emailCc != null && !emailCc.isEmpty())
+					|| (emailCco != null && !emailCco.isEmpty())) {
 				postman.sendMail(emailTo, emailCc, emailCco, emailSender);
 			} else {
 				BiitCommonLogger.warning(this.getClass(), "Sending email failed. No destination emails sets!");
 			}
 		} catch (MessagingException e) {
-			BiitCommonLogger.severe(this.getClass(),
-					"Sending email failed: smtpServer '" + smtpServer + "', emailUser '" + emailUser + "', emailPassword '" + emailPassword + "' ");
+			BiitCommonLogger.severe(this.getClass(), "Sending email failed: smtpServer '" + smtpServer
+					+ "', emailUser '" + emailUser + "', emailPassword '" + emailPassword + "' ");
 			// throw new EmailNotSentException(e.getMessage());
 			for (final ThreadExceptionListener listener : exceptionListeners) {
 				listener.exceptionLaunched(e);
@@ -91,20 +92,20 @@ public class SendEmailThread implements Runnable {
 	}
 
 	public void setEmailTo(List<String> emailTo) {
-		while (emailTo.remove(null))
-			;
+		while (emailTo.remove(null)) {
+		}
 		this.emailTo = emailTo;
 	}
 
 	public void setEmailCc(List<String> emailCc) {
-		while (emailCc.remove(null))
-			;
+		while (emailCc.remove(null)) {
+		}
 		this.emailCc = emailCc;
 	}
 
 	public void setEmailCco(List<String> emailCco) {
-		while (emailCco.remove(null))
-			;
+		while (emailCco.remove(null)) {
+		}
 		this.emailCco = emailCco;
 	}
 

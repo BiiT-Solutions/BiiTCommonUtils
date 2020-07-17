@@ -58,9 +58,9 @@ public class ConfigurationReader {
 
 	protected void addPropertiesFromJar(String configurationFile) {
 		// Load settings as file.
-		String jarFolder = getJarFolder();
+		final String jarFolder = getJarFolder();
 		if (jarFolder != null) {
-			String settingsFile = jarFolder + "/" + configurationFile;
+			final String settingsFile = jarFolder + "/" + configurationFile;
 			BiitCommonLogger.debug(this.getClass(), "Searching for configuration file in '" + settingsFile + "'.");
 			if (fileExists(settingsFile)) {
 				addPropertiesSource(new PropertiesSourceFile(jarFolder, configurationFile));
@@ -293,7 +293,7 @@ public class ConfigurationReader {
 	}
 
 	protected String getJarFolder() {
-		URL settingsUrl = getJarUrl();
+		final URL settingsUrl = getJarUrl();
 		if (settingsUrl == null) {
 			return null;
 		}
@@ -301,8 +301,8 @@ public class ConfigurationReader {
 	}
 
 	protected boolean fileExists(String filePathString) {
-		File f = new File(filePathString);
-		return (f.exists() && !f.isDirectory());
+		final File file = new File(filePathString);
+		return (file.exists() && !file.isDirectory());
 	}
 
 	protected String getJarName() {
