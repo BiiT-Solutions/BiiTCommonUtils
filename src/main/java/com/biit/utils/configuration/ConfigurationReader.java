@@ -1,5 +1,8 @@
 package com.biit.utils.configuration;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -16,6 +19,9 @@ import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 public class ConfigurationReader {
 	private static final String VALUES_SEPARATOR_REGEX = " *, *";
 	private static final char PREFIX_SEPARATOR_CHAR = '.';
+	private static final String WINDOWS_DEFAULT_EXECUTABLE_EXTENSION = ".exe";
+	private static final String JAR_DEFAULT_NAME = "application.jar";
+
 	private final Map<Class<?>, IValueConverter<?>> converter;
 	private final Map<String, String> propertiesDefault;
 	private Map<String, String> propertiesFinalValue;
@@ -48,6 +54,21 @@ public class ConfigurationReader {
 						+ oldValue + "' to '" + newValue + "'.");
 			}
 		});
+	}
+
+	protected void addPropertiesFromJar(String configurationFile) {
+		// Load settings as file.
+		String jarFolder = getJarFolder();
+		if (jarFolder != null) {
+			String settingsFile = jarFolder + "/" + configurationFile;
+			BiitCommonLogger.debug(this.getClass(), "Searching for configuration file in '" + settingsFile + "'.");
+			if (fileExists(settingsFile)) {
+				addPropertiesSource(new PropertiesSourceFile(jarFolder, configurationFile));
+				BiitCommonLogger.debug(this.getClass(), "Found configuration file '" + settingsFile + "'!");
+			} else {
+				BiitCommonLogger.debug(this.getClass(), "Configuration file not found at '" + settingsFile + "'.");
+			}
+		}
 	}
 
 	public interface PropertyChangedListener {
@@ -233,6 +254,58 @@ public class ConfigurationReader {
 		value = value.replaceAll(VALUES_SEPARATOR_REGEX, ",");
 		// Split by commas.
 		return value.split(",");
+	}
 
+	private URL getJarUrl() {
+		URL url;
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			url = this.getClass().getResource('/' + this.getClass().getName().replace('.', '/') + ".class");
+			try {
+				url = new URL(url.toString().replaceFirst("/", ""));
+			} catch (MalformedURLException e) {
+				BiitCommonLogger.debug(this.getClass(), e.toString());
+			}
+		} else {
+			url = this.getClass().getResource('/' + this.getClass().getName().replace('.', '/') + ".class");
+		}
+		BiitCommonLogger.info(this.getClass(), "Jar found for searching settings '" + url + "'.");
+		if (url == null) {
+			return null;
+		}
+		// Remove class inside JAR file (i.e. jar:file:///outer.jar!/file.class)
+		String packetPath = url.getPath();
+		if (packetPath.contains("!")) {
+			packetPath = packetPath.substring(0, packetPath.indexOf("!"));
+			if (packetPath.endsWith(WINDOWS_DEFAULT_EXECUTABLE_EXTENSION)) {
+				packetPath = packetPath.substring(0, packetPath.lastIndexOf("/")) + "/" + getJarName();
+			}
+		}
+
+		packetPath = packetPath.replace("jar:", "");
+		try {
+			url = new URL(packetPath);
+		} catch (MalformedURLException e) {
+			// Not in a jar.
+			return null;
+		}
+
+		return url;
+	}
+
+	protected String getJarFolder() {
+		URL settingsUrl = getJarUrl();
+		if (settingsUrl == null) {
+			return null;
+		}
+		return settingsUrl.getPath().substring(0, settingsUrl.getPath().lastIndexOf('/')).replaceAll("%20", " ");
+	}
+
+	protected boolean fileExists(String filePathString) {
+		File f = new File(filePathString);
+		return (f.exists() && !f.isDirectory());
+	}
+
+	protected String getJarName() {
+		return JAR_DEFAULT_NAME;
 	}
 }
