@@ -64,7 +64,8 @@ public class ConfigurationReader {
 			BiitCommonLogger.debug(this.getClass(), "Searching for configuration file in '" + settingsFile + "'.");
 			if (fileExists(settingsFile)) {
 				addPropertiesSource(new PropertiesSourceFile(jarFolder, configurationFile));
-				BiitCommonLogger.debug(this.getClass(), "Found configuration file '" + settingsFile + "'!");
+				BiitCommonLogger.info(this.getClass(),
+						"Found configuration file '" + settingsFile + "' on jar '" + jarFolder + "'!");
 			} else {
 				BiitCommonLogger.debug(this.getClass(), "Configuration file not found at '" + settingsFile + "'.");
 			}
