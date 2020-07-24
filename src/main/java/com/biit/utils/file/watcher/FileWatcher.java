@@ -2,7 +2,6 @@ package com.biit.utils.file.watcher;
 
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
