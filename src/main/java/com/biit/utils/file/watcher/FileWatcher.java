@@ -2,6 +2,7 @@ package com.biit.utils.file.watcher;
 
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
@@ -89,7 +90,7 @@ public class FileWatcher {
 	public void addFileRemovedListener(FileRemovedListener listener) {
 		fileRemovedListeners.add(listener);
 	}
-
+		
 	private Path getDirectoryToWatch() {
 		if (pathToWatch == null) {
 			pathToWatch = Paths.get(directoryToWatch);
@@ -208,7 +209,8 @@ public class FileWatcher {
 
 	public void setDirectoryToWatch(String directoryToWatch) {
 		if (!directoryToWatch.equals(this.directoryToWatch)) {
-			this.directoryToWatch = directoryToWatch;
+			// On windows shows this error: java.nio.file.InvalidPathException: Illegal char <:> at index 2:
+			this.directoryToWatch = directoryToWatch.replaceFirst("^/(.:/)", "");
 			closeFileWatcher();
 		}
 	}
