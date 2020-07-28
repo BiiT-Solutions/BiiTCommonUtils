@@ -35,11 +35,11 @@ import com.biit.logger.BiitCommonLogger;
 public class FileReader {
 	private static final String ICON_FOLDER = "icons";
 
-	public static File getResource(String fileName) throws NullPointerException {
+	public static File getResource(String fileName) throws FileNotFoundException {
 		return getResource(FileReader.class, fileName);
 	}
 
-	public static File getResource(Class<?> classWithResources, String fileName) throws NullPointerException {
+	public static File getResource(Class<?> classWithResources, String fileName) throws FileNotFoundException {
 		final URL url = classWithResources.getClassLoader().getResource(fileName);
 		if (url != null) {
 			BiitCommonLogger.info(FileReader.class,
@@ -98,7 +98,7 @@ public class FileReader {
 				}
 			}
 		} catch (NullPointerException npe) {
-			throw new NullPointerException("File '" + fileName + "' does not exist.");
+			throw new FileNotFoundException("File '" + fileName + "' does not exist.");
 		} catch (UnsupportedEncodingException ue) {
 			BiitCommonLogger.errorMessageNotification(FileReader.class, ue);
 		}
