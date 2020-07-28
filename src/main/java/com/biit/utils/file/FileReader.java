@@ -45,7 +45,8 @@ public class FileReader {
 			BiitCommonLogger.info(FileReader.class,
 					"Resource to read '" + fileName + "' found at url '" + url.toString() + "'.");
 		} else {
-			BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + fileName + "'.");
+			BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + fileName + "' using classloader from '"
+					+ classWithResources.getProtectionDomain().getCodeSource().getLocation() + "'.");
 		}
 		File file = null;
 		// Jetty load resource.
@@ -121,8 +122,8 @@ public class FileReader {
 	}
 
 	public static ImageIcon getIcon(String iconFile) {
-		return new ImageIcon(FileReader.class.getClassLoader().getResource(
-				File.separator + ICON_FOLDER + File.separator + iconFile));
+		return new ImageIcon(FileReader.class.getClassLoader()
+				.getResource(File.separator + ICON_FOLDER + File.separator + iconFile));
 	}
 
 	/**
@@ -225,8 +226,8 @@ public class FileReader {
 				final URI uri = url.toURI();
 				if (uri.getScheme().equals("jar")) {
 					// Remove 'file:' and '!' in 'jar!'
-					final File jarFile = new File(url.getPath().toString()
-							.substring(5, url.toString().indexOf("jar!") - 1));
+					final File jarFile = new File(
+							url.getPath().toString().substring(5, url.toString().indexOf("jar!") - 1));
 					try (final JarFile jar = new JarFile(jarFile)) {
 						// gives ALL entries in jar
 						final Enumeration<JarEntry> entries = jar.entries();
@@ -235,8 +236,8 @@ public class FileReader {
 							// filter according to the path
 							if (jarEntry.getName().startsWith(folderPath + "/")
 									&& !jarEntry.getName().endsWith(folderPath + "/")) {
-								files.add(getResource(jarEntry.getName().substring(
-										jarEntry.getName().indexOf(folderPath))));
+								files.add(getResource(
+										jarEntry.getName().substring(jarEntry.getName().indexOf(folderPath))));
 							}
 						}
 						return files;
