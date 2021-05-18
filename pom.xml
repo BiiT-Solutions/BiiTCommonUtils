@@ -24,7 +24,7 @@
 
 	<scm>
 		<connection>scm:git:git.biit-solutions.com:BiiT/BiiTCommonUtils.git</connection>
-		<developerConnection>scm:git:git.biit-solutions.com:Biit/BiiTCommonUtils.git</developerConnection>
+		<connection>scm:git:git.biit-solutions.com:BiiT/Biit/BiiTCommonUtils.git</developerConnection>
 		<tag>common-utils-1.0.9</tag>
 	</scm>
 
