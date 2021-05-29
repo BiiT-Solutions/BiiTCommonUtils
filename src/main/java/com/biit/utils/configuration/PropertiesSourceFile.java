@@ -14,76 +14,77 @@ import com.biit.utils.file.watcher.FileWatcher;
 import com.biit.utils.file.watcher.FileWatcher.FileModifiedListener;
 
 public class PropertiesSourceFile extends SourceFile<Properties> implements IPropertiesSource {
-	private Set<FileModifiedListener> fileModifiedListeners;
-	private FileWatcher fileWatcher;
+    private Set<FileModifiedListener> fileModifiedListeners;
+    private FileWatcher fileWatcher;
 
-	public PropertiesSourceFile(String fileName) {
-		super(fileName);
-		fileModifiedListeners = new HashSet<>();
-	}
+    public PropertiesSourceFile(String fileName) {
+        super(fileName);
+        fileModifiedListeners = new HashSet<>();
+    }
 
-	public PropertiesSourceFile(String filePath, String fileName) {
-		super(filePath, fileName);
-		fileModifiedListeners = new HashSet<>();
-	}
+    public PropertiesSourceFile(String filePath, String fileName) {
+        super(filePath, fileName);
+        fileModifiedListeners = new HashSet<>();
+    }
 
-	public void addFileModifiedListeners(FileModifiedListener fileModifiedListener) {
-		fileModifiedListeners.add(fileModifiedListener);
-	}
+    public void addFileModifiedListeners(FileModifiedListener fileModifiedListener) {
+        fileModifiedListeners.add(fileModifiedListener);
+    }
 
-	@Override
-	public void setFilePath(String filePath) {
-		super.setFilePath(filePath);
-		setWatcher();
-	}
+    @Override
+    public void setFilePath(String filePath) {
+        super.setFilePath(filePath);
+        setWatcher();
+    }
 
-	@Override
-	public Properties loadFile() {
-		try {
-			if (getFilePath() == null) {
-				return PropertiesFile.load(getFileName());
-			} else {
-				return PropertiesFile.load(getFilePath(), getFileName());
-			}
-		} catch (FileNotFoundException e) {
-			BiitCommonLogger.debug(this.getClass(), e.getMessage());
-		} catch (IOException e) {
-			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
-		} catch (NullPointerException e) {
-			BiitCommonLogger.info(this.getClass(), e.getMessage());
-		}
-		return null;
-	}
+    @Override
+    public Properties loadFile() {
+        try {
+            if (getFilePath() == null) {
+                return PropertiesFile.load(getFileName());
+            } else {
+                return PropertiesFile.load(getFilePath(), getFileName());
+            }
+        } catch (FileNotFoundException e) {
+            BiitCommonLogger.debug(this.getClass(), e.getMessage());
+        } catch (IOException e) {
+            BiitCommonLogger.errorMessageNotification(this.getClass(), e);
+        } catch (NullPointerException e) {
+            BiitCommonLogger.info(this.getClass(), e.getMessage());
+        }
+        BiitCommonLogger.debug(this.getClass(), "File '" + getFilePath() + "/" + getFileName() + "' not found.");
+        return null;
+    }
 
-	private String getDirectoryToWatch() {
-		return (getFilePath() != null ? getFilePath() : this.getClass().getClassLoader().getResource(".").getPath());
-	}
+    private String getDirectoryToWatch() {
+        return (getFilePath() != null ? getFilePath() : this.getClass().getClassLoader().getResource(".").getPath());
+    }
 
-	private void setWatcher() {
-		final Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[] { getFileName() }));
+    private void setWatcher() {
+        final Set<String> checkedFiles = new HashSet<>(Arrays.asList(new String[]{getFileName()}));
 
-		try {
-			fileWatcher = new FileWatcher(getDirectoryToWatch(), checkedFiles);
-			fileWatcher.addFileModifiedListener(new FileModifiedListener() {
+        try {
+            fileWatcher = new FileWatcher(getDirectoryToWatch(), checkedFiles);
+            fileWatcher.addFileModifiedListener(new FileModifiedListener() {
 
-				@Override
-				public void changeDetected(Path pathToFile) {
-					// Pass the listener to current listeners.S
-					for (final FileModifiedListener fileModifiedListener : fileModifiedListeners) {
-						fileModifiedListener.changeDetected(pathToFile);
-					}
-				}
-			});
-		} catch (IOException e) {
-			BiitCommonLogger.errorMessageNotification(this.getClass(), e);
-		} catch (NullPointerException npe) {
-			BiitCommonLogger.warning(this.getClass(), "Directory to watch not found!");
-		}
-	}
+                @Override
+                public void changeDetected(Path pathToFile) {
+                    // Pass the listener to current listeners.S
+                    for (final FileModifiedListener fileModifiedListener : fileModifiedListeners) {
+                        fileModifiedListener.changeDetected(pathToFile);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            BiitCommonLogger.errorMessageNotification(this.getClass(), e);
+        } catch (NullPointerException npe) {
+            BiitCommonLogger.warning(this.getClass(), "Directory to watch not found!");
+        }
+    }
 
-	public void stopFileWatcher() {
-		if (fileWatcher != null) {
-			fileWatcher.closeFileWatcher();
-		}
-	}
+    public void stopFileWatcher() {
+        if (fileWatcher != null) {
+            fileWatcher.closeFileWatcher();
+        }
+    }
 }

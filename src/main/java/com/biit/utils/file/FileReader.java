@@ -35,17 +35,18 @@ import com.biit.logger.BiitCommonLogger;
 public class FileReader {
 	private static final String ICON_FOLDER = "icons";
 
-	public static File getResource(String fileName) throws NullPointerException {
+	public static File getResource(String fileName) throws FileNotFoundException {
 		return getResource(FileReader.class, fileName);
 	}
 
-	public static File getResource(Class<?> classWithResources, String fileName) throws NullPointerException {
+	public static File getResource(Class<?> classWithResources, String fileName) throws FileNotFoundException {
 		final URL url = classWithResources.getClassLoader().getResource(fileName);
 		if (url != null) {
 			BiitCommonLogger.info(FileReader.class,
 					"Resource to read '" + fileName + "' found at url '" + url.toString() + "'.");
 		} else {
-			BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + fileName + "'.");
+			BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + fileName + "' using classloader from '"
+					+ classWithResources.getProtectionDomain().getCodeSource().getLocation() + "'.");
 		}
 		File file = null;
 		// Jetty load resource.
@@ -95,7 +96,7 @@ public class FileReader {
 				}
 			}
 		} catch (NullPointerException npe) {
-			throw new NullPointerException("File '" + fileName + "' does not exist.");
+			throw new FileNotFoundException("File '" + fileName + "' does not exist.");
 		} catch (UnsupportedEncodingException ue) {
 			BiitCommonLogger.errorMessageNotification(FileReader.class, ue);
 		}
@@ -119,8 +120,8 @@ public class FileReader {
 	}
 
 	public static ImageIcon getIcon(String iconFile) {
-		return new ImageIcon(FileReader.class.getClassLoader().getResource(
-				File.separator + ICON_FOLDER + File.separator + iconFile));
+		return new ImageIcon(FileReader.class.getClassLoader()
+				.getResource(File.separator + ICON_FOLDER + File.separator + iconFile));
 	}
 
 	/**
@@ -233,8 +234,8 @@ public class FileReader {
 							// filter according to the path
 							if (jarEntry.getName().startsWith(folderPath + "/")
 									&& !jarEntry.getName().endsWith(folderPath + "/")) {
-								files.add(getResource(jarEntry.getName().substring(
-										jarEntry.getName().indexOf(folderPath))));
+								files.add(getResource(
+										jarEntry.getName().substring(jarEntry.getName().indexOf(folderPath))));
 							}
 						}
 						return files;

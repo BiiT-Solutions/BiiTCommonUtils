@@ -89,7 +89,7 @@ public class FileWatcher {
 	public void addFileRemovedListener(FileRemovedListener listener) {
 		fileRemovedListeners.add(listener);
 	}
-
+		
 	private Path getDirectoryToWatch() {
 		if (pathToWatch == null) {
 			pathToWatch = Paths.get(directoryToWatch);
@@ -208,7 +208,8 @@ public class FileWatcher {
 
 	public void setDirectoryToWatch(String directoryToWatch) {
 		if (!directoryToWatch.equals(this.directoryToWatch)) {
-			this.directoryToWatch = directoryToWatch;
+			// On windows shows this error: java.nio.file.InvalidPathException: Illegal char <:> at index 2:
+			this.directoryToWatch = directoryToWatch.replaceFirst("^/(.:/)", "");
 			closeFileWatcher();
 		}
 	}

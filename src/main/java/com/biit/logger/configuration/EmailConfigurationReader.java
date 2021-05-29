@@ -41,6 +41,7 @@ public class EmailConfigurationReader extends ConfigurationReader {
 		addProperty(EMAIL_PASSWORD_TAG, DEFAULT_EMAIL_PASSWORD);
 		addProperty(EMAIL_SENDER_TAG, DEFAULT_EMAIL_SENDER);
 		addProperty(EMAIL_PORT_TAG, DEFAULT_EMAIL_PORT);
+		addProperty(EMAIL_COPY_ADDRESS, null);
 		addProperty(EMAIL_ENABLED_TAG, false);
 		addProperty(EMAIL_TO_TAG, "");
 	}
