@@ -86,10 +86,8 @@ public class FileReader {
 								// Do nothing.
 							}
 						}
-					} catch (FileNotFoundException e1) {
+					} catch (IOException e1) {
 						BiitCommonLogger.severe(FileReader.class.getName(), e1);
-					} catch (IOException e) {
-						BiitCommonLogger.severe(FileReader.class.getName(), e);
 					}
 				}
 				if (!file.exists()) {
@@ -142,7 +140,7 @@ public class FileReader {
 	 * Reads a resource text file and returns a list of strings (one line per
 	 * string).
 	 * 
-	 * @param resourceName
+	 * @param filePath
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -175,7 +173,7 @@ public class FileReader {
 	}
 
 	public static String getResource(String fileName, Charset charset) throws FileNotFoundException {
-		final StringBuilder result = new StringBuilder("");
+		final StringBuilder result = new StringBuilder();
 		// Get file from resources folder
 		try {
 			final File file = getResource(fileName);
@@ -225,7 +223,7 @@ public class FileReader {
 				final URI uri = url.toURI();
 				if (uri.getScheme().equals("jar")) {
 					// Remove 'file:' and '!' in 'jar!'
-					final File jarFile = new File(url.getPath().toString()
+					final File jarFile = new File(url.getPath()
 							.substring(5, url.toString().indexOf("jar!") - 1));
 					try (final JarFile jar = new JarFile(jarFile)) {
 						// gives ALL entries in jar
@@ -263,9 +261,9 @@ public class FileReader {
 	public static List<File> getFiles(File folder) {
 		final File[] fileList = folder.listFiles();
 		if (fileList != null) {
-			return new ArrayList<File>(Arrays.asList(fileList));
+			return new ArrayList<>(Arrays.asList(fileList));
 		}
-		return new ArrayList<File>();
+		return new ArrayList<>();
 	}
 
 	/**
