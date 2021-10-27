@@ -4,13 +4,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.apache.log4j.Logger;
 
 import com.biit.logger.configuration.EmailConfigurationReader;
 import com.biit.logger.mail.ErrorMailGeneration;
 import com.biit.logger.mail.SendEmail;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
+import org.slf4j.Logger;
 
 public abstract class BiitLogger {
 

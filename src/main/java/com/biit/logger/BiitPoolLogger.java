@@ -1,10 +1,12 @@
 package com.biit.logger;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BiitPoolLogger extends BiitLogger {
 
-	private static Logger logger = Logger.getLogger(BiitPoolLogger.class);
+	private static Logger logger = LoggerFactory.getLogger(BiitPoolLogger.class);
 
 	public static void severe(String name, Throwable e) {
 		severe(logger, BiitLogger.getStackTrace(e));
