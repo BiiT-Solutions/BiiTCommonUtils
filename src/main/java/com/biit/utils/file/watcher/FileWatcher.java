@@ -122,6 +122,8 @@ public class FileWatcher {
 					try {
 						BiitCommonLogger.info(this.getClass(), "Closing filewatcher for '" + directoryToWatch + "'.");
 						watcher.close();
+					} catch (NullPointerException e) {
+						BiitCommonLogger.warning(this.getClass(), "Watcher not generated");
 					} catch (Exception e) {
 						BiitCommonLogger.severe(this.getClass().getName(), e);
 					}
