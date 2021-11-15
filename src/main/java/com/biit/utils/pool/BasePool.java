@@ -11,157 +11,160 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.biit.logger.BiitPoolLogger;
 
 public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, Type> {
-	// Elements by id;
-	private Map<ElementId, Long> elementsTime; // user id -> time.
-	private Map<ElementId, Type> elementsById;
+    // Elements by id;
+    private Map<ElementId, Long> elementsTime; // user id -> time.
+    private Map<ElementId, Type> elementsById;
 
-	public BasePool() {
-		reset();
-	}
+    public BasePool() {
+        reset();
+    }
 
-	@Override
-	public synchronized void reset() {
-		BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
-		elementsTime = new ConcurrentHashMap<ElementId, Long>();
-		elementsById = new ConcurrentHashMap<ElementId, Type>();
-	}
+    @Override
+    public synchronized void reset() {
+        BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
+        elementsTime = new ConcurrentHashMap<ElementId, Long>();
+        elementsById = new ConcurrentHashMap<ElementId, Type>();
+    }
 
-	@Override
-	public synchronized void addElement(Type element, ElementId key) {
-		BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
-		if (getExpirationTime() > 0) {
-			elementsTime.put(key, System.currentTimeMillis());
-			elementsById.put(key, element);
-		}
-	}
+    @Override
+    public synchronized void addElement(Type element, ElementId key) {
+        BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
+        if (getExpirationTime() > 0) {
+            elementsTime.put(key, System.currentTimeMillis());
+            elementsById.put(key, element);
+        }
+    }
 
-	/**
-	 * Gets all previously stored elements of a user in a site.
-	 * 
-	 * @param elementId
-	 *            element key for the pool.
-	 * @return the element that has the selected key.
-	 */
-	@Override
-	public synchronized Type getElement(ElementId elementId) {
-		if (elementId != null && getExpirationTime() > 0) {
-			final long now = System.currentTimeMillis();
-			ElementId storedObjectId = null;
-			if (elementsTime.size() > 0) {
-				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				final Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
-				final Map<ElementId, Type> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
-				final Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
+    /**
+     * Gets all previously stored elements of a user in a site.
+     *
+     * @param elementId element key for the pool.
+     * @return the element that has the selected key.
+     */
+    @Override
+    public synchronized Type getElement(ElementId elementId) {
+        if (elementId != null && getExpirationTime() > 0) {
+            final long now = System.currentTimeMillis();
+            ElementId storedObjectId = null;
+            if (elementsTime.size() > 0) {
+                BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
+                final Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
+                final Map<ElementId, Type> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
+                final Iterator<ElementId> elementByTime = elementsByTimeChecked.keySet().iterator();
 
-				for (final Entry<ElementId, Long> elementsByTimeEntry : elementsByTimeChecked.entrySet()) {
-					storedObjectId = elementByTime.next();
-					if (elementsByTimeEntry.getValue() != null
-							&& (now - elementsByTimeEntry.getValue()) > getExpirationTime()) {
-						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeEntry.getValue()
-								+ "' has expired (elapsed time: '" + (now - elementsByTimeEntry.getValue()) + "' > '"
-								+ getExpirationTime() + "'.)");
-						// object has expired
-						removeElement(storedObjectId);
-						storedObjectId = null;
-					} else {
-						if (elementsByIdChecked.get(storedObjectId) != null) {
-							// Remove not valid elements.
-							if (isDirty(elementsByIdChecked.get(storedObjectId))) {
-								BiitPoolLogger.debug(this.getClass(),
-										"Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
-												+ " is dirty! ");
-								removeElement(storedObjectId);
-							} else if (Objects.equals(storedObjectId, elementId)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: "
-										+ elementsByIdChecked.get(storedObjectId).getClass().getName()
-										+ " store hit for " + elementId);
-								return elementsByIdChecked.get(storedObjectId);
-							}
-						}
-					}
-				}
-			}
-		}
-		BiitPoolLogger.debug(this.getClass(), "Object with Id '" + elementId + "' - Cache Miss.");
-		return null;
-	}
+                for (final Entry<ElementId, Long> elementsByTimeEntry : elementsByTimeChecked.entrySet()) {
+                    storedObjectId = elementByTime.next();
+                    if (elementsByTimeEntry.getValue() != null
+                            && (now - elementsByTimeEntry.getValue()) > getExpirationTime()) {
+                        BiitPoolLogger.debug(this.getClass(), "Element '" + elementsByTimeEntry.getValue()
+                                + "' has expired (elapsed time: '" + (now - elementsByTimeEntry.getValue()) + "' > '"
+                                + getExpirationTime() + "'.)");
+                        // object has expired
+                        removeElement(storedObjectId);
+                        storedObjectId = null;
+                    } else {
+                        if (elementsByIdChecked.get(storedObjectId) != null) {
+                            // Remove not valid elements.
+                            if (isDirty(elementsByIdChecked.get(storedObjectId))) {
+                                BiitPoolLogger.debug(this.getClass(),
+                                        "Cache: " + elementsByIdChecked.get(storedObjectId).getClass().getName()
+                                                + " is dirty! ");
+                                removeElement(storedObjectId);
+                            } else if (Objects.equals(storedObjectId, elementId)) {
+                                BiitPoolLogger.info(this.getClass(), "Cache: "
+                                        + elementsByIdChecked.get(storedObjectId).getClass().getName()
+                                        + " store hit for " + elementId);
+                                return elementsByIdChecked.get(storedObjectId);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        BiitPoolLogger.debug(this.getClass(), "Object with Id '" + elementId + "' - Cache Miss.");
+        return null;
+    }
 
-	@Override
-	public synchronized ElementId getKey(Type element) {
-		if (element != null && getExpirationTime() > 0) {
-			final long now = System.currentTimeMillis();
-			ElementId storedObjectId = null;
-			if (elementsTime.size() > 0) {
-				BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-				final Iterator<ElementId> groupsIds = new ConcurrentHashMap<ElementId, Long>(elementsTime).keySet()
-						.iterator();
-				while (groupsIds.hasNext()) {
-					storedObjectId = groupsIds.next();
-					if (elementsTime.get(storedObjectId) != null
-							&& (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
-						BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId)
-								+ "' has expired (elapsed time: '" + (now - elementsTime.get(storedObjectId)) + "' > '"
-								+ getExpirationTime() + "'.)");
-						// object has expired
-						removeElement(storedObjectId);
-						storedObjectId = null;
-					} else {
-						if (elementsById.get(storedObjectId) != null) {
-							// Remove not valid elements.
-							if (isDirty(elementsById.get(storedObjectId))) {
-								BiitPoolLogger.debug(this.getClass(), "Cache: "
-										+ elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
-								removeElement(storedObjectId);
-							} else if (Objects.equals(elementsById.get(storedObjectId), element)) {
-								BiitPoolLogger.info(this.getClass(), "Cache: "
-										+ elementsById.get(storedObjectId).getClass().getName() + " store hit for "
-										+ element);
-								return storedObjectId;
-							}
-						}
-					}
-				}
-			}
-		}
-		BiitPoolLogger.debug(this.getClass(), "Object '" + element + "' - Cache Miss.");
-		return null;
-	}
+    @Override
+    public synchronized ElementId getKey(Type element) {
+        if (element != null && getExpirationTime() > 0) {
+            final long now = System.currentTimeMillis();
+            ElementId storedObjectId = null;
+            if (elementsTime.size() > 0) {
+                BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
+                final Iterator<ElementId> groupsIds = new ConcurrentHashMap<ElementId, Long>(elementsTime).keySet()
+                        .iterator();
+                while (groupsIds.hasNext()) {
+                    storedObjectId = groupsIds.next();
+                    if (elementsTime.get(storedObjectId) != null
+                            && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
+                        BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId)
+                                + "' has expired (elapsed time: '" + (now - elementsTime.get(storedObjectId)) + "' > '"
+                                + getExpirationTime() + "'.)");
+                        // object has expired
+                        removeElement(storedObjectId);
+                        storedObjectId = null;
+                    } else {
+                        if (elementsById.get(storedObjectId) != null) {
+                            // Remove not valid elements.
+                            if (isDirty(elementsById.get(storedObjectId))) {
+                                BiitPoolLogger.debug(this.getClass(), "Cache: "
+                                        + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
+                                removeElement(storedObjectId);
+                            } else if (Objects.equals(elementsById.get(storedObjectId), element)) {
+                                BiitPoolLogger.info(this.getClass(), "Cache: "
+                                        + elementsById.get(storedObjectId).getClass().getName() + " store hit for "
+                                        + element);
+                                return storedObjectId;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        BiitPoolLogger.debug(this.getClass(), "Object '" + element + "' - Cache Miss.");
+        return null;
+    }
 
-	@Override
-	public abstract long getExpirationTime();
+    @Override
+    public abstract long getExpirationTime();
 
-	@Override
-	public Set<Type> getAllPooledElements() {
-		return new HashSet<>(elementsById.values());
-	}
+    @Override
+    public Set<Type> getAllPooledElements() {
+        return new HashSet<>(elementsById.values());
+    }
 
-	@Override
-	public Map<ElementId, Type> getElementsById() {
-		return elementsById;
-	}
+    @Override
+    public Set<ElementId> getAllPooledKeys() {
+        return new HashSet<>(elementsById.keySet());
+    }
 
-	@Override
-	public Map<ElementId, Long> getElementsTime() {
-		return elementsTime;
-	}
+    @Override
+    public Map<ElementId, Type> getElementsById() {
+        return elementsById;
+    }
 
-	@Override
-	public synchronized Type removeElement(ElementId elementId) {
-		if (elementId != null) {
-			BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
-			elementsTime.remove(elementId);
-			return elementsById.remove(elementId);
-		}
-		return null;
-	}
+    @Override
+    public Map<ElementId, Long> getElementsTime() {
+        return elementsTime;
+    }
 
-	/**
-	 * An element is dirty if cannot be used by the pool any more.
-	 * 
-	 * @param element
-	 *            element to check
-	 * @return if it is dirty or not.
-	 */
-	@Override
-	public abstract boolean isDirty(Type element);
+    @Override
+    public synchronized Type removeElement(ElementId elementId) {
+        if (elementId != null) {
+            BiitPoolLogger.debug(this.getClass(), "Removing element '" + elementId + "'.");
+            elementsTime.remove(elementId);
+            return elementsById.remove(elementId);
+        }
+        return null;
+    }
+
+    /**
+     * An element is dirty if cannot be used by the pool any more.
+     *
+     * @param element element to check
+     * @return if it is dirty or not.
+     */
+    @Override
+    public abstract boolean isDirty(Type element);
 }
