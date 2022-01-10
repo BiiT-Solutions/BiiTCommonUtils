@@ -289,7 +289,8 @@ public class FileReader {
             return false;
         }
         if (!file.canRead()) {
-            throw new IOException("Cannot read file " + file.getAbsolutePath());
+            BiitCommonLogger.warning(FileReader.class, "Cannot read file " + file.getAbsolutePath());
+            return false;
         }
         if (file.length() < 4) {
             return false;
