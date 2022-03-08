@@ -85,6 +85,30 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
         return null;
     }
 
+    protected synchronized void cleanExpired() {
+        final long now = System.currentTimeMillis();
+        for (final ElementId elementId : new ConcurrentHashMap<>(elementsTime).keySet()) {
+            final ElementId storedObjectId = elementId;
+            if (elementsTime.get(storedObjectId) != null
+                    && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
+                BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId)
+                        + "' has expired (elapsed time: '" + (now - elementsTime.get(storedObjectId)) + "' > '"
+                        + getExpirationTime() + "'.)");
+                // object has expired
+                removeElement(storedObjectId);
+            } else {
+                if (elementsById.get(storedObjectId) != null) {
+                    // Remove not valid elements.
+                    if (isDirty(elementsById.get(storedObjectId))) {
+                        BiitPoolLogger.debug(this.getClass(), "Cache: "
+                                + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
+                        removeElement(storedObjectId);
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public synchronized ElementId getKey(Type element) {
         if (element != null && getExpirationTime() > 0) {
@@ -167,4 +191,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
      */
     @Override
     public abstract boolean isDirty(Type element);
+
+    public int size() {
+        return elementsById.size();
+    }
 }
