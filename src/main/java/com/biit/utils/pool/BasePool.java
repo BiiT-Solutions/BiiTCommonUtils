@@ -71,7 +71,7 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
                                                 + " is dirty! ");
                                 removeElement(storedObjectId);
                             } else if (Objects.equals(storedObjectId, elementId)) {
-                                BiitPoolLogger.info(this.getClass(), "Cache: "
+                                BiitPoolLogger.debug(this.getClass(), "Cache: "
                                         + elementsByIdChecked.get(storedObjectId).getClass().getName()
                                         + " store hit for " + elementId);
                                 return elementsByIdChecked.get(storedObjectId);
@@ -136,7 +136,7 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
                                         + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
                                 removeElement(storedObjectId);
                             } else if (Objects.equals(elementsById.get(storedObjectId), element)) {
-                                BiitPoolLogger.info(this.getClass(), "Cache: "
+                                BiitPoolLogger.debug(this.getClass(), "Cache: "
                                         + elementsById.get(storedObjectId).getClass().getName() + " store hit for "
                                         + element);
                                 return storedObjectId;
