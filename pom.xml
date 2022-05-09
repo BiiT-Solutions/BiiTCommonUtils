@@ -8,6 +8,13 @@
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
 
+	<parent>
+		<groupId>com.biit</groupId>
+		<artifactId>versions</artifactId>
+		<version>[0,1)</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
 	<distributionManagement>
 		<repository>
 			<id>central</id>
@@ -39,7 +46,6 @@
 		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
 		<slf4j.version>1.7.32</slf4j.version>
 		<logback.version>1.2.6</logback.version>
-		<javax.mail.version>1.4.7</javax.mail.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-scm-provider-gitexe.version>1.9.2</maven-scm-provider-gitexe.version>
 		<project.scm.id>git</project.scm.id>
@@ -55,30 +61,25 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 		<!-- MAIL -->
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>${javax.mail.version}</version>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
 		</dependency>
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>${org.testng.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -90,16 +91,7 @@
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>${maven-deploy-plugin.version}</version>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${maven-javadoc-plugin.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>${maven-source-plugin.version}</version>
-			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -164,28 +156,6 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>${findbug.version}</version>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<!-- Enables analysis which takes more memory but finds more bugs. 
-								If you run out of memory, changes the value of the effort element to 'Low'. -->
-							<effort>Max</effort>
-							<!-- Build fail if problems are found -->
-							<failOnError>true</failOnError>
-							<!-- Reports all bugs (values are max, medium and max) -->
-							<threshold>max</threshold>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
