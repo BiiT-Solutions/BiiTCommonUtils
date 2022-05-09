@@ -35,27 +35,6 @@
 		<tag>common-utils-1.0.9</tag>
 	</scm>
 
-	<properties>
-		<main.basedir>${project.basedir}</main.basedir>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.jdk.version>1.8</java.jdk.version>
-		<plugin.compiler.version>3.8.1</plugin.compiler.version>
-		<plugin.exec.version>1.2.1</plugin.exec.version>
-		<org.testng.version>6.8</org.testng.version>
-		<maven-surefire.version>2.17</maven-surefire.version>
-		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
-		<slf4j.version>1.7.32</slf4j.version>
-		<logback.version>1.2.6</logback.version>
-		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-		<maven-scm-provider-gitexe.version>1.9.2</maven-scm-provider-gitexe.version>
-		<project.scm.id>git</project.scm.id>
-		<checkstyle.version>2.17</checkstyle.version>
-		<findbug.version>3.0.4</findbug.version>
-		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
-		<maven-source-plugin.version>3.1.0</maven-source-plugin.version>
-	</properties>
-
 	<dependencies>
 		<!-- log -->
 		<dependency>
@@ -95,7 +74,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${plugin.compiler.version}</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>${java.jdk.version}</source>
 					<target>${java.jdk.version}</target>
@@ -141,7 +120,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>${checkstyle.version}</version>
+				<version>${maven-checkstyle.version}</version>
 				<configuration>
 					<configLocation>${main.basedir}/checkstyle.xml</configLocation>
 					<encoding>UTF-8</encoding>

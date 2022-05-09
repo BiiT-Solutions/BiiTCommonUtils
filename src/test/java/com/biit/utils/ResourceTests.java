@@ -5,8 +5,7 @@ import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.biit.utils.file.FileReader;
@@ -18,13 +17,13 @@ public class ResourceTests {
 	@Test
 	public void listFilesInFolder() {
 		final List<File> resources = FileReader.getResources(RESOURCE_FOLDER);
-		Assert.assertEquals(2, resources.size());
+		Assert.assertEquals(resources.size(), 2);
 	}
 
 	@Test
 	public void getResourceContent() throws FileNotFoundException {
 		final String content = FileReader.getResource(RESOURCE_FOLDER + File.separator + "resource1.txt",
 				Charset.defaultCharset());
-		Assert.assertEquals("text1\n", content);
+		Assert.assertEquals(content, "text1\n");
 	}
 }
