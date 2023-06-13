@@ -1,5 +1,8 @@
 package com.biit.utils.file;
 
+import com.biit.logger.BiitCommonLogger;
+
+import javax.swing.ImageIcon;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -28,12 +31,16 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipFile;
 
-import javax.swing.ImageIcon;
-
-import com.biit.logger.BiitCommonLogger;
-
-public class FileReader {
+public final class FileReader {
     private static final String ICON_FOLDER = "icons";
+    private static final int BUFFER_SIZE = 1024;
+    private static final int MIN_FILE_SIZE = 4;
+    private static final int ZIP_HEADER = 0x504b0304;
+
+
+    private FileReader() {
+
+    }
 
     public static File getResource(String fileName) throws FileNotFoundException {
         return getResource(FileReader.class, fileName);
@@ -70,7 +77,7 @@ public class FileReader {
                                 final File tempFile = File.createTempFile(fileName, "_jar");
                                 tempFile.deleteOnExit();
                                 final OutputStream os = new FileOutputStream(tempFile);
-                                final byte[] buffer = new byte[1024];
+                                final byte[] buffer = new byte[BUFFER_SIZE];
                                 int bytesRead;
                                 // read from is to buffer
                                 while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -190,7 +197,7 @@ public class FileReader {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         try {
-            final byte[] chunk = new byte[4096];
+            final byte[] chunk = new byte[BUFFER_SIZE];
             int bytesRead;
             final InputStream stream = url.openStream();
 
@@ -218,9 +225,9 @@ public class FileReader {
                 final URI uri = url.toURI();
                 if (uri.getScheme().equals("jar")) {
                     // Remove 'file:' and '!' in 'jar!'
-                    final File jarFile = new File(url.getPath()
-                            .substring(5, url.toString().indexOf("jar!") - 1));
-                    try (final JarFile jar = new JarFile(jarFile)) {
+                    File jarFile = new File(url.getPath()
+                            .substring("file:".length(), url.toString().indexOf("jar!") - 1));
+                    try (JarFile jar = new JarFile(jarFile)) {
                         // gives ALL entries in jar
                         final Enumeration<JarEntry> entries = jar.entries();
                         while (entries.hasMoreElements()) {
@@ -292,12 +299,12 @@ public class FileReader {
             BiitCommonLogger.warning(FileReader.class, "Cannot read file " + file.getAbsolutePath());
             return false;
         }
-        if (file.length() < 4) {
+        if (file.length() < MIN_FILE_SIZE) {
             return false;
         }
         final DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
         final int test = in.readInt();
         in.close();
-        return test == 0x504b0304;
+        return test == ZIP_HEADER;
     }
 }

@@ -8,27 +8,26 @@ import java.util.Vector;
 
 /**
  * Properties file where all keys are sorted.
- *
  */
 public class SortedProperties extends Properties {
-	private static final long serialVersionUID = 1965770488142804900L;
+    private static final long serialVersionUID = 1965770488142804900L;
 
-	@Override
-	public Enumeration<Object> keys() {
-		final Enumeration<Object> keysEnum = super.keys();
-		final Vector<Object> keyList = new Vector<Object>();
+    @Override
+    public Enumeration<Object> keys() {
+        final Enumeration<Object> keysEnum = super.keys();
+        final Vector<Object> keyList = new Vector<Object>();
 
-		while (keysEnum.hasMoreElements()) {
-			keyList.add(keysEnum.nextElement());
-		}
+        while (keysEnum.hasMoreElements()) {
+            keyList.add(keysEnum.nextElement());
+        }
 
-		Collections.sort(keyList, new Comparator<Object>() {
-			@Override
-			public int compare(Object o1, Object o2) {
-				return o1.toString().compareTo(o2.toString());
-			}
-		});
+        Collections.sort(keyList, new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
 
-		return keyList.elements();
-	}
+        return keyList.elements();
+    }
 }

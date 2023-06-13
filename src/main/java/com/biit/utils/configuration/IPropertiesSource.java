@@ -4,10 +4,10 @@ import java.util.Properties;
 
 public interface IPropertiesSource {
 
-	Properties loadFile();
+    Properties loadFile();
 
-	String getFilePath();
+    String getFilePath();
 
-	String getFileName();
+    String getFileName();
 
 }

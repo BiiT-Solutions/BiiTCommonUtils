@@ -4,10 +4,10 @@ import java.io.FileNotFoundException;
 
 public interface ISourceFile<FileType> {
 
-	FileType loadFile() throws FileNotFoundException;
+    FileType loadFile() throws FileNotFoundException;
 
-	String getFilePath();
+    String getFilePath();
 
-	String getFileName();
+    String getFileName();
 
 }

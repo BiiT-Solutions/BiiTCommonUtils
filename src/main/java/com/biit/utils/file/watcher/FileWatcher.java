@@ -1,5 +1,8 @@
 package com.biit.utils.file.watcher;
 
+import com.biit.logger.BiitCommonLogger;
+import com.biit.utils.file.FileReader;
+
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
@@ -11,215 +14,212 @@ import java.nio.file.WatchService;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.biit.logger.BiitCommonLogger;
-import com.biit.utils.file.FileReader;
-
 public class FileWatcher {
-	private WatchQueueReader fileWatcher = null;
-	public String directoryToWatch = null;
-	private Set<FileModifiedListener> fileModifiedListeners;
-	private Set<FileAddedListener> fileAddedListeners;
-	private Set<FileRemovedListener> fileRemovedListeners;
-	private Thread thread;
-	private Path pathToWatch = null;
-	private WatchService watcher = null;
+    private WatchQueueReader fileWatcher = null;
+    private String directoryToWatch = null;
+    private Set<FileModifiedListener> fileModifiedListeners;
+    private Set<FileAddedListener> fileAddedListeners;
+    private Set<FileRemovedListener> fileRemovedListeners;
+    private Thread thread;
+    private Path pathToWatch = null;
+    private WatchService watcher = null;
 
-	public interface FileModifiedListener {
-		void changeDetected(Path pathToFile);
-	}
+    public interface FileModifiedListener {
+        void changeDetected(Path pathToFile);
+    }
 
-	public interface FileAddedListener {
-		void fileCreated(Path pathToFile);
-	}
+    public interface FileAddedListener {
+        void fileCreated(Path pathToFile);
+    }
 
-	public interface FileRemovedListener {
-		void fileDeleted(Path pathToFile);
-	}
+    public interface FileRemovedListener {
+        void fileDeleted(Path pathToFile);
+    }
 
-	/**
-	 * Check some files in a specific path
-	 * 
-	 * @param directoryToWatch
-	 *            directory where the files are stored.
-	 * @param filesNames
-	 *            the files to check
-	 * @throws IOException
-	 */
-	public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
-		if (directoryToWatch != null) {
-			setDirectoryToWatch(directoryToWatch);
-		} else {
-			setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
-		}
-		fileModifiedListeners = new HashSet<>();
-		fileAddedListeners = new HashSet<>();
-		fileRemovedListeners = new HashSet<>();
-		startWatcher(filesNames);
-	}
 
-	/**
-	 * Check some files in the resource directory.
-	 * 
-	 * @param filesNames
-	 * @throws IOException
-	 */
-	public FileWatcher(Set<String> filesNames) throws IOException {
-		this(null, filesNames);
-	}
 
-	/**
-	 * Only check for a directory. Watch if any file is added, updated or
-	 * deleted.
-	 * 
-	 * @param directoryToWatch
-	 * @throws IOException
-	 */
-	public FileWatcher(String directoryToWatch) throws IOException {
-		this(directoryToWatch, null);
-	}
+    /**
+     * Check some files in a specific path
+     *
+     * @param directoryToWatch directory where the files are stored.
+     * @param filesNames       the files to check
+     * @throws IOException
+     */
+    public FileWatcher(String directoryToWatch, Set<String> filesNames) throws IOException {
+        if (directoryToWatch != null) {
+            setDirectoryToWatch(directoryToWatch);
+        } else {
+            setDirectoryToWatch(FileReader.class.getClassLoader().getResource(".").toString());
+        }
+        fileModifiedListeners = new HashSet<>();
+        fileAddedListeners = new HashSet<>();
+        fileRemovedListeners = new HashSet<>();
+        startWatcher(filesNames);
+    }
 
-	public void addFileModifiedListener(FileModifiedListener listener) {
-		fileModifiedListeners.add(listener);
-	}
+    /**
+     * Check some files in the resource directory.
+     *
+     * @param filesNames
+     * @throws IOException
+     */
+    public FileWatcher(Set<String> filesNames) throws IOException {
+        this(null, filesNames);
+    }
 
-	public void addFileAddedListener(FileAddedListener listener) {
-		fileAddedListeners.add(listener);
-	}
+    /**
+     * Only check for a directory. Watch if any file is added, updated or
+     * deleted.
+     *
+     * @param directoryToWatch
+     * @throws IOException
+     */
+    public FileWatcher(String directoryToWatch) throws IOException {
+        this(directoryToWatch, null);
+    }
 
-	public void addFileRemovedListener(FileRemovedListener listener) {
-		fileRemovedListeners.add(listener);
-	}
-		
-	private Path getDirectoryToWatch() {
-		if (pathToWatch == null) {
-			pathToWatch = Paths.get(directoryToWatch);
-		}
-		return pathToWatch;
-	}
+    public void addFileModifiedListener(FileModifiedListener listener) {
+        fileModifiedListeners.add(listener);
+    }
 
-	private WatchService getWatchService() throws IOException {
-		if (watcher == null) {
-			if (getDirectoryToWatch() == null) {
-				throw new UnsupportedOperationException("Directory not found");
-			}
-			watcher = getDirectoryToWatch().getFileSystem().newWatchService();
-		}
-		return watcher;
-	}
+    public void addFileAddedListener(FileAddedListener listener) {
+        fileAddedListeners.add(listener);
+    }
 
-	private void startWatcher(Set<String> filesNames) {
-		try {
-			fileWatcher = new WatchQueueReader(getWatchService(), getDirectoryToWatch());
-			fileWatcher.setFilesNames(filesNames);
-			stopThread();
-			thread = new Thread(fileWatcher, "FileWatcher");
-			thread.start();
-			pathToWatch.register(getWatchService(), StandardWatchEventKinds.ENTRY_CREATE,
-					StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-			// Ensure to close the watcher.
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					try {
-						BiitCommonLogger.info(this.getClass(), "Closing filewatcher for '" + directoryToWatch + "'.");
-						watcher.close();
-					} catch (NullPointerException e) {
-						BiitCommonLogger.warning(this.getClass(), "Watcher not generated");
-					} catch (Exception e) {
-						BiitCommonLogger.severe(this.getClass().getName(), e);
-					}
-				}
-			});
-		} catch (IOException e) {
-			BiitCommonLogger.severe(this.getClass().getName(), e);
-		}
-	}
+    public void addFileRemovedListener(FileRemovedListener listener) {
+        fileRemovedListeners.add(listener);
+    }
 
-	private class WatchQueueReader implements Runnable {
-		private WatchService watcher;
-		private Path pathToWatch;
-		private Set<String> filesNames;
+    private Path getDirectoryToWatch() {
+        if (pathToWatch == null) {
+            pathToWatch = Paths.get(directoryToWatch);
+        }
+        return pathToWatch;
+    }
 
-		public WatchQueueReader(WatchService watcher, Path pathToWatch) {
-			this.watcher = watcher;
-			this.pathToWatch = pathToWatch;
-		}
+    private WatchService getWatchService() throws IOException {
+        if (watcher == null) {
+            if (getDirectoryToWatch() == null) {
+                throw new UnsupportedOperationException("Directory not found");
+            }
+            watcher = getDirectoryToWatch().getFileSystem().newWatchService();
+        }
+        return watcher;
+    }
 
-		@Override
-		public void run() {
-			try {
-				// Get the first event before looping
-				WatchKey key = watcher.take();
-				while (key != null) {
-					// We have a polled event, now we traverse it and receive
-					// all the states from it
-					for (final WatchEvent<?> event : key.pollEvents()) {
-						// Event on a directory or a set of files.
-						if (filesNames == null || (filesNames.contains(event.context().toString()))) {
-							if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-								for (final FileModifiedListener fileModifiedListener : new HashSet<>(
-										fileModifiedListeners)) {
-									fileModifiedListener.changeDetected(combine(pathToWatch, (Path) event.context()));
-								}
-							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-								for (final FileAddedListener fileCreationListener : new HashSet<>(fileAddedListeners)) {
-									fileCreationListener.fileCreated(combine(pathToWatch, (Path) event.context()));
-								}
-							} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-								for (final FileRemovedListener fileDeletionListener : new HashSet<>(
-										fileRemovedListeners)) {
-									fileDeletionListener.fileDeleted(combine(pathToWatch, (Path) event.context()));
-								}
-							} else if (event.kind().equals(StandardWatchEventKinds.OVERFLOW)) {
-								BiitCommonLogger.errorMessageNotification(this.getClass(),
-										"File Watcher events vents may have been lost or discarded.");
-							}
-						}
-					}
-					key.reset();
-					key = watcher.take();
-				}
-			} catch (InterruptedException e) {
-				BiitCommonLogger.errorMessageNotification(this.getClass(), e);
-			} catch (ClosedWatchServiceException e) {
-				// watcher closed. Do nothing.
-				return;
-			}
-		}
+    private void startWatcher(Set<String> filesNames) {
+        try {
+            fileWatcher = new WatchQueueReader(getWatchService(), getDirectoryToWatch());
+            fileWatcher.setFilesNames(filesNames);
+            stopThread();
+            thread = new Thread(fileWatcher, "FileWatcher");
+            thread.start();
+            pathToWatch.register(getWatchService(), StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+            // Ensure to close the watcher.
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    try {
+                        BiitCommonLogger.info(this.getClass(), "Closing filewatcher for '" + directoryToWatch + "'.");
+                        watcher.close();
+                    } catch (NullPointerException e) {
+                        BiitCommonLogger.warning(this.getClass(), "Watcher not generated");
+                    } catch (Exception e) {
+                        BiitCommonLogger.severe(this.getClass().getName(), e);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            BiitCommonLogger.severe(this.getClass().getName(), e);
+        }
+    }
 
-		public void setFilesNames(Set<String> filesNames) {
-			this.filesNames = filesNames;
-		}
-	}
+    private class WatchQueueReader implements Runnable {
+        private WatchService watcher;
+        private Path pathToWatch;
+        private Set<String> filesNames;
 
-	protected static Path combine(Path path1, Path path2) {
-		return Paths.get(path1.toString(), path2.toString());
-	}
+        WatchQueueReader(WatchService watcher, Path pathToWatch) {
+            this.watcher = watcher;
+            this.pathToWatch = pathToWatch;
+        }
 
-	public void closeFileWatcher() {
-		pathToWatch = null;
-		if (watcher != null) {
-			try {
-				watcher.close();
-				stopThread();
-			} catch (IOException e) {
-				BiitCommonLogger.errorMessageNotification(this.getClass(), e);
-			}
-		}
-		watcher = null;
-	}
+        @Override
+        public void run() {
+            try {
+                // Get the first event before looping
+                WatchKey key = watcher.take();
+                while (key != null) {
+                    // We have a polled event, now we traverse it and receive
+                    // all the states from it
+                    for (final WatchEvent<?> event : key.pollEvents()) {
+                        // Event on a directory or a set of files.
+                        if (filesNames == null || (filesNames.contains(event.context().toString()))) {
+                            if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+                                for (final FileModifiedListener fileModifiedListener : new HashSet<>(
+                                        fileModifiedListeners)) {
+                                    fileModifiedListener.changeDetected(combine(pathToWatch, (Path) event.context()));
+                                }
+                            } else if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+                                for (final FileAddedListener fileCreationListener : new HashSet<>(fileAddedListeners)) {
+                                    fileCreationListener.fileCreated(combine(pathToWatch, (Path) event.context()));
+                                }
+                            } else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
+                                for (final FileRemovedListener fileDeletionListener : new HashSet<>(
+                                        fileRemovedListeners)) {
+                                    fileDeletionListener.fileDeleted(combine(pathToWatch, (Path) event.context()));
+                                }
+                            } else if (event.kind().equals(StandardWatchEventKinds.OVERFLOW)) {
+                                BiitCommonLogger.errorMessageNotification(this.getClass(),
+                                        "File Watcher events vents may have been lost or discarded.");
+                            }
+                        }
+                    }
+                    key.reset();
+                    key = watcher.take();
+                }
+            } catch (InterruptedException e) {
+                BiitCommonLogger.errorMessageNotification(this.getClass(), e);
+            } catch (ClosedWatchServiceException e) {
+                // watcher closed. Do nothing.
+                return;
+            }
+        }
 
-	public void setDirectoryToWatch(String directoryToWatch) {
-		if (!directoryToWatch.equals(this.directoryToWatch)) {
-			// On windows shows this error: java.nio.file.InvalidPathException: Illegal char <:> at index 2:
-			this.directoryToWatch = directoryToWatch.replaceFirst("^/(.:/)", "");
-			closeFileWatcher();
-		}
-	}
+        public void setFilesNames(Set<String> filesNames) {
+            this.filesNames = filesNames;
+        }
+    }
 
-	public void stopThread() {
-		if (thread != null) {
-			thread.interrupt();
-		}
-	}
+    protected static Path combine(Path path1, Path path2) {
+        return Paths.get(path1.toString(), path2.toString());
+    }
+
+    public void closeFileWatcher() {
+        pathToWatch = null;
+        if (watcher != null) {
+            try {
+                watcher.close();
+                stopThread();
+            } catch (IOException e) {
+                BiitCommonLogger.errorMessageNotification(this.getClass(), e);
+            }
+        }
+        watcher = null;
+    }
+
+    public void setDirectoryToWatch(String directoryToWatch) {
+        if (!directoryToWatch.equals(this.directoryToWatch)) {
+            // On windows shows this error: java.nio.file.InvalidPathException: Illegal char <:> at index 2:
+            this.directoryToWatch = directoryToWatch.replaceFirst("^/(.:/)", "");
+            closeFileWatcher();
+        }
+    }
+
+    public void stopThread() {
+        if (thread != null) {
+            thread.interrupt();
+        }
+    }
 
 }

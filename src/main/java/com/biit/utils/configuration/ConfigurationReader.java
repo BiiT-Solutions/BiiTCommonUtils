@@ -1,5 +1,8 @@
 package com.biit.utils.configuration;
 
+import com.biit.logger.BiitCommonLogger;
+import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,9 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-
-import com.biit.logger.BiitCommonLogger;
-import com.biit.utils.configuration.exceptions.PropertyNotFoundException;
 
 public class ConfigurationReader {
     private static final String VALUES_SEPARATOR_REGEX = " *, *";
@@ -104,6 +104,8 @@ public class ConfigurationReader {
                 break;
             case INSENSITIVE:
                 propertiesFinalValue = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+                break;
+            default:
                 break;
         }
         propertiesFinalValue.putAll(propertiesDefault);

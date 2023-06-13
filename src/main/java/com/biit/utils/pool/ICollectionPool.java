@@ -13,48 +13,48 @@ import java.util.Set;
  */
 public interface ICollectionPool<KeyId, ElementId, Type> {
 
-	void reset();
+    void reset();
 
-	Collection<Type> getElements(KeyId elementId);
+    Collection<Type> getElements(KeyId elementId);
 
-	long getExpirationTime();
+    long getExpirationTime();
 
-	public Map<KeyId, Map<ElementId, Type>> getElementsByKey();
+    Map<KeyId, Map<ElementId, Type>> getElementsByKey();
 
-	public Map<ElementId, Type> removeElement(KeyId elementId);
+    Map<ElementId, Type> removeElement(KeyId elementId);
 
-	boolean isDirty(Collection<Type> element);
+    boolean isDirty(Collection<Type> element);
 
-	Map<KeyId, Long> getElementsTime();
+    Map<KeyId, Long> getElementsTime();
 
-	void addElements(Map<ElementId, Type> elements, KeyId key);
+    void addElements(Map<ElementId, Type> elements, KeyId key);
 
-	Type removeElement(KeyId key, Type element);
+    Type removeElement(KeyId key, Type element);
 
-	void addElement(Type element, KeyId key);
+    void addElement(Type element, KeyId key);
 
-	void setElements(Map<ElementId, Type> elements, KeyId key);
+    void setElements(Map<ElementId, Type> elements, KeyId key);
 
-	void addElements(Collection<Type> elements, KeyId key);
+    void addElements(Collection<Type> elements, KeyId key);
 
-	void setElements(Collection<Type> elements, KeyId key);
+    void setElements(Collection<Type> elements, KeyId key);
 
-	Set<Map<ElementId, Type>> getAllPooledElements();
+    Set<Map<ElementId, Type>> getAllPooledElements();
 
-	Type removeElementByKey(KeyId key, ElementId collectedElementId);
+    Type removeElementByKey(KeyId key, ElementId collectedElementId);
 
-	/**
-	 * Removes an element inside of the mapped collection.
-	 * 
-	 * @param collectedElementId
-	 */
-	void removeCollectedElementById(ElementId collectedElementId);
+    /**
+     * Removes an element inside of the mapped collection.
+     *
+     * @param collectedElementId
+     */
+    void removeCollectedElementById(ElementId collectedElementId);
 
-	/**
-	 * Updates an element inside of a mapped collection.
-	 * 
-	 * @param collectedItem
-	 */
-	void update(Type collectedItem);
+    /**
+     * Updates an element inside a mapped collection.
+     *
+     * @param collectedItem
+     */
+    void update(Type collectedItem);
 
 }

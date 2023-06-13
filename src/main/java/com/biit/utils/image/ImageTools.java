@@ -30,8 +30,14 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-public class ImageTools {
+public final class ImageTools {
     private static final int MIN_SIZE = 200;
+    private static final int BUFFER_SIZE = 1024;
+    private static final int TEXT_ALIGNMENT = 75;
+
+    private ImageTools() {
+
+    }
 
     /**
      * Loads an image from a specific path
@@ -140,7 +146,8 @@ public class ImageTools {
     public static BufferedImage resizeImage(BufferedImage originalImage, int scaledWidth, int scaledHeigh,
                                             boolean preserveAlpha) {
         final BufferedImage resizedImage;
-        final int finalHeigh, finalWidth;
+        final int finalHeigh;
+        final int finalWidth;
         if (((double) originalImage.getHeight()) / scaledHeigh < ((double) originalImage.getWidth()) / scaledWidth) {
             finalWidth = scaledWidth;
             finalHeigh = (int) (originalImage.getHeight() * scaledWidth / (double) originalImage.getWidth());
@@ -202,7 +209,7 @@ public class ImageTools {
         drawable.setColor(Color.WHITE);
         drawable.fillRect(0, 0, (int) width, height);
         drawable.setColor(Color.black);
-        drawable.drawString("Image cannot be created. ", width / 2 - 75, height / 2);
+        drawable.drawString("Image cannot be created. ", width / 2 - TEXT_ALIGNMENT, height / 2);
 
         try {
             // Write the image to a buffer.
@@ -256,7 +263,7 @@ public class ImageTools {
                 // Ignore untrusted certificates in SSL.
                 final SSLContext sslContext = SSLContext.getInstance("SSL");
                 sslContext
-                        .init(new KeyManager[0], new TrustManager[] {new DefaultTrustManager()}, new SecureRandom());
+                        .init(new KeyManager[0], new TrustManager[]{new DefaultTrustManager()}, new SecureRandom());
                 SSLContext.setDefault(sslContext);
                 HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
             } catch (Exception e) {
@@ -267,7 +274,7 @@ public class ImageTools {
         inputStream = url.openStream();
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[1024];
+        final byte[] buffer = new byte[BUFFER_SIZE];
 
         int n = 0;
         while (-1 != (n = inputStream.read(buffer))) {

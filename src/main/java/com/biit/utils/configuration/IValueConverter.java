@@ -1,9 +1,9 @@
 package com.biit.utils.configuration;
 
-public abstract interface IValueConverter <T>{
+public interface IValueConverter<T> {
 
-	public T convertFromString(String value);
-	
-	public String convertToString(Object value);
-	
+    T convertFromString(String value);
+
+    String convertToString(Object value);
+
 }
