@@ -199,11 +199,11 @@ public final class ImageTools {
      */
 
     public static byte[] createDefaultImage(int imageWidth, int imageHeight, String text) {
-        ByteArrayOutputStream imagebuffer = null;
+        ByteArrayOutputStream imagebuffer;
         // No data (because there is not any flow).
         // HEIGHT discount the top margin of panel.
-        final int width = imageWidth < MIN_SIZE ? MIN_SIZE : imageWidth;
-        final int height = imageHeight < MIN_SIZE ? MIN_SIZE : imageHeight;
+        final int width = Math.max(imageWidth, MIN_SIZE);
+        final int height = Math.max(imageHeight, MIN_SIZE);
         final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         final Graphics drawable = image.getGraphics();
         drawable.setColor(Color.WHITE);

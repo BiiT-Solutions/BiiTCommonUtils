@@ -34,10 +34,10 @@ public class ConfigurationReader {
     }
 
     public ConfigurationReader() {
-        converter = new HashMap<Class<?>, IValueConverter<?>>();
-        propertiesDefault = new HashMap<String, String>();
-        propertiesFinalValue = new HashMap<String, String>();
-        propertiesSources = new ArrayList<IPropertiesSource>();
+        converter = new HashMap<>();
+        propertiesDefault = new HashMap<>();
+        propertiesFinalValue = new HashMap<>();
+        propertiesSources = new ArrayList<>();
         propertyChangedListeners = new HashSet<>();
         propertiesBySourceValues = new HashMap<>();
 
@@ -100,7 +100,7 @@ public class ConfigurationReader {
     public void readConfigurations(Case caseMode) {
         switch (caseMode) {
             case SENSITIVE:
-                propertiesFinalValue = new HashMap<String, String>();
+                propertiesFinalValue = new HashMap<>();
                 break;
             case INSENSITIVE:
                 propertiesFinalValue = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -128,11 +128,11 @@ public class ConfigurationReader {
      * @param propertyFile
      */
     private void readAllProperties(Properties propertyFile, IPropertiesSource propertiesSource) {
-        for (final String propertyId : new HashMap<String, String>(propertiesFinalValue).keySet()) {
+        for (final String propertyId : new HashMap<>(propertiesFinalValue).keySet()) {
             final String value = propertyFile.getProperty(propertyId, propertiesFinalValue.get(propertyId));
             // Notify property change
             if (propertiesBySourceValues.get(propertiesSource) == null) {
-                propertiesBySourceValues.put(propertiesSource, new HashMap<String, String>());
+                propertiesBySourceValues.put(propertiesSource, new HashMap<>());
             }
 
             if (propertiesBySourceValues.get(propertiesSource).get(propertyId) != null

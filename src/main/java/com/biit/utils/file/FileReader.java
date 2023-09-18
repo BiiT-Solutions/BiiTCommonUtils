@@ -4,6 +4,7 @@ import com.biit.logger.BiitCommonLogger;
 
 import javax.swing.ImageIcon;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -164,7 +166,7 @@ public final class FileReader {
 
     public static String readFile(File file) throws FileNotFoundException {
         final Scanner scanner = new Scanner(file, "UTF-8");
-        // Change delimiter or it will removes all white spaces.
+        // Change delimiter or it will remove all white spaces.
         scanner.useDelimiter("\\A");
         final StringBuilder content = new StringBuilder();
         while (scanner.hasNext()) {
@@ -190,6 +192,35 @@ public final class FileReader {
             throw new FileNotFoundException(npe.getMessage());
         }
         return result.toString();
+    }
+
+    public static List<String> getResourceFiles(String path) throws IOException {
+        List<String> filenames = new ArrayList<>();
+
+        try (InputStream in = getResourceAsStream(path)) {
+            if (in != null) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                String resource;
+
+                while ((resource = br.readLine()) != null) {
+                    filenames.add(resource);
+                }
+            }
+        }
+        return filenames;
+    }
+
+    private static InputStream getResourceAsStream(String resource) {
+        try (InputStream in = getContextClassLoader().getResourceAsStream(resource)) {
+            return in == null ? FileReader.class.getResourceAsStream(resource) : in;
+        } catch (IOException e) {
+            BiitCommonLogger.errorMessageNotification(FileReader.class, e);
+        }
+        return null;
+    }
+
+    private static ClassLoader getContextClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
     }
 
     public static byte[] downloadUrl(String urlname) throws MalformedURLException {
