@@ -30,8 +30,8 @@
 
 
     <scm>
-        <connection>scm:git:git.biit-solutions.com:BiiT/BiiTCommonUtils.git</connection>
-        <developerConnection>scm:git:git.biit-solutions.com:BiiT/BiiTCommonUtils.git</developerConnection>
+        <connection>scm:git:git.biit-solutions.com:Java/BiiTCommonUtils.git</connection>
+        <developerConnection>scm:git:git.biit-solutions.com:Java/BiiTCommonUtils.git</developerConnection>
         <tag>common-utils-1.0.9</tag>
     </scm>
 
