@@ -1,5 +1,7 @@
 package com.biit.utils.pool;
 
+import com.biit.logger.BiitPoolLogger;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -7,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.biit.logger.BiitPoolLogger;
 
 public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, Type> {
     // Elements by id;
@@ -22,17 +22,15 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
     @Override
     public synchronized void reset() {
         BiitPoolLogger.debug(this.getClass(), "Reseting all pool.");
-        elementsTime = new ConcurrentHashMap<ElementId, Long>();
-        elementsById = new ConcurrentHashMap<ElementId, Type>();
+        elementsTime = new ConcurrentHashMap<>();
+        elementsById = new ConcurrentHashMap<>();
     }
 
     @Override
     public synchronized void addElement(Type element, ElementId key) {
         BiitPoolLogger.debug(this.getClass(), "Adding element '" + element + "' with key '" + key + "'.");
-        if (getExpirationTime() > 0) {
-            elementsTime.put(key, System.currentTimeMillis());
-            elementsById.put(key, element);
-        }
+        elementsTime.put(key, System.currentTimeMillis());
+        elementsById.put(key, element);
     }
 
     /**
@@ -45,8 +43,8 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
     public synchronized Type getElement(ElementId elementId) {
         if (elementId != null && getExpirationTime() > 0) {
             final long now = System.currentTimeMillis();
-            ElementId storedObjectId = null;
-            if (elementsTime.size() > 0) {
+            ElementId storedObjectId;
+            if (!elementsTime.isEmpty()) {
                 BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
                 final Map<ElementId, Long> elementsByTimeChecked = new ConcurrentHashMap<>(elementsTime);
                 final Map<ElementId, Type> elementsByIdChecked = new ConcurrentHashMap<>(elementsById);
@@ -61,7 +59,6 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
                                 + getExpirationTime() + "'.)");
                         // object has expired
                         removeElement(storedObjectId);
-                        storedObjectId = null;
                     } else {
                         if (elementsByIdChecked.get(storedObjectId) != null) {
                             // Remove not valid elements.
@@ -88,21 +85,20 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
     protected synchronized void cleanExpired() {
         final long now = System.currentTimeMillis();
         for (final ElementId elementId : new ConcurrentHashMap<>(elementsTime).keySet()) {
-            final ElementId storedObjectId = elementId;
-            if (elementsTime.get(storedObjectId) != null
-                    && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
-                BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId)
-                        + "' has expired (elapsed time: '" + (now - elementsTime.get(storedObjectId)) + "' > '"
+            if (elementsTime.get(elementId) != null
+                    && (now - elementsTime.get(elementId)) > getExpirationTime()) {
+                BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(elementId)
+                        + "' has expired (elapsed time: '" + (now - elementsTime.get(elementId)) + "' > '"
                         + getExpirationTime() + "'.)");
                 // object has expired
-                removeElement(storedObjectId);
+                removeElement(elementId);
             } else {
-                if (elementsById.get(storedObjectId) != null) {
+                if (elementsById.get(elementId) != null) {
                     // Remove not valid elements.
-                    if (isDirty(elementsById.get(storedObjectId))) {
+                    if (isDirty(elementsById.get(elementId))) {
                         BiitPoolLogger.debug(this.getClass(), "Cache: "
-                                + elementsById.get(storedObjectId).getClass().getName() + " is dirty! ");
-                        removeElement(storedObjectId);
+                                + elementsById.get(elementId).getClass().getName() + " is dirty! ");
+                        removeElement(elementId);
                     }
                 }
             }
@@ -113,13 +109,11 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
     public synchronized ElementId getKey(Type element) {
         if (element != null && getExpirationTime() > 0) {
             final long now = System.currentTimeMillis();
-            ElementId storedObjectId = null;
-            if (elementsTime.size() > 0) {
+            ElementId storedObjectId;
+            if (!elementsTime.isEmpty()) {
                 BiitPoolLogger.debug(this.getClass(), "Elements on cache: " + elementsTime.size() + ".");
-                final Iterator<ElementId> groupsIds = new ConcurrentHashMap<ElementId, Long>(elementsTime).keySet()
-                        .iterator();
-                while (groupsIds.hasNext()) {
-                    storedObjectId = groupsIds.next();
+                for (ElementId elementId : new ConcurrentHashMap<>(elementsTime).keySet()) {
+                    storedObjectId = elementId;
                     if (elementsTime.get(storedObjectId) != null
                             && (now - elementsTime.get(storedObjectId)) > getExpirationTime()) {
                         BiitPoolLogger.debug(this.getClass(), "Element '" + elementsTime.get(storedObjectId)
@@ -127,7 +121,6 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
                                 + getExpirationTime() + "'.)");
                         // object has expired
                         removeElement(storedObjectId);
-                        storedObjectId = null;
                     } else {
                         if (elementsById.get(storedObjectId) != null) {
                             // Remove not valid elements.
