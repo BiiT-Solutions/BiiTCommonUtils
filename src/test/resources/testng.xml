@@ -9,6 +9,7 @@
                 <include name="fileWatcherTests"/>
                 <include name="folderWatcherTests"/>
                 <include name="limitedPoolsTests"/>
+                <include name="localDateTimeRangeTests"/>
             </run>
         </groups>
         <classes>
@@ -18,6 +19,7 @@
             <class name="com.biit.utils.file.watcher.FolderWatcherTests"/>
             <class name="com.biit.utils.ResourceTests"/>
             <class name="com.biit.utils.pool.LimitedPoolsTests"/>
+            <class name="com.biit.utils.date.range.LocalDateTimeRangeTests"/>
         </classes>
     </test>
 </suite>
