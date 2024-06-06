@@ -10,6 +10,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class SendEmail {
@@ -18,35 +19,39 @@ public final class SendEmail {
 
     }
 
-    public static void sendEmail(List<String> mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
+    public static void sendEmail(List<String> mailTo, String subject, String htmlContent, String plainTextContent)
+            throws EmailNotSentException, InvalidEmailAddressException {
         if (EmailConfigurationReader.getInstance().getEmailCopy() != null) {
-            sendEmail(mailTo, null, new ArrayList<>(Arrays.asList(new String[]{EmailConfigurationReader.getInstance().getEmailCopy()})), subject,
-                    htmlContent);
+            sendEmail(mailTo, null, new ArrayList<>(Collections.singletonList(EmailConfigurationReader.getInstance().getEmailCopy())), subject,
+                    htmlContent, plainTextContent);
         } else {
-            sendEmail(mailTo, null, null, subject, htmlContent);
+            sendEmail(mailTo, null, null, subject, htmlContent, plainTextContent);
         }
     }
 
-    public static void sendEmail(String mailTo, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-        sendEmail(new ArrayList<>(Arrays.asList(new String[]{mailTo})), subject, htmlContent);
+    public static void sendEmail(String mailTo, String subject, String htmlContent, String plainTextContent)
+            throws EmailNotSentException, InvalidEmailAddressException {
+        sendEmail(new ArrayList<>(Collections.singletonList(mailTo)), subject, htmlContent, plainTextContent);
     }
 
-    public static void sendEmail(List<String> mailTo, List<String> mailCc, List<String> mailCco, String subject, String htmlContent)
+    public static void sendEmail(List<String> mailTo, List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent)
             throws EmailNotSentException, InvalidEmailAddressException {
         sendEmail(EmailConfigurationReader.getInstance().getSmtpServer(), EmailConfigurationReader.getInstance().getEmailPort(),
                 EmailConfigurationReader.getInstance().getEmailUser(), EmailConfigurationReader.getInstance().getEmailPassword(),
-                EmailConfigurationReader.getInstance().getEmailSender(), mailTo, mailCc, mailCco, subject, htmlContent);
+                EmailConfigurationReader.getInstance().getEmailSender(), mailTo, mailCc, mailCco, subject, htmlContent, plainTextContent);
     }
 
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo, String mailCc,
-                                 String mailCco, String subject, String htmlContent) throws EmailNotSentException, InvalidEmailAddressException {
-        sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, new ArrayList<>(Arrays.asList(new String[]{mailTo})),
-                new ArrayList<>(Arrays.asList(new String[]{mailCc})), new ArrayList<>(Arrays.asList(new String[]{mailCco})), subject, htmlContent);
+                                 String mailCco, String subject, String htmlContent, String plainTextContent)
+            throws EmailNotSentException, InvalidEmailAddressException {
+        sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, new ArrayList<>(Collections.singletonList(mailTo)),
+                new ArrayList<>(Collections.singletonList(mailCc)),
+                new ArrayList<>(Collections.singletonList(mailCco)), subject, htmlContent, plainTextContent);
     }
 
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
-                                 List<String> mailCc, List<String> mailCco, String subject, String htmlContent) throws
-            EmailNotSentException, InvalidEmailAddressException {
+                                 List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent)
+            throws EmailNotSentException, InvalidEmailAddressException {
         if (!isValidEmailAddress(emailSender)) {
             throw new InvalidEmailAddressException("Address email '" + emailSender + "' is invalid");
         }
@@ -64,6 +69,7 @@ public final class SendEmail {
             sendEmailThread.setEmailTo(mailTo);
             sendEmailThread.setSubject(subject);
             sendEmailThread.setHtmlContent(htmlContent);
+            sendEmailThread.setPlainTextContent(plainTextContent);
             sendEmailThread.setEmailPort(smtpPort);
 
             sendEmailThread.run();

@@ -20,6 +20,7 @@ public class SendEmailThread implements Runnable {
     private String emailSender;
     private String subject;
     private String htmlContent;
+    private String plainTextContent;
 
     private Set<ThreadExceptionListener> exceptionListeners;
 
@@ -40,7 +41,12 @@ public class SendEmailThread implements Runnable {
         final Postman postman = new Postman(smtpServer, emailPort, emailUser, emailPassword);
         try {
             postman.setSubject(subject);
-            postman.addHtml(htmlContent);
+            if (htmlContent != null) {
+                postman.addHtml(htmlContent);
+            }
+            if (plainTextContent != null) {
+                postman.addText(plainTextContent);
+            }
             // Avoiding javax.activation.UnsupportedDataTypeException: no object
             // DCH for MIME type multipart/mixed;
             Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
@@ -110,4 +116,7 @@ public class SendEmailThread implements Runnable {
                 .collect(Collectors.toList());
     }
 
+    public void setPlainTextContent(String plainTextContent) {
+        this.plainTextContent = plainTextContent;
+    }
 }
