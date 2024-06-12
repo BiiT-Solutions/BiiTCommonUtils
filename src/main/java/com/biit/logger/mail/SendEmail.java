@@ -64,9 +64,9 @@ public final class SendEmail {
             sendEmailThread.setEmailUser(emailUser);
             sendEmailThread.setEmailPassword(emailPassword);
             sendEmailThread.setEmailSender(emailSender);
-            sendEmailThread.setEmailCco(mailCco);
-            sendEmailThread.setEmailCc(mailCc);
-            sendEmailThread.setEmailTo(mailTo);
+            sendEmailThread.setEmailCco(mailCco != null ? mailCco : new ArrayList<>());
+            sendEmailThread.setEmailCc(mailCc != null ? mailCc : new ArrayList<>());
+            sendEmailThread.setEmailTo(mailTo != null ? mailTo : new ArrayList<>());
             sendEmailThread.setSubject(subject);
             sendEmailThread.setHtmlContent(htmlContent);
             sendEmailThread.setPlainTextContent(plainTextContent);
