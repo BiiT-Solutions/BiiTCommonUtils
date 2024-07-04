@@ -3,13 +3,16 @@ package com.biit.logger.mail;
 import com.biit.logger.BiitCommonLogger;
 
 import javax.mail.MessagingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class SendEmailThread implements Runnable {
+
+    private static final String[] INVALID_DOMAINS = {"test.com", "testing.com"};
+
     private String smtpServer;
     private String emailUser;
     private List<String> emailTo;
@@ -99,24 +102,32 @@ public class SendEmailThread implements Runnable {
     }
 
     public void setEmailTo(List<String> emailTo) {
-        this.emailTo = emailTo.parallelStream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        this.emailTo = filterMails(emailCc);
     }
 
     public void setEmailCc(List<String> emailCc) {
-        this.emailCc = emailCc.parallelStream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        this.emailCc = filterMails(emailCc);
     }
 
     public void setEmailCco(List<String> emailCco) {
-        this.emailCco = emailCco.parallelStream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        this.emailCco = filterMails(emailCco);
     }
 
     public void setPlainTextContent(String plainTextContent) {
         this.plainTextContent = plainTextContent;
+    }
+
+    private List<String> filterMails(List<String> emails) {
+        final List<String> filteredMails = new ArrayList<>();
+        emails.forEach(email -> {
+            if (email != null) {
+                if (Arrays.stream(INVALID_DOMAINS).noneMatch(email::endsWith)) {
+                    filteredMails.add(email);
+                } else {
+                    BiitCommonLogger.warning(this.getClass(), "Ignoring email address '" + email + "'. Its domain is blacklisted.");
+                }
+            }
+        });
+        return filteredMails;
     }
 }
