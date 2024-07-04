@@ -102,7 +102,7 @@ public class SendEmailThread implements Runnable {
     }
 
     public void setEmailTo(List<String> emailTo) {
-        this.emailTo = filterMails(emailCc);
+        this.emailTo = filterMails(emailTo);
     }
 
     public void setEmailCc(List<String> emailCc) {
