@@ -53,11 +53,10 @@ public class SendEmailThread implements Runnable {
             // Avoiding javax.activation.UnsupportedDataTypeException: no object
             // DCH for MIME type multipart/mixed;
             Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
-            if ((emailTo != null && !emailTo.isEmpty()) || (emailCc != null && !emailCc.isEmpty())
-                    || (emailCco != null && !emailCco.isEmpty())) {
+            if ((emailTo != null && !emailTo.isEmpty()) || (emailCc != null && !emailCc.isEmpty())) {
                 postman.sendMail(emailTo, emailCc, emailCco, emailSender);
             } else {
-                BiitCommonLogger.warning(this.getClass(), "Sending email failed. No destination emails sets!");
+                BiitCommonLogger.warning(this.getClass(), "Sending email failed. No destination emails are set!");
             }
         } catch (MessagingException e) {
             BiitCommonLogger.severe(this.getClass(), "Sending email failed: smtpServer '" + smtpServer
