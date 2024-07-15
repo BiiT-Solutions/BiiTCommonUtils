@@ -3,15 +3,20 @@ package com.biit.logger.mail;
 import com.biit.logger.BiitCommonLogger;
 
 import javax.mail.MessagingException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class SendEmailThread implements Runnable {
 
     private static final String[] INVALID_DOMAINS = {"test.com", "testing.com"};
+    private static final String DEFAULT_ATTACHMENT_NAME = "attachment";
+    private static final String DEFAULT_ATTACHMENT_EXTENSION = "att";
 
     private String smtpServer;
     private String emailUser;
@@ -24,11 +29,13 @@ public class SendEmailThread implements Runnable {
     private String subject;
     private String htmlContent;
     private String plainTextContent;
+    private String attachmentName;
+    private byte[] attachment;
 
     private Set<ThreadExceptionListener> exceptionListeners;
 
     interface ThreadExceptionListener {
-        void exceptionLaunched(MessagingException e);
+        void exceptionLaunched(Exception e);
     }
 
     public SendEmailThread() {
@@ -50,6 +57,9 @@ public class SendEmailThread implements Runnable {
             if (plainTextContent != null) {
                 postman.addText(plainTextContent);
             }
+            if (attachment != null) {
+                attachFile(postman);
+            }
             // Avoiding javax.activation.UnsupportedDataTypeException: no object
             // DCH for MIME type multipart/mixed;
             Thread.currentThread().setContextClassLoader(SendEmail.class.getClassLoader());
@@ -58,7 +68,7 @@ public class SendEmailThread implements Runnable {
             } else {
                 BiitCommonLogger.warning(this.getClass(), "Sending email failed. No destination emails are set!");
             }
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             BiitCommonLogger.severe(this.getClass(), "Sending email failed: smtpServer '" + smtpServer
                     + "', emailUser '" + emailUser + "', emailPassword '" + emailPassword + "' ");
             // throw new EmailNotSentException(e.getMessage());
@@ -66,6 +76,26 @@ public class SendEmailThread implements Runnable {
                 listener.exceptionLaunched(e);
             }
         }
+    }
+
+    private void attachFile(Postman postman) throws MessagingException, IOException {
+        final String attachmentName = this.attachmentName != null ? this.attachmentName : "attachment";
+        final Optional<String> fileName = getFileName(attachmentName);
+        final Optional<String> fileExtension = getFileExtension(attachmentName);
+        final File attachment = File.createTempFile(fileName.orElse(DEFAULT_ATTACHMENT_NAME), fileExtension.orElse(DEFAULT_ATTACHMENT_EXTENSION));
+        postman.addAttachment(attachment, fileName.orElse(DEFAULT_ATTACHMENT_NAME) + "." + fileExtension.orElse(DEFAULT_ATTACHMENT_EXTENSION));
+    }
+
+    public Optional<String> getFileName(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(0, filename.lastIndexOf(".")));
+    }
+
+    public Optional<String> getFileExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1));
     }
 
     public void setSmtpServer(String smtpServer) {
@@ -114,6 +144,14 @@ public class SendEmailThread implements Runnable {
 
     public void setPlainTextContent(String plainTextContent) {
         this.plainTextContent = plainTextContent;
+    }
+
+    public void setAttachmentName(String attachmentName) {
+        this.attachmentName = attachmentName;
+    }
+
+    public void setAttachment(byte[] attachment) {
+        this.attachment = attachment;
     }
 
     private List<String> filterMails(List<String> emails) {
