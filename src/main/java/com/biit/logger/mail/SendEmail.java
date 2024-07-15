@@ -50,12 +50,14 @@ public final class SendEmail {
     }
 
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
-                                 List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent) throws EmailNotSentException, InvalidEmailAddressException {
+                                 List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent)
+            throws EmailNotSentException, InvalidEmailAddressException {
         sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, mailTo, mailCc, mailCco, subject, htmlContent, plainTextContent, null, null);
     }
 
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
-                                 List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent, byte[] attachmanet, String attachmentName)
+                                 List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent,
+                                 byte[] attachmanet, String attachmentName)
             throws EmailNotSentException, InvalidEmailAddressException {
         if (!isValidEmailAddress(emailSender)) {
             throw new InvalidEmailAddressException("Address email '" + emailSender + "' is invalid");
@@ -76,6 +78,8 @@ public final class SendEmail {
             sendEmailThread.setHtmlContent(htmlContent);
             sendEmailThread.setPlainTextContent(plainTextContent);
             sendEmailThread.setEmailPort(smtpPort);
+            sendEmailThread.setAttachment(attachmanet);
+            sendEmailThread.setAttachmentName(attachmentName);
 
             sendEmailThread.run();
         } catch (Throwable exc) {
