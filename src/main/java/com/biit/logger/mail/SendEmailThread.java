@@ -3,7 +3,6 @@ package com.biit.logger.mail;
 import com.biit.logger.BiitCommonLogger;
 
 import javax.mail.MessagingException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +29,7 @@ public class SendEmailThread implements Runnable {
     private String htmlContent;
     private String plainTextContent;
     private String attachmentName;
+    private String attachmentType;
     private byte[] attachment;
 
     private Set<ThreadExceptionListener> exceptionListeners;
@@ -58,7 +58,7 @@ public class SendEmailThread implements Runnable {
                 postman.addText(plainTextContent);
             }
             if (attachment != null) {
-                attachFile(postman);
+                attachData(postman);
             }
             // Avoiding javax.activation.UnsupportedDataTypeException: no object
             // DCH for MIME type multipart/mixed;
@@ -78,12 +78,12 @@ public class SendEmailThread implements Runnable {
         }
     }
 
-    private void attachFile(Postman postman) throws MessagingException, IOException {
+    private void attachData(Postman postman) throws MessagingException, IOException {
         final String attachmentName = this.attachmentName != null ? this.attachmentName : "attachment";
         final Optional<String> fileName = getFileName(attachmentName);
         final Optional<String> fileExtension = getFileExtension(attachmentName);
-        final File attachment = File.createTempFile(fileName.orElse(DEFAULT_ATTACHMENT_NAME), fileExtension.orElse(DEFAULT_ATTACHMENT_EXTENSION));
-        postman.addAttachment(attachment, fileName.orElse(DEFAULT_ATTACHMENT_NAME) + "." + fileExtension.orElse(DEFAULT_ATTACHMENT_EXTENSION));
+        postman.addAttachment(attachment, attachmentType,
+                fileName.orElse(DEFAULT_ATTACHMENT_NAME) + "." + fileExtension.orElse(DEFAULT_ATTACHMENT_EXTENSION));
     }
 
     public Optional<String> getFileName(String filename) {
@@ -152,6 +152,10 @@ public class SendEmailThread implements Runnable {
 
     public void setAttachment(byte[] attachment) {
         this.attachment = attachment;
+    }
+
+    public void setAttachmentType(String attachmentType) {
+        this.attachmentType = attachmentType;
     }
 
     private List<String> filterMails(List<String> emails) {

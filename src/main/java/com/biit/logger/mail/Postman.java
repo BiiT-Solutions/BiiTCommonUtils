@@ -15,6 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
@@ -70,6 +71,20 @@ public class Postman {
     public void addAttachment(File file, String filename) throws MessagingException {
         final BodyPart messageBodyPart = new MimeBodyPart();
         final DataSource source = new FileDataSource(file);
+        messageBodyPart.setDataHandler(new DataHandler(source));
+        messageBodyPart.setFileName(filename);
+        multipart.addBodyPart(messageBodyPart);
+    }
+
+    /**
+     * @param content  the data
+     * @param type     the MIME type
+     * @param filename the name of the attached file.
+     * @throws MessagingException
+     */
+    public void addAttachment(byte[] content, String type, String filename) throws MessagingException {
+        final BodyPart messageBodyPart = new MimeBodyPart();
+        final DataSource source = new ByteArrayDataSource(content, type);
         messageBodyPart.setDataHandler(new DataHandler(source));
         messageBodyPart.setFileName(filename);
         multipart.addBodyPart(messageBodyPart);
