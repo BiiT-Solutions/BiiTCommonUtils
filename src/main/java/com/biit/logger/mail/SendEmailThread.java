@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class SendEmailThread implements Runnable {
 
-    private static final String[] INVALID_DOMAINS = {"test.com", "testing.com"};
+    private static final String[] INVALID_DOMAINS = {"test.com", "testing.com", "email.com"};
     private static final String DEFAULT_ATTACHMENT_NAME = "attachment";
     private static final String DEFAULT_ATTACHMENT_EXTENSION = "att";
 
