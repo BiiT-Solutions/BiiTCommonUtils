@@ -161,7 +161,7 @@ public class SendEmailThread implements Runnable {
     private List<String> filterMails(List<String> emails) {
         final List<String> filteredMails = new ArrayList<>();
         emails.forEach(email -> {
-            if (email != null) {
+            if (email != null && !email.isBlank()) {
                 if (Arrays.stream(INVALID_DOMAINS).noneMatch(email::endsWith)) {
                     filteredMails.add(email);
                 } else {
