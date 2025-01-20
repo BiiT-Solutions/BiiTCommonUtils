@@ -4,7 +4,7 @@
     <groupId>com.biit</groupId>
     <artifactId>common-utils</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.68-SNAPSHOT</version>
+    <version>1.2.70-SNAPSHOT</version>
     <name>Generic utilities used in all Biit projects.</name>
     <description>Read settings files and basic logging.</description>
 
