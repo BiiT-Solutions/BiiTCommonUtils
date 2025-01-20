@@ -165,7 +165,7 @@ public class SendEmailThread implements Runnable {
                 if (Arrays.stream(INVALID_DOMAINS).noneMatch(email::endsWith)) {
                     filteredMails.add(email);
                 } else {
-                    BiitCommonLogger.warning(this.getClass(), "Ignoring email address '" + email + "'. Its domain is blacklisted.");
+                    BiitCommonLogger.warning(this.getClass(), "Ignoring email address '" + email + "'. This domain is blacklisted.");
                 }
             }
         });

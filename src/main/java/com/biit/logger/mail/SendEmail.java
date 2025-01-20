@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class SendEmail {
 
@@ -44,9 +46,11 @@ public final class SendEmail {
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo, String mailCc,
                                  String mailCco, String subject, String htmlContent, String plainTextContent)
             throws EmailNotSentException, InvalidEmailAddressException {
-        sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, new ArrayList<>(Collections.singletonList(mailTo)),
-                new ArrayList<>(Collections.singletonList(mailCc)),
-                new ArrayList<>(Collections.singletonList(mailCco)), subject, htmlContent, plainTextContent);
+        sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender,
+                mailTo != null ? Stream.of(mailTo.split(",")).map(String::trim).collect(Collectors.toList()) : null,
+                mailCc != null ? Stream.of(mailCc.split(",")).map(String::trim).collect(Collectors.toList()) : null,
+                mailCco != null ? Stream.of(mailCco.split(",")).map(String::trim).collect(Collectors.toList()) : null,
+                subject, htmlContent, plainTextContent);
     }
 
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
@@ -55,6 +59,17 @@ public final class SendEmail {
         sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, mailTo, mailCc, mailCco, subject, htmlContent, plainTextContent,
                 null, null, null);
     }
+
+    public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, String mailTo,
+                                 String mailCc, String mailCco, String subject, String htmlContent, String plainTextContent,
+                                 byte[] attachment, String attachmentType, String attachmentName) throws EmailNotSentException, InvalidEmailAddressException {
+        sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender,
+                mailTo != null ? Stream.of(mailTo.split(",")).map(String::trim).collect(Collectors.toList()) : null,
+                mailCc != null ? Stream.of(mailCc.split(",")).map(String::trim).collect(Collectors.toList()) : null,
+                mailCco != null ? Stream.of(mailCco.split(",")).map(String::trim).collect(Collectors.toList()) : null,
+                subject, htmlContent, plainTextContent, attachment, attachmentType, attachmentName);
+    }
+
 
     public static void sendEmail(String smtpServer, String smtpPort, String emailUser, String emailPassword, String emailSender, List<String> mailTo,
                                  List<String> mailCc, List<String> mailCco, String subject, String htmlContent, String plainTextContent,
