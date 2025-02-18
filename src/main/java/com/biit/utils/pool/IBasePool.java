@@ -23,6 +23,8 @@ public interface IBasePool<ElementId, Type> {
 
     boolean isDirty(Type element);
 
+    void addElement(Type element, ElementId key, Long expirationTime);
+
     Type getElement(ElementId elementId);
 
     ElementId getKey(Type element);
