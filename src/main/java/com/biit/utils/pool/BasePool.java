@@ -2,6 +2,8 @@ package com.biit.utils.pool;
 
 import com.biit.logger.BiitPoolLogger;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,11 +33,19 @@ public abstract class BasePool<ElementId, Type> implements IBasePool<ElementId, 
         addElement(element, key, System.currentTimeMillis());
     }
 
+    public synchronized void addElement(Type element, ElementId key, LocalDateTime insertedAt) {
+        if (insertedAt == null) {
+            addElement(element, key);
+        } else {
+            addElement(element, key, insertedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
+    }
+
     @Override
-    public synchronized void addElement(Type element, ElementId key, Long expirationTime) {
-        BiitPoolLogger.debug(this.getClass(), "Adding element '{}' with key '{}' that expires at '{}'.",
-                element, key, expirationTime);
-        elementsTime.put(key, expirationTime);
+    public synchronized void addElement(Type element, ElementId key, Long insertedAt) {
+        BiitPoolLogger.debug(this.getClass(), "Adding element '{}' with key '{}' that is inserted at '{}'.",
+                element, key, insertedAt);
+        elementsTime.put(key, insertedAt);
         elementsById.put(key, element);
     }
 
