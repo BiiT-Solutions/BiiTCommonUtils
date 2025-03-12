@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class SendEmailThread implements Runnable {
 
-    private static final String[] INVALID_DOMAINS = {"test.com", "testing.com", "email.com"};
+    public static final String[] INVALID_DOMAINS = {"test.com", "testing.com", "email.com"};
     private static final String DEFAULT_ATTACHMENT_NAME = "attachment";
     private static final String DEFAULT_ATTACHMENT_EXTENSION = "att";
 
@@ -158,14 +158,18 @@ public class SendEmailThread implements Runnable {
         this.attachmentType = attachmentType;
     }
 
-    private List<String> filterMails(List<String> emails) {
+    public static List<String> filterMails(String... emails) {
+        return filterMails(Arrays.asList(emails));
+    }
+
+    public static List<String> filterMails(List<String> emails) {
         final List<String> filteredMails = new ArrayList<>();
         emails.forEach(email -> {
             if (email != null && !email.isBlank()) {
                 if (Arrays.stream(INVALID_DOMAINS).noneMatch(email::endsWith)) {
                     filteredMails.add(email);
                 } else {
-                    BiitCommonLogger.warning(this.getClass(), "Ignoring email address '" + email + "'. This domain is blacklisted.");
+                    BiitCommonLogger.warning(SendEmailThread.class, "Ignoring email address '" + email + "'. This domain is blacklisted.");
                 }
             }
         });
