@@ -7,4 +7,13 @@ public class InvalidEmailAddressException extends Exception {
     public InvalidEmailAddressException(String message) {
         super(message);
     }
+
+
+    public InvalidEmailAddressException(Class<?> clazz, String message) {
+        super(clazz + ": " + message);
+    }
+
+    public InvalidEmailAddressException(Class<?> clazz, String message, Throwable cause) {
+        super(clazz + ": " + message, cause);
+    }
 }

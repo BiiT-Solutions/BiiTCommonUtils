@@ -7,4 +7,12 @@ public class EmailNotSentException extends Exception {
     public EmailNotSentException(String message) {
         super(message);
     }
+
+    public EmailNotSentException(Class<?> clazz, String message) {
+        super(clazz + ": " + message);
+    }
+
+    public EmailNotSentException(Class<?> clazz, String message, Throwable cause) {
+        super(clazz + ": " + message, cause);
+    }
 }
