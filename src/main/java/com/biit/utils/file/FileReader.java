@@ -57,6 +57,7 @@ public final class FileReader {
         } else {
             BiitCommonLogger.warning(FileReader.class, "Invalid resource '" + fileName + "' using classloader from '"
                     + classWithResources.getProtectionDomain().getCodeSource().getLocation() + "'.");
+            throw new FileNotFoundException("File '" + fileName + "' does not exist.");
         }
         File file = null;
         // Jetty load resource.
@@ -136,7 +137,7 @@ public final class FileReader {
      * @return
      * @throws FileNotFoundException
      */
-    public static List<String> getResouceAsList(String resourceName) throws FileNotFoundException {
+    public static List<String> getResouceAsList(String resourceName) throws IOException {
         final File file = FileReader.getResource(resourceName);
         return readFileAsList(file);
     }
@@ -149,13 +150,13 @@ public final class FileReader {
      * @return
      * @throws FileNotFoundException
      */
-    public static List<String> getFileAsList(String filePath) throws FileNotFoundException {
+    public static List<String> getFileAsList(String filePath) throws IOException {
         final File file = new File(filePath);
         return readFileAsList(file);
     }
 
-    private static List<String> readFileAsList(File file) throws FileNotFoundException {
-        final Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.name());
+    private static List<String> readFileAsList(File file) throws IOException {
+        final Scanner scanner = new Scanner(file, StandardCharsets.UTF_8);
         scanner.useDelimiter("\\A");
         final List<String> lines = new ArrayList<>();
         while (scanner.hasNext()) {
@@ -165,8 +166,8 @@ public final class FileReader {
         return lines;
     }
 
-    public static String readFile(File file) throws FileNotFoundException {
-        final Scanner scanner = new Scanner(file, "UTF-8");
+    public static String readFile(File file) throws IOException {
+        final Scanner scanner = new Scanner(file, StandardCharsets.UTF_8);
         // Change delimiter or it will remove all white spaces.
         scanner.useDelimiter("\\A");
         final StringBuilder content = new StringBuilder();
@@ -183,6 +184,9 @@ public final class FileReader {
         try {
             final File file = getResource(fileName);
             try {
+                if (file == null) {
+                    throw new FileNotFoundException("File '" + fileName + "' does not exist.");
+                }
                 for (final String line : Files.readAllLines(file.toPath(), charset)) {
                     result.append(line).append("\n");
                 }
@@ -334,10 +338,11 @@ public final class FileReader {
         if (file.length() < MIN_FILE_SIZE) {
             return false;
         }
-        final DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-        final int test = in.readInt();
-        in.close();
-        return test == ZIP_HEADER;
+
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            final int test = in.readInt();
+            return test == ZIP_HEADER;
+        }
     }
 
     public static Path sanitizePath(final String baseDirPath, final String folderPath) {
