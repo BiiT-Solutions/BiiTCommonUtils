@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -337,5 +338,29 @@ public final class FileReader {
         final int test = in.readInt();
         in.close();
         return test == ZIP_HEADER;
+    }
+
+    public static Path sanitizePath(final String baseDirPath, final String folderPath) {
+        return sanitizePath(Path.of(baseDirPath), Path.of(folderPath));
+    }
+
+    public static Path sanitizePath(final Path baseDirPath, final Path folderPath) {
+
+        if (!baseDirPath.isAbsolute()) {
+            throw new IllegalArgumentException("Base path must be absolute");
+        }
+
+        // Join the two paths together, then normalize so that any ".." elements
+        // in the userPath can remove parts of baseDirPath.
+        // (e.g. "/foo/bar/baz" + "../attack" -> "/foo/bar/attack")
+        final Path resolvedPath = baseDirPath.resolve(folderPath).normalize();
+
+        // Make sure the resulting path is still within the required directory.
+        // (In the example above, "/foo/bar/attack" is not.)
+        if (!resolvedPath.startsWith(baseDirPath)) {
+            throw new IllegalArgumentException("User path escapes the base path");
+        }
+
+        return resolvedPath;
     }
 }
