@@ -345,6 +345,10 @@ public final class FileReader {
         }
     }
 
+    public static Path sanitizePath(final String folderPath) {
+        return sanitizePath("/", folderPath);
+    }
+
     public static Path sanitizePath(final String baseDirPath, final String folderPath) {
         return sanitizePath(Path.of(baseDirPath), Path.of(folderPath));
     }
