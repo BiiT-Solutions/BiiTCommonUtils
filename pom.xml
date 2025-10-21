@@ -8,6 +8,11 @@
     <name>Generic utilities used in all Biit projects.</name>
     <description>Read settings files and basic logging.</description>
 
+    <organization>
+        <name>BiiT Sourcing Solutions S.L.</name>
+        <url>https://www.biit-solutions.com/</url>
+    </organization>
+
     <parent>
         <groupId>com.biit</groupId>
         <artifactId>versions</artifactId>
@@ -18,22 +23,31 @@
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>libs-releases</name>
-            <url>https://artifactory.biit-solutions.com/artifactory/libs-release</url>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>libs-snapshot</name>
-            <url>https://artifactory.biit-solutions.com/artifactory/libs-snapshot</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/BiiT-Solutions/BiiTCommonUtils</url>
         </snapshotRepository>
     </distributionManagement>
 
 
     <scm>
-        <connection>scm:git:git.biit-solutions.com:Java/BiiTCommonUtils.git</connection>
-        <developerConnection>scm:git:git.biit-solutions.com:Java/BiiTCommonUtils.git</developerConnection>
-        <tag>common-utils-1.0.9</tag>
+        <connection>scm:git:ssh://git@github.com/BiiT-Solutions/BiiTCommonUtils.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/BiiT-Solutions/BiiTCommonUtils.git</developerConnection>
+        <url>https://github.com/BiiT-Solutions/BiiTCommonUtils.git</url>
+        <tag>biit-common-utils</tag>
     </scm>
+
+    <licenses>
+        <license>
+            <name>GNU AGPL v3</name>
+            <url>https://www.gnu.org/licenses/agpl-3.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <main.basedir>${project.basedir}</main.basedir>
@@ -100,6 +114,29 @@
                         <version>${maven-surefire-plugin.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <configuration>
+                    <organizationName>BiiT Sourcing Solutions S.L.</organizationName>
+                    <inceptionYear>2022</inceptionYear>
+                    <licenseName>agpl_v3</licenseName>
+                    <excludes>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/*.xml</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>first</id>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
