@@ -4,7 +4,7 @@
     <groupId>com.biit-solutions</groupId>
     <artifactId>common-utils</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.102</version>
+    <version>1.2.103-SNAPSHOT</version>
     <name>Generic utilities used in all Biit projects.</name>
     <description>Read settings files and basic logging.</description>
 
@@ -38,7 +38,7 @@
         <connection>scm:git:ssh://git@github.com/BiiT-Solutions/BiiTCommonUtils.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/BiiT-Solutions/BiiTCommonUtils.git</developerConnection>
         <url>https://github.com/BiiT-Solutions/BiiTCommonUtils.git</url>
-        <tag>common-utils-1.2.102</tag>
+        <tag>biit-common-utils</tag>
     </scm>
 
     <licenses>
