@@ -2,6 +2,10 @@ name: Publish package to GitHub Packages
 
 # Only trigger, when the build workflow succeeded
 on:
+  workflow_run:
+    workflows: [ "Sonar Backend" ]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
