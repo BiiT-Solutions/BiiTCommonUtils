@@ -1,20 +1,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.biit</groupId>
+	<groupId>com.biit-solutions</groupId>
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
 	<version>1.1.57</version>
 	<name>Generic utilities used in all Biit projects.</name>
 	<description>Read settings files and basic logging.</description>
+	<url>https://github.com/BiiT-Solutions</url>
 
 	<organization>
 		<name>BiiT Sourcing Solutions S.L.</name>
 		<url>https://www.biit-solutions.com/</url>
 	</organization>
 
+	<developers>
+		<developer>
+			<id>jhortelano</id>
+			<name>Jorge Hortelano</name>
+			<email>jhortelano@biit-solutions.com</email>
+			<roles>
+				<role>Project-Administrator</role>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
 	<parent>
-		<groupId>com.biit</groupId>
+		<groupId>com.biit-solutions</groupId>
 		<artifactId>versions</artifactId>
 		<version>[0.1,0.2)</version>
 		<relativePath /> <!-- lookup parent from repository -->
@@ -58,25 +71,30 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<version>2.0.17</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
+			<version>1.4.8</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
+			<version>1.4.8</version>
 		</dependency>
 		<!-- MAIL -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
+			<version>${javax.mail.version}</version>
 		</dependency>
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
+			<version>${org.testng.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
