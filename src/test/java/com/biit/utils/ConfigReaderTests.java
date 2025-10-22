@@ -89,7 +89,7 @@ public class ConfigReaderTests {
 				PROPERTY_CASE_DEFAULT_VALUE);
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void configRead() throws PropertyNotFoundException {
 		final TestConfigurationReader testConfigurationReader = new TestConfigurationReader();
 

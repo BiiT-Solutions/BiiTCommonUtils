@@ -237,8 +237,6 @@ public class ImageTools {
 	 * format.
 	 * 
 	 * @param url
-	 * @param format
-	 *            JPG, PNG, GIF...
 	 * @return
 	 * @throws InvalidRemoteImageDefinition
 	 */
@@ -257,8 +255,6 @@ public class ImageTools {
 	 * format.
 	 * 
 	 * @param url
-	 * @param format
-	 *            JPG, PNG, GIF...
 	 * @return
 	 * @throws IOException
 	 */

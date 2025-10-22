@@ -100,10 +100,12 @@ public class ConfigurationReader {
     public void readConfigurations(Case caseMode) {
         switch (caseMode) {
             case SENSITIVE:
-                propertiesFinalValue = new HashMap<String, String>();
+                propertiesFinalValue = new HashMap<>();
                 break;
             case INSENSITIVE:
                 propertiesFinalValue = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+                break;
+            default:
                 break;
         }
         propertiesFinalValue.putAll(propertiesDefault);
